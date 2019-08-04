@@ -3,7 +3,7 @@
 .idea/
 
 application.properties
-# Compiled class file
+src/main/resources/application.properties
 *.class
 
 # Log file

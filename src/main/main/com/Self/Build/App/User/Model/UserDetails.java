@@ -1,5 +1,8 @@
 package com.Self.Build.App.User.Model;
 
+import com.Self.Build.App.Validation.Group.Edited;
+import com.Self.Build.App.Validation.Group.FileValidationGroup;
+import com.Self.Build.App.Validation.Image;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.web.multipart.MultipartFile;
@@ -7,10 +10,11 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 
 @Entity
 @Table( name = "user_details" )
-public class UserDetails {
+public class UserDetails implements Serializable {
 
 
     @Id
@@ -95,23 +99,19 @@ public class UserDetails {
         this.lastName = lastName;
     }
 
-    @Override
     public String getFileName() {
         return fileName;
     }
 
-    @Override
     public void setFileName(String fileName) {
         this.fileName = fileName;
     }
 
     @JsonIgnore()
-    @Override
     public MultipartFile getFile() {
         return file;
     }
 
-    @Override
     public void setFile(MultipartFile file) {
         this.file = file;
     }

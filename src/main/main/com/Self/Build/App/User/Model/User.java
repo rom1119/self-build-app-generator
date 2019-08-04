@@ -1,5 +1,9 @@
 package com.Self.Build.App.User.Model;
 
+import com.Self.Build.App.Validation.Group.PasswordChange;
+import com.Self.Build.App.Validation.Group.Registration;
+import com.Self.Build.App.Validation.UniqueUsername;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.hibernate.annotations.Fetch;
@@ -10,23 +14,27 @@ import javax.persistence.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 @Table( name = "user" )
-@EntityListeners(UserEntityListener.class)
+//@EntityListeners(UserEntityListener.class)
 //@JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonDeserialize()
 @NamedQuery(name="User.findAllWhereIsAsdInFirstName", query="SELECT u from User u left join u.userDetails ud where ud.firstName LIKE '%asd%'")
 //@JsonIgnoreProperties({"id", "firstName"})
 //@JsonPropertyOrder({ "name", "id" })
-public class User {
+public class User implements Serializable {
 
     @Id
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "uuid")
 //    @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name = "id", unique = true)
-    private Long id;
+    private String id;
 
     @Version
     private Long version;
@@ -83,12 +91,11 @@ public class User {
         setRoles(roles);
     }
 
-    @Override
-    public Long getId() {
+    public String getId() {
         return id;
     }
-    @Override
-    public void setId(Long id) {
+
+    public void setId(String id) {
         this.id = id;
     }
 

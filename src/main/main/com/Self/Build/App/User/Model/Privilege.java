@@ -9,7 +9,7 @@ import java.util.Set;
 
 @Entity
 @Table( name = "privilege" )
-public class Privilege implements AuthorityInterface, Serializable {
+public class Privilege implements Serializable {
 
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
@@ -31,22 +31,18 @@ public class Privilege implements AuthorityInterface, Serializable {
         this.name = name;
     }
 
-    @Override
     public Long getId() {
         return id;
     }
 
-    @Override
     public void setId(Long id) {
         this.id = id;
     }
 
-    @Override
     public String getName() {
         return name;
     }
 
-    @Override
     public void setName(String name) {
         this.name = name;
     }

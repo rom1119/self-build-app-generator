@@ -1,5 +1,23 @@
 package com.Self.Build.App.User.FakeData;
 
+import com.Self.Build.App.User.Model.Privilege;
+import com.Self.Build.App.User.Model.Role;
+import com.Self.Build.App.User.Model.User;
+import com.Self.Build.App.User.Model.UserDetails;
+import com.Self.Build.App.User.Repository.PrivilegeRepository;
+import com.Self.Build.App.User.Repository.RoleRepository;
+import com.Self.Build.App.User.Repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.transaction.Transactional;
+import java.util.*;
+
 @Component
 public class UserData {
 
