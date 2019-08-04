@@ -2,6 +2,7 @@
 /src/main/webapp/static/bower_components
 .idea/
 
+application.properties
 # Compiled class file
 *.class
 
