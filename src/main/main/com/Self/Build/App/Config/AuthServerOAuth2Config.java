@@ -16,6 +16,12 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.A
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
+import org.springframework.security.oauth2.provider.ClientDetailsService;
+import org.springframework.security.oauth2.provider.approval.ApprovalStore;
+import org.springframework.security.oauth2.provider.approval.TokenApprovalStore;
+import org.springframework.security.oauth2.provider.approval.TokenStoreUserApprovalHandler;
+import org.springframework.security.oauth2.provider.approval.UserApprovalHandler;
+import org.springframework.security.oauth2.provider.request.DefaultOAuth2RequestFactory;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JdbcTokenStore;
@@ -38,6 +44,11 @@ public class AuthServerOAuth2Config extends AuthorizationServerConfigurerAdapter
     @Autowired
     private MyUserDetailsService userDetailsService;
 
+
+
+    @Autowired
+    private ClientDetailsService clientDetailsService;
+
     @Autowired
     private DataSource dataSource;
 
@@ -46,6 +57,7 @@ public class AuthServerOAuth2Config extends AuthorizationServerConfigurerAdapter
             AuthorizationServerSecurityConfigurer oauthServer)
             throws Exception {
         oauthServer
+
                 .tokenKeyAccess("permitAll()")
                 .checkTokenAccess("isAuthenticated()");
 
@@ -61,13 +73,15 @@ public class AuthServerOAuth2Config extends AuthorizationServerConfigurerAdapter
                 .scopes("read")
                 .autoApprove(true)
                 .accessTokenValiditySeconds(1000)
+                .refreshTokenValiditySeconds(600)
                 .and()
             .withClient("clientIdPassword")
                 .secret(passwordEncoder.encode("secret"))
                 .accessTokenValiditySeconds(1000)
                 .authorizedGrantTypes(
                         "password","authorization_code", "refresh_token")
-                .scopes("read");
+                .scopes("read", "write")
+                .refreshTokenValiditySeconds(600);
     }
 
     @Override
@@ -76,7 +90,7 @@ public class AuthServerOAuth2Config extends AuthorizationServerConfigurerAdapter
             throws Exception {
 
         endpoints
-                .tokenStore(tokenStore())
+                .tokenStore(tokenStore()).userApprovalHandler(userApprovalHandler()).userDetailsService(userDetailsService)
                 .authenticationManager(authenticationManager);
     }
 
@@ -99,6 +113,25 @@ public class AuthServerOAuth2Config extends AuthorizationServerConfigurerAdapter
         defaultTokenServices.setTokenStore(tokenStore());
         return defaultTokenServices;
     }
+
+    @Bean
+    @Autowired
+    public TokenStoreUserApprovalHandler userApprovalHandler(){
+        TokenStoreUserApprovalHandler handler = new TokenStoreUserApprovalHandler();
+        handler.setTokenStore(tokenStore());
+        handler.setRequestFactory(new DefaultOAuth2RequestFactory(clientDetailsService));
+        handler.setClientDetailsService(clientDetailsService);
+        return handler;
+    }
+    @Bean
+    public ApprovalStore approvalStore() throws Exception {
+        TokenApprovalStore store = new TokenApprovalStore();
+        store.setTokenStore(tokenStore());
+        return store;
+    }
+
+
+
 
     private DatabasePopulator databasePopulator() {
         ResourceDatabasePopulator populator = new ResourceDatabasePopulator();

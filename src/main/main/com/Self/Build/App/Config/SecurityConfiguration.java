@@ -3,7 +3,10 @@ package com.Self.Build.App.Config;
 import com.Self.Build.App.User.MyUserDetailsService;
 import com.Self.Build.App.User.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.access.AccessDecisionManager;
 import org.springframework.security.access.AccessDecisionVoter;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
@@ -19,12 +22,24 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.provider.ClientDetailsService;
+import org.springframework.security.oauth2.provider.approval.ApprovalStore;
+import org.springframework.security.oauth2.provider.approval.TokenApprovalStore;
+import org.springframework.security.oauth2.provider.approval.TokenStoreUserApprovalHandler;
+import org.springframework.security.oauth2.provider.request.DefaultOAuth2RequestFactory;
+import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.web.access.expression.WebExpressionVoter;
+import org.springframework.security.web.session.SessionManagementFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.List;
 
+@Configuration
 @EnableWebSecurity
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
@@ -37,6 +52,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Autowired
     private UserRepository userRepository;
 
+
+
+
 //    @Autowired
 //    private CustomPermissionEvaluator customPermissionEvaluator;
 
@@ -47,6 +65,18 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         return userDetailsService;
     }
 
+//    @Bean
+    public CorsConfigurationSource corsFilter() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        CorsConfiguration config = new CorsConfiguration().applyPermitDefaultValues();
+        config.addAllowedOrigin("http://localhost:3000");
+        config.addAllowedMethod(HttpMethod.OPTIONS);
+        source.registerCorsConfiguration("/oauth/token", config);
+        FilterRegistrationBean bean = new FilterRegistrationBean(new CorsFilter( source));
+        bean.setOrder(0);
+        return source;
+    }
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -54,7 +84,17 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        super.configure(http);
+//        super.configure(http);
+        http.csrf().disable().authorizeRequests().antMatchers("/oauth/token").permitAll()
+
+                ;
+//        http.cors().configurationSource(corsFilter())
+//                .addFilterBefore(corsFilter(), SessionManagementFilter.class) //adds your custom CorsFilterCustom
+
+//                .csrf().disable().authorizeRequests()
+//                .antMatchers("/oauth/token")
+//                .permitAll()
+//                ;
 //        http
 //                .authorizeRequests()
 //
@@ -166,6 +206,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 //        return dmseh;
 //    }
 //
+
     @Bean
     @Override
     public AuthenticationManager authenticationManagerBean() throws Exception {

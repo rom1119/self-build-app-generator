@@ -23,7 +23,7 @@ public class SecurityController {
 //    @Autowired
 //    private IUserService service;
 
-    @GetMapping("/user/logged_user")
+    @GetMapping("/oauth/user")
     public Object getLoggedUser(Authentication authentication) {
 //        System.out.println(auth.getPrincipal());
         if (authentication.getPrincipal() == null) {
