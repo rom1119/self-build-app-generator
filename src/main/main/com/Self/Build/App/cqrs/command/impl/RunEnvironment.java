@@ -1,6 +1,6 @@
 package com.Self.Build.App.cqrs.command.impl;
 
-import com.Self.Build.App.cqrs.handler.CommandHandler;
+import com.Self.Build.App.cqrs.command.handler.CommandHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

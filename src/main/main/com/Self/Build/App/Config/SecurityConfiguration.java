@@ -1,7 +1,7 @@
 package com.Self.Build.App.Config;
 
-import com.Self.Build.App.User.MyUserDetailsService;
-import com.Self.Build.App.User.Repository.UserRepository;
+import com.Self.Build.App.infrastructure.User.MyUserDetailsService;
+import com.Self.Build.App.infrastructure.User.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -22,14 +22,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.provider.ClientDetailsService;
-import org.springframework.security.oauth2.provider.approval.ApprovalStore;
-import org.springframework.security.oauth2.provider.approval.TokenApprovalStore;
-import org.springframework.security.oauth2.provider.approval.TokenStoreUserApprovalHandler;
-import org.springframework.security.oauth2.provider.request.DefaultOAuth2RequestFactory;
-import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.web.access.expression.WebExpressionVoter;
-import org.springframework.security.web.session.SessionManagementFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
