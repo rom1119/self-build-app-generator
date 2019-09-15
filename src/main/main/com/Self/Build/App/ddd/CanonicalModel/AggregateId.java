@@ -16,7 +16,6 @@ public class AggregateId implements Serializable {
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "uuid")
     @Column(columnDefinition = "CHAR(32)")
-    @Id
     protected String aggregateId;
 
     public AggregateId(String aggregateId) {
