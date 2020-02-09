@@ -8,20 +8,20 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table( name = "css_project_item" )
-public class CssProjectItem extends ProjectItem<CssProject> {
+@Table( name = "html_tag" )
+public class HtmlTag extends ProjectItem<HtmlProject> {
 
     @ManyToOne
     @JoinColumn(name = "project_id", nullable = false)
-    private CssProject project;
+    private HtmlProject project;
 
     @Override
-    public CssProject getProject() {
+    public HtmlProject getProject() {
         return project;
     }
 
     @Override
-    public ProjectItem<CssProject> setProject(CssProject project) {
+    public ProjectItem<HtmlProject> setProject(HtmlProject project) {
         this.project =  project;
 
         return this;

@@ -9,31 +9,31 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table( name = "css_project" )
-public class CssProject extends Project<CssProjectItem> {
+@Table( name = "html_project" )
+public class HtmlProject extends Project<HtmlTag> {
 
     @OneToMany(mappedBy = "project")
     @Fetch(FetchMode.SELECT)
-    protected Set<CssProjectItem> items;
+    protected Set<HtmlTag> items;
 
-    public CssProject() {
+    public HtmlProject() {
         items = new HashSet<>();
     }
 
     @Override
-    public Project<CssProjectItem> addItem(CssProjectItem item) {
+    public Project<HtmlTag> addItem(HtmlTag item) {
         items.add(item);
         return this;
     }
 
     @Override
-    public Project<CssProjectItem> removeItem(CssProjectItem item) {
+    public Project<HtmlTag> removeItem(HtmlTag item) {
         items.remove(item);
         return this;
     }
 
     @Override
-    public boolean hasItem(CssProjectItem item) {
+    public boolean hasItem(HtmlTag item) {
         return items.contains(item);
     }
 }
