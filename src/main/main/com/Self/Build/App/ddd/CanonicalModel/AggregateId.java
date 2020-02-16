@@ -7,7 +7,6 @@ import javax.persistence.Embeddable;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import java.io.Serializable;
-import java.util.UUID;
 
 @SuppressWarnings("serial")
 @Embeddable
@@ -15,23 +14,23 @@ public class AggregateId implements Serializable {
 
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "uuid")
-    @Column(columnDefinition = "CHAR(32)")
-    protected String aggregateId;
+    @Column(name = "id", unique = true)
+    protected String id;
 
     public AggregateId(String aggregateId) {
-        this.aggregateId = aggregateId;
+        this.id = aggregateId;
     }
 
     protected AggregateId() {
     }
 
     public String getId() {
-        return aggregateId;
+        return id;
     }
 
     @Override
     public int hashCode() {
-        return aggregateId.hashCode();
+        return id.hashCode();
     }
 
     @Override
@@ -43,16 +42,16 @@ public class AggregateId implements Serializable {
         if (getClass() != obj.getClass())
             return false;
         AggregateId other = (AggregateId) obj;
-        if (aggregateId == null) {
-            if (other.aggregateId != null)
+        if (id == null) {
+            if (other.id != null)
                 return false;
-        } else if (!aggregateId.equals(other.aggregateId))
+        } else if (!id.equals(other.id))
             return false;
         return true;
     }
 
     @Override
     public String toString() {
-        return aggregateId;
+        return id;
     }
 }

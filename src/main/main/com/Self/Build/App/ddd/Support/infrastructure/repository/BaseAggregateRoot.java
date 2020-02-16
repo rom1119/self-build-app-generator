@@ -1,11 +1,9 @@
 package com.Self.Build.App.ddd.Support.infrastructure.repository;
 
-import com.Self.Build.App.ddd.CanonicalModel.AggregateId;
-import com.Self.Build.App.ddd.SharedKernel.exceptions.DomainOperationException;
+import com.Self.Build.App.ddd.Support.infrastructure.EventPublisher.DomainEventPublisher;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
 
@@ -14,10 +12,11 @@ public abstract class BaseAggregateRoot {
     public static enum AggregateStatus {
         ACTIVE, ARCHIVE
     }
-    @EmbeddedId
-    @AttributeOverride(name = "aggregateId", column = @Column(name = "id", nullable = false))
-    protected AggregateId aggregateId;
-
+    @Id
+    @GeneratedValue(generator = "uuid")
+    @GenericGenerator(name = "uuid", strategy = "uuid")
+    @Column(name = "id", unique = true)
+    protected String id;
 
     @Version
     protected Long version;
@@ -26,15 +25,16 @@ public abstract class BaseAggregateRoot {
     private AggregateStatus aggregateStatus = AggregateStatus.ACTIVE;
 
     @Transient
-    @Autowired
+    @Autowired()
     protected DomainEventPublisher eventPublisher;
 
+    @JsonIgnore()
     public boolean isRemoved() {
         return aggregateStatus == AggregateStatus.ARCHIVE;
     }
 
     protected void domainError(String message) {
-        throw new DomainOperationException(aggregateId, message);
+//        throw new DomainOperationException(aggregateId, message);
     }
 
     public void markAsRemoved() {

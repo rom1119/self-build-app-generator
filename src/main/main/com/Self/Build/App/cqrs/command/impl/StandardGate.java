@@ -28,7 +28,6 @@ public class StandardGate implements Gate {
             return null;
         }
 
-
         return runEnvironment.run(command);
     }
 

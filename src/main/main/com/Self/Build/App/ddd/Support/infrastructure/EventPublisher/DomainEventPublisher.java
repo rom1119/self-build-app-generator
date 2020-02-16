@@ -1,4 +1,4 @@
-package com.Self.Build.App.ddd.Support.infrastructure.repository;
+package com.Self.Build.App.ddd.Support.infrastructure.EventPublisher;
 
 import java.io.Serializable;
 

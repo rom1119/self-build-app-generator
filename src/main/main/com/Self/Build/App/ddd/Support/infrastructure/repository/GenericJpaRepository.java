@@ -3,12 +3,13 @@ package com.Self.Build.App.ddd.Support.infrastructure.repository;
 import com.Self.Build.App.ddd.CanonicalModel.AggregateId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
 import javax.persistence.PersistenceContext;
+import javax.transaction.Transactional;
 import java.lang.reflect.ParameterizedType;
 
 public abstract class GenericJpaRepository<A extends BaseAggregateRoot> {
@@ -26,22 +27,26 @@ public abstract class GenericJpaRepository<A extends BaseAggregateRoot> {
         this.clazz = ((Class<A>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0]);
     }
 
-    @Transactional(propagation = Propagation.SUPPORTS)
-    public A load(AggregateId id) {
+    @Transactional
+    public A load(String id) {
         //lock to be sure when creating other objects based on values of this aggregate
         A aggregate = entityManager.find(clazz, id, LockModeType.OPTIMISTIC);
 
         if (aggregate == null)
-            throw new RuntimeException("Aggregate " + clazz.getCanonicalName() + " id = " + id + " does not exist");
+            return null;
+//            throw new RuntimeException("Aggregate " + clazz.getCanonicalName() + " id = " + id + " does not exist");
 
         if (aggregate.isRemoved())
-            throw new RuntimeException("Aggragate + " + id + " is removed.");
+            return null;
+//            throw new RuntimeException("Aggragate + " + id + " is removed.");
 
         spring.autowireBean(aggregate);
 
         return aggregate;
     }
 
+
+    @Transactional
     public void save(A aggregate) {
         if (entityManager.contains(aggregate)){
             //locking Aggregate Root logically protects whole aggregate
@@ -52,7 +57,8 @@ public abstract class GenericJpaRepository<A extends BaseAggregateRoot> {
         }
     }
 
-    public void delete(AggregateId id){
+    @Transactional
+    public void delete(String id){
         A entity = load(id);
         //just flag
         entity.markAsRemoved();
