@@ -59,15 +59,29 @@ public class HtmlProjectData {
 
         HtmlProject htmlProject = new HtmlProject();
         HtmlTag h1 = new HtmlTag();
+        h1.setProject(htmlProject);
+        h1.setTagName("h1");
+        HtmlTag h1Child = new HtmlTag();
+        h1Child.setTagName("h1");
+        h1Child.setProject(htmlProject);
+        h1.addChild(h1Child);
 
         CssStyle width = new CssStyle("width", "400px");
         CssStyle height = new CssStyle("height", "200px");
         CssStyle backgroundColor = new CssStyle("backgroundColor", "red");
-        h1.setProject(htmlProject);
-        h1.setTagName("h1");
+
+        CssStyle width2 = new CssStyle("width", "200px");
+        CssStyle height2 = new CssStyle("height", "100px");
+        CssStyle backgroundColor2 = new CssStyle("backgroundColor", "blue");
+
         h1.addCssStyle(width);
         h1.addCssStyle(height);
         h1.addCssStyle(backgroundColor);
+
+        h1Child.addCssStyle(width2);
+        h1Child.addCssStyle(height2);
+        h1Child.addCssStyle(backgroundColor2);
+
         htmlProject.setName("CBC Project");
 
 //        cssStyleRepository.save(width);

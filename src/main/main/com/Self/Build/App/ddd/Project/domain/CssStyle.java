@@ -1,7 +1,9 @@
 package com.Self.Build.App.ddd.Project.domain;
 
+import com.Self.Build.App.ddd.Support.infrastructure.PropertyAccess;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonView;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
@@ -15,12 +17,15 @@ public class CssStyle implements Serializable {
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @Column(name = "id", unique = true)
+    @JsonView(PropertyAccess.Details.class)
     private Long id;
 
     @NotEmpty()
+    @JsonView(PropertyAccess.Details.class)
     private String name;
 
     @NotEmpty()
+    @JsonView(PropertyAccess.Details.class)
     private String value;
 
     @ManyToOne( fetch = FetchType.LAZY)
