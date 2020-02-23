@@ -1,6 +1,8 @@
 package com.Self.Build.App.ddd.Project;
 
+import com.Self.Build.App.ddd.Support.infrastructure.PropertyAccess;
 import com.Self.Build.App.ddd.Support.infrastructure.repository.BaseAggregateRoot;
+import com.fasterxml.jackson.annotation.JsonView;
 
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
@@ -9,6 +11,7 @@ import javax.persistence.MappedSuperclass;
 public abstract class Project<T extends ProjectItem> extends BaseAggregateRoot {
 
     @Column
+    @JsonView(PropertyAccess.Public.class)
     protected String name;
 
     public abstract Project<T>  addItem(T item);

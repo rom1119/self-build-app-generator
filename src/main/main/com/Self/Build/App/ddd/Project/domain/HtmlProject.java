@@ -1,7 +1,9 @@
 package com.Self.Build.App.ddd.Project.domain;
 
 import com.Self.Build.App.ddd.Project.Project;
+import com.Self.Build.App.ddd.Support.infrastructure.PropertyAccess;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -19,6 +21,7 @@ public class HtmlProject extends Project<HtmlTag> implements Serializable {
     @OneToMany(mappedBy = "project")
     @Fetch(FetchMode.SELECT)
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @JsonView(PropertyAccess.Details.class)
     protected Set<HtmlTag> items;
 
     public HtmlProject() {

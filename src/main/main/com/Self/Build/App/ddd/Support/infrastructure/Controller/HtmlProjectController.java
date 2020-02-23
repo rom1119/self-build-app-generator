@@ -1,16 +1,22 @@
 package com.Self.Build.App.ddd.Support.infrastructure.Controller;
 
 import com.Self.Build.App.cqrs.command.impl.StandardGate;
+import com.Self.Build.App.cqrs.query.PaginatedResult;
 import com.Self.Build.App.ddd.CanonicalModel.AggregateId;
 import com.Self.Build.App.ddd.Project.Application.commands.AddTagToHtmlProjectCommand;
 import com.Self.Build.App.ddd.Project.domain.HtmlProject;
 import com.Self.Build.App.ddd.Project.domain.HtmlTag;
+import com.Self.Build.App.ddd.Support.infrastructure.PropertyAccess;
+import com.Self.Build.App.ddd.Support.infrastructure.repository.HtmlProjectPageableRepository;
 import com.Self.Build.App.ddd.Support.infrastructure.repository.HtmlProjectRepository;
 import com.Self.Build.App.infrastructure.User.Model.User;
 import com.Self.Build.App.infrastructure.User.Repository.UserRepository;
 import com.Self.Build.App.infrastructure.User.exception.ApiError;
 import com.Self.Build.App.infrastructure.User.exception.ResourceNotFoundException;
+import com.fasterxml.jackson.annotation.JsonView;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,7 +25,9 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.ServletRequest;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -28,6 +36,9 @@ public class HtmlProjectController {
 
     @Autowired
     private HtmlProjectRepository repository;
+
+    @Autowired
+    private HtmlProjectPageableRepository repositoryPageable;
 //
     @Autowired
     private StandardGate gate;
@@ -37,8 +48,16 @@ public class HtmlProjectController {
 
 //    @PreAuthorize("hasRole('SUPER_ADMIN')")
     @GetMapping("/{id}")
+    @JsonView(PropertyAccess.Details.class)
     public HtmlProject getOne(@PathVariable String id, Authentication auth) {
         return Optional.ofNullable(repository.load(id)).orElseThrow(() -> new ResourceNotFoundException("Not found"));
+    }
+
+    @GetMapping()
+    @JsonView(PropertyAccess.List.class)
+    public PaginatedResult<HtmlProject> getAll(Pageable pageable) {
+        Page<HtmlProject> all = repositoryPageable.findAll(pageable);
+        return new PaginatedResult(all.getContent(), all.getNumber(), all.getSize(), all.getTotalElements());
     }
 
     @PutMapping("/{id}")

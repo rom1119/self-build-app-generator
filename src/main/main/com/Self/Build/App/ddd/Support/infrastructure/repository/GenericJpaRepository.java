@@ -4,6 +4,7 @@ import com.Self.Build.App.ddd.CanonicalModel.AggregateId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.transaction.annotation.Propagation;
 
 import javax.persistence.EntityManager;
@@ -12,7 +13,7 @@ import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 import java.lang.reflect.ParameterizedType;
 
-public abstract class GenericJpaRepository<A extends BaseAggregateRoot> {
+public abstract class GenericJpaRepository<A extends BaseAggregateRoot>  {
 
     @PersistenceContext
     protected EntityManager entityManager;

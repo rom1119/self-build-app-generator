@@ -1,6 +1,9 @@
 package com.Self.Build.App.cqrs.query;
 
 
+import com.Self.Build.App.ddd.Support.infrastructure.PropertyAccess;
+import com.fasterxml.jackson.annotation.JsonView;
+
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
@@ -8,21 +11,26 @@ import java.util.List;
 @SuppressWarnings("serial")
 public class PaginatedResult<T> implements Serializable {
 
+    @JsonView(PropertyAccess.Public.class)
     private final List<T> items;
+    @JsonView(PropertyAccess.Public.class)
     private final int pageSize;
+    @JsonView(PropertyAccess.Public.class)
     private final int pageNumber;
+    @JsonView(PropertyAccess.Public.class)
     private final int pagesCount;
-    private final int totalItemsCount;
+    @JsonView(PropertyAccess.Public.class)
+    private final Long totalItemsCount;
 
     public PaginatedResult(int pageNumber, int pageSize) {
         this.pageNumber = pageNumber;
         this.pageSize = pageSize;
         items = Collections.emptyList();
         pagesCount = 0;
-        totalItemsCount = 0;
+        totalItemsCount = Long.valueOf(0);
     }
 
-    public PaginatedResult(List<T> items, int pageNumber, int pageSize, int totalItemsCount) {
+    public PaginatedResult(List<T> items, int pageNumber, int pageSize, Long totalItemsCount) {
         this.items = items;
         this.pageNumber = pageNumber;
         this.pageSize = pageSize;
@@ -30,7 +38,7 @@ public class PaginatedResult<T> implements Serializable {
         this.totalItemsCount = totalItemsCount;
     }
 
-    private int countPages(int size, int itemsCount) {
+    private int countPages(int size, Long itemsCount) {
         return (int) Math.ceil((double) itemsCount / size);
     }
 
@@ -50,7 +58,7 @@ public class PaginatedResult<T> implements Serializable {
         return pagesCount;
     }
 
-    public int getTotalItemsCount() {
+    public Long getTotalItemsCount() {
         return totalItemsCount;
     }
 }
