@@ -3,6 +3,8 @@ package com.Self.Build.App.ddd.Project.FakeData;
 import com.Self.Build.App.ddd.Project.domain.CssStyle;
 import com.Self.Build.App.ddd.Project.domain.HtmlProject;
 import com.Self.Build.App.ddd.Project.domain.HtmlTag;
+import com.Self.Build.App.ddd.Project.domain.Unit.Named;
+import com.Self.Build.App.ddd.Project.domain.Unit.Size.Pixel;
 import com.Self.Build.App.ddd.Support.infrastructure.repository.CssStyleRepository;
 import com.Self.Build.App.ddd.Support.infrastructure.repository.HtmlProjectRepository;
 import com.Self.Build.App.ddd.Support.infrastructure.repository.HtmlTagRepository;
@@ -66,21 +68,33 @@ public class HtmlProjectData {
         h1Child.setProject(htmlProject);
         h1.addChild(h1Child);
 
-        CssStyle width = new CssStyle("width", "400px");
-        CssStyle height = new CssStyle("height", "200px");
+        CssStyle width = new CssStyle("width", "400");
+        width.setUnit(new Pixel());
+        CssStyle height = new CssStyle("height", "200");
+        height.setUnit(new Pixel());
         CssStyle backgroundColor = new CssStyle("backgroundColor", "red");
+        backgroundColor.setUnit(new Named());
+        CssStyle boxSizing = new CssStyle("boxSizing", "content-box");
+        boxSizing.setUnit(new Named());
 
-        CssStyle width2 = new CssStyle("width", "200px");
-        CssStyle height2 = new CssStyle("height", "100px");
+        CssStyle width2 = new CssStyle("width", "200");
+        width2.setUnit(new Pixel());
+        CssStyle height2 = new CssStyle("height", "100");
+        height2.setUnit(new Pixel());
         CssStyle backgroundColor2 = new CssStyle("backgroundColor", "blue");
+        backgroundColor2.setUnit(new Named());
+        CssStyle boxSizing2 = new CssStyle("boxSizing", "content-box");
+        boxSizing2.setUnit(new Named());
 
         h1.addCssStyle(width);
         h1.addCssStyle(height);
         h1.addCssStyle(backgroundColor);
+        h1.addCssStyle(boxSizing);
 
         h1Child.addCssStyle(width2);
         h1Child.addCssStyle(height2);
         h1Child.addCssStyle(backgroundColor2);
+        h1Child.addCssStyle(boxSizing2);
 
         htmlProject.setName("CBC Project");
 

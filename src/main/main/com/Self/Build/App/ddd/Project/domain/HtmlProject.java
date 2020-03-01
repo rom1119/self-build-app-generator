@@ -21,11 +21,24 @@ public class HtmlProject extends Project<HtmlTag> implements Serializable {
     @OneToMany(mappedBy = "project")
     @Fetch(FetchMode.SELECT)
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    @JsonView(PropertyAccess.Details.class)
     protected Set<HtmlTag> items;
 
     public HtmlProject() {
         items = new HashSet<>();
+    }
+
+    @JsonView(PropertyAccess.Details.class)
+    @JsonProperty("items")
+    public Set<HtmlTag> getMainItems()
+    {
+        Set<HtmlTag> list = new HashSet<>();
+        for (HtmlTag item: items) {
+            if (!item.hasParent()) {
+                list.add(item);
+            }
+        }
+
+        return list;
     }
 
     @Override

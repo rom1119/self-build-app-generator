@@ -114,6 +114,10 @@ public class HtmlTag extends ProjectItem<HtmlProject> implements Serializable {
         return parent;
     }
 
+    public boolean hasParent() {
+        return parent != null;
+    }
+
     public void setParent(HtmlTag parent) {
         this.parent = parent;
     }
