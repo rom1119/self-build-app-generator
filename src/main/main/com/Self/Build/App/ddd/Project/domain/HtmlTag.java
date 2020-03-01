@@ -5,6 +5,7 @@ import com.Self.Build.App.ddd.Support.infrastructure.PropertyAccess;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
+import org.hibernate.annotations.Cascade;
 
 import javax.persistence.*;
 import javax.validation.Valid;
@@ -17,11 +18,12 @@ import java.util.List;
 public class HtmlTag extends ProjectItem<HtmlProject> implements Serializable {
 
     @JsonView(PropertyAccess.Details.class)
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     protected String tagName;
 
     @ManyToOne
     @JoinColumn(name = "project_id", nullable = false)
-    @JsonIgnore()
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private HtmlProject project;
 
     @Valid
@@ -29,14 +31,16 @@ public class HtmlTag extends ProjectItem<HtmlProject> implements Serializable {
             fetch = FetchType.EAGER, orphanRemoval = true)
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     @JsonView(PropertyAccess.Details.class)
-    private List<CssStyle> cssStyleList;
+    @Cascade(org.hibernate.annotations.CascadeType.ALL)
+    protected List<CssStyle> cssStyleList;
 
     @Valid
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL,
             fetch = FetchType.EAGER, orphanRemoval = true)
+    @Cascade(org.hibernate.annotations.CascadeType.ALL)
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     @JsonView(PropertyAccess.Details.class)
-    private List<HtmlTag> children;
+    protected List<HtmlTag> children;
 
     @ManyToOne( fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")

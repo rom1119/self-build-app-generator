@@ -8,12 +8,12 @@ import java.io.Serializable;
 
 @SuppressWarnings("serial")
 @Command
-public class AddTagToHtmlProjectCommand implements Serializable {
+public class AppendTagToHtmlProjectCommand implements Serializable {
 
     private AggregateId projectId;
     private HtmlTag tag;
 
-    public AddTagToHtmlProjectCommand(AggregateId projectId, HtmlTag tag) {
+    public AppendTagToHtmlProjectCommand(AggregateId projectId, HtmlTag tag) {
         this.projectId = projectId;
         this.tag = tag;
     }

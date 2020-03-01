@@ -26,13 +26,16 @@ public class CssStyle implements Serializable {
 
     @NotEmpty()
     @JsonView(PropertyAccess.Details.class)
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     private String name;
 
     @JsonView(PropertyAccess.Details.class)
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     private String unitName;
 
     @NotEmpty()
     @JsonView(PropertyAccess.Details.class)
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     private String value;
 
     @ManyToOne( fetch = FetchType.LAZY)
@@ -80,6 +83,7 @@ public class CssStyle implements Serializable {
         this.htmlTag = htmlTag;
     }
 
+    @JsonIgnore
     public BaseUnit getUnit() {
 //        unitName
         return getUnitFromName(unitName);

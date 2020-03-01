@@ -3,14 +3,12 @@ package com.Self.Build.App.ddd.Support.infrastructure.Controller;
 import com.Self.Build.App.cqrs.command.impl.StandardGate;
 import com.Self.Build.App.cqrs.query.PaginatedResult;
 import com.Self.Build.App.ddd.CanonicalModel.AggregateId;
-import com.Self.Build.App.ddd.Project.Application.commands.AddTagToHtmlProjectCommand;
+import com.Self.Build.App.ddd.Project.Application.commands.AppendTagToHtmlProjectCommand;
 import com.Self.Build.App.ddd.Project.domain.HtmlProject;
 import com.Self.Build.App.ddd.Project.domain.HtmlTag;
 import com.Self.Build.App.ddd.Support.infrastructure.PropertyAccess;
 import com.Self.Build.App.ddd.Support.infrastructure.repository.HtmlProjectPageableRepository;
 import com.Self.Build.App.ddd.Support.infrastructure.repository.HtmlProjectRepository;
-import com.Self.Build.App.infrastructure.User.Model.User;
-import com.Self.Build.App.infrastructure.User.Repository.UserRepository;
 import com.Self.Build.App.infrastructure.User.exception.ApiError;
 import com.Self.Build.App.infrastructure.User.exception.ResourceNotFoundException;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -19,15 +17,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.ServletRequest;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -60,7 +54,7 @@ public class HtmlProjectController {
         return new PaginatedResult(all.getContent(), all.getNumber(), all.getSize(), all.getTotalElements());
     }
 
-    @PutMapping("/{id}")
+    @PostMapping("/{id}/append-tag")
     public ResponseEntity addTag(@PathVariable String id,
                                  @RequestBody @Validated() HtmlTag htmlTag,
                                  BindingResult bindingResult
@@ -73,7 +67,7 @@ public class HtmlProjectController {
         HtmlProject entity = Optional.ofNullable(repository.load(id))
                 .orElseThrow(() -> new ResourceNotFoundException("Not found"));
 
-        AddTagToHtmlProjectCommand command = new AddTagToHtmlProjectCommand(new AggregateId(id), htmlTag);
+        AppendTagToHtmlProjectCommand command = new AppendTagToHtmlProjectCommand(new AggregateId(id), htmlTag);
         gate.dispatch(command);
 
         return ResponseEntity.ok(entity);
