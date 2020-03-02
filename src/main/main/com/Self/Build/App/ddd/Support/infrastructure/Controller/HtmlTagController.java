@@ -9,6 +9,7 @@ import com.Self.Build.App.infrastructure.User.exception.ResourceNotFoundExceptio
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -36,7 +37,7 @@ public class HtmlTagController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity addTag(@PathVariable String id,
+    public ResponseEntity update(@PathVariable String id,
                                  @RequestBody @Validated() HtmlTag htmlTag,
                                  BindingResult bindingResult
                                  )
@@ -48,10 +49,14 @@ public class HtmlTagController {
         HtmlTag entity = Optional.ofNullable(repository.load(id))
                 .orElseThrow(() -> new ResourceNotFoundException("Not found"));
 
-        UpdateHtmlTagCommand command = new UpdateHtmlTagCommand(htmlTag);
-        gate.dispatch(command);
+        if (!entity.equals(htmlTag)) {
+            throw new AccessDeniedException("Not Access  to html tag");
+        }
 
-        return ResponseEntity.ok(entity);
+        UpdateHtmlTagCommand command = new UpdateHtmlTagCommand(htmlTag);
+        HtmlTag res = (HtmlTag) gate.dispatch(command);
+
+        return ResponseEntity.ok(res);
     }
 
 //    @RequestMapping(method = RequestMethod.GET)

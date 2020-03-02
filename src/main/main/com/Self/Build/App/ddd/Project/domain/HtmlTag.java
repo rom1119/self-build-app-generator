@@ -74,6 +74,11 @@ public class HtmlTag extends ProjectItem<HtmlProject> implements Serializable {
         return this;
     }
 
+    public boolean hasCssStyle(CssStyle cssStyle) {
+
+        return cssStyleList.contains(cssStyle);
+    }
+
     public HtmlTag removeCssStyle(CssStyle cssStyle) {
         cssStyleList.remove(cssStyle);
         cssStyle.setHtmlTag(null);

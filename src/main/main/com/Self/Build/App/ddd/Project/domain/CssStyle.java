@@ -19,7 +19,7 @@ public class CssStyle implements Serializable {
 
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     @Column(name = "id", unique = true)
     @JsonView(PropertyAccess.Details.class)
     private Long id;
@@ -29,6 +29,7 @@ public class CssStyle implements Serializable {
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     private String name;
 
+    @NotEmpty()
     @JsonView(PropertyAccess.Details.class)
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     private String unitName;
@@ -94,13 +95,17 @@ public class CssStyle implements Serializable {
         this.unitName = unitFromName.getName();
     }
 
+    public String getUnitName() {
+        return unitName;
+    }
+
     public void setUnit(BaseUnit unit) {
         this.unitName = unit.getName();
     }
 
     private BaseUnit getUnitFromName(String name)
     {
-        switch(unitName) {
+        switch(name) {
             case Named.NAME:
                 return new Named(value);
             case Pixel.NAME:

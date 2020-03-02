@@ -8,6 +8,7 @@ import org.hibernate.annotations.GenericGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @MappedSuperclass
 public abstract class BaseAggregateRoot {
@@ -32,6 +33,10 @@ public abstract class BaseAggregateRoot {
     @Autowired()
     protected DomainEventPublisher eventPublisher;
 
+    public String getId() {
+        return id;
+    }
+
     @JsonIgnore()
     public boolean isRemoved() {
         return aggregateStatus == AggregateStatus.ARCHIVE;
@@ -43,5 +48,18 @@ public abstract class BaseAggregateRoot {
 
     public void markAsRemoved() {
         aggregateStatus = AggregateStatus.ARCHIVE;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BaseAggregateRoot that = (BaseAggregateRoot) o;
+        return id.equals(that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
