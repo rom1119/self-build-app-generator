@@ -35,10 +35,6 @@ public class UpdateHtmlTagHandler implements CommandHandler<UpdateHtmlTagCommand
 
         List<Long> issetEntitiesIds = new ArrayList<>();
         for (CssStyle css : dto.getCssStyleList()) {
-
-//            if (!DbENtity.hasCssStyle(css)) {
-//                DbENtity.removeCssStyle(css)
-//            }
             if(css.getId() != null && css.getId() > 0) {
                 issetEntitiesIds.add(css.getId());
                 CssStyle dbCss = cssStyleRepository.getOne(css.getId());
@@ -55,13 +51,16 @@ public class UpdateHtmlTagHandler implements CommandHandler<UpdateHtmlTagCommand
             }
         }
 
-        for (CssStyle css : DbENtity.getCssStyleList()) {
+        int sizeCssList = DbENtity.getCssStyleList().size();
+
+        for (int i = 0; i < sizeCssList; i++) {
+            CssStyle css = DbENtity.getCssStyleList().get(i);
             if (!issetEntitiesIds.contains(css.getId())) {
-                cssStyleRepository.delete(css);
-//                DbENtity.removeCssStyle(css);
+//                cssStyleRepository.delete(css);
+                DbENtity.removeCssStyle(css);
             }
         }
-        cssStyleRepository.flush();
-        return DbENtity;
+//        cssStyleRepository.flush();
+        return dto;
     }
 }
