@@ -2,6 +2,7 @@ package com.Self.Build.App.ddd.Project.Application.commands.handler;
 
 import com.Self.Build.App.cqrs.annotation.CommandHandlerAnnotation;
 import com.Self.Build.App.cqrs.command.handler.CommandHandler;
+import com.Self.Build.App.ddd.Project.Application.commands.AppendChildToTagCommand;
 import com.Self.Build.App.ddd.Project.Application.commands.AppendTagToHtmlProjectCommand;
 import com.Self.Build.App.ddd.Project.domain.CssStyle;
 import com.Self.Build.App.ddd.Project.domain.HtmlProject;
@@ -13,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.transaction.Transactional;
 
 @CommandHandlerAnnotation
-public class AppendTagToHtmlProjectHandler implements CommandHandler<AppendTagToHtmlProjectCommand, HtmlProject> {
+public class AppendChildToTagHandler implements CommandHandler<AppendChildToTagCommand, HtmlTag> {
 
     @Autowired
     private HtmlProjectRepository projectRepository;
@@ -23,17 +24,17 @@ public class AppendTagToHtmlProjectHandler implements CommandHandler<AppendTagTo
 
     @Override
     @Transactional
-    public HtmlProject handle(AppendTagToHtmlProjectCommand command) {
-        HtmlProject htmlProject = projectRepository.load(command.getProjectId().getId());
-        htmlProject.appendChild(command.getTag());
-        command.getTag().getChildren().forEach((HtmlTag e) -> {
-            tagRepository.save(e);
-            e.setParent(command.getTag());
-        });
+    public HtmlTag handle(AppendChildToTagCommand command) {
+        HtmlTag parentTag = tagRepository.load(command.getParentTagId().getId());
+        parentTag.appendChild(command.getTag());
+//        command.getTag().getChildren().forEach((HtmlTag e) -> {
+//            tagRepository.save(e);
+//            e.setParent(command.getTag());
+//        });
         tagRepository.save(command.getTag());
         command.getTag().getCssStyleList().forEach((CssStyle e) -> {
             e.setHtmlTag(command.getTag());
         });
-        return htmlProject;
+        return parentTag;
     }
 }

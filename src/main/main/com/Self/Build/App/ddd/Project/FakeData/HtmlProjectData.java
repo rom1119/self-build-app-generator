@@ -61,12 +61,13 @@ public class HtmlProjectData {
 
         HtmlProject htmlProject = new HtmlProject();
         HtmlTag h1 = new HtmlTag();
+        htmlProject.appendChild(h1);
         h1.setProject(htmlProject);
         h1.setTagName("h1");
         HtmlTag h1Child = new HtmlTag();
         h1Child.setTagName("h1");
         h1Child.setProject(htmlProject);
-        h1.addChild(h1Child);
+        h1.appendChild(h1Child);
 
         CssStyle width = new CssStyle("width", "400");
         width.setUnit(new Pixel());

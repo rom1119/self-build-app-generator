@@ -1,7 +1,12 @@
 package com.Self.Build.App.ddd.Support.infrastructure.Controller;
 
 import com.Self.Build.App.cqrs.command.impl.StandardGate;
+import com.Self.Build.App.ddd.CanonicalModel.AggregateId;
+import com.Self.Build.App.ddd.Project.Application.commands.AppendChildToTagCommand;
+import com.Self.Build.App.ddd.Project.Application.commands.AppendTagToHtmlProjectCommand;
 import com.Self.Build.App.ddd.Project.Application.commands.UpdateHtmlTagCommand;
+import com.Self.Build.App.ddd.Project.Application.commands.handler.AppendChildToTagHandler;
+import com.Self.Build.App.ddd.Project.domain.HtmlProject;
 import com.Self.Build.App.ddd.Project.domain.HtmlTag;
 import com.Self.Build.App.ddd.Support.infrastructure.repository.HtmlTagRepository;
 import com.Self.Build.App.infrastructure.User.exception.ApiError;
@@ -57,6 +62,25 @@ public class HtmlTagController {
         HtmlTag res = (HtmlTag) gate.dispatch(command);
 
         return ResponseEntity.ok(res);
+    }
+
+    @PostMapping("/{id}/append-tag")
+    public ResponseEntity addChild(@PathVariable String id,
+                                 @RequestBody @Validated() HtmlTag htmlTag,
+                                 BindingResult bindingResult
+    )
+    {
+
+        if (bindingResult.hasErrors()) {
+            return new ResponseEntity(new ApiError(HttpStatus.BAD_REQUEST, "Invalid data", bindingResult.getFieldErrors()), HttpStatus.BAD_REQUEST);
+        }
+        HtmlTag entity = Optional.ofNullable(repository.load(id))
+                .orElseThrow(() -> new ResourceNotFoundException("Not found"));
+
+        AppendChildToTagCommand command = new AppendChildToTagCommand(new AggregateId(id), htmlTag);
+        gate.dispatch(command);
+
+        return ResponseEntity.ok(entity);
     }
 
 //    @RequestMapping(method = RequestMethod.GET)

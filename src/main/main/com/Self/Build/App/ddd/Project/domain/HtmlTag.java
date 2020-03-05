@@ -1,11 +1,13 @@
 package com.Self.Build.App.ddd.Project.domain;
 
+import com.Self.Build.App.ddd.Project.Project;
 import com.Self.Build.App.ddd.Project.ProjectItem;
 import com.Self.Build.App.ddd.Support.infrastructure.PropertyAccess;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.hibernate.annotations.Cascade;
+import org.springframework.core.annotation.Order;
 
 import javax.persistence.*;
 import javax.validation.Valid;
@@ -20,6 +22,11 @@ public class HtmlTag extends ProjectItem<HtmlProject> implements Serializable {
     @JsonView(PropertyAccess.Details.class)
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     protected String tagName;
+
+    @JsonView(PropertyAccess.Details.class)
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
+    @Column(name = "order_number")
+    protected int orderNumber = 1;
 
     @ManyToOne
     @JoinColumn(name = "project_id", nullable = false)
@@ -38,6 +45,7 @@ public class HtmlTag extends ProjectItem<HtmlProject> implements Serializable {
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL,
             fetch = FetchType.EAGER, orphanRemoval = true)
     @Cascade(org.hibernate.annotations.CascadeType.ALL)
+    @OrderBy("orderNumber")
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     @JsonView(PropertyAccess.Details.class)
     protected List<HtmlTag> children;
@@ -98,6 +106,13 @@ public class HtmlTag extends ProjectItem<HtmlProject> implements Serializable {
         this.tagName = tagName;
     }
 
+    public HtmlTag appendChild(HtmlTag item) {
+        int orderNumber = children.size() + 1;
+        addChild(item);
+        item.setOrderNumber(orderNumber);
+        return this;
+    }
+
     public HtmlTag addChild(HtmlTag child) {
         children.add(child);
         child.setParent(this);
@@ -107,8 +122,18 @@ public class HtmlTag extends ProjectItem<HtmlProject> implements Serializable {
     public HtmlTag removeChild(HtmlTag child) {
         children.remove(child);
         child.setParent(null);
+        recalculateOrders(child.orderNumber);
 
         return this;
+    }
+
+    private void recalculateOrders(int startOrder)
+    {
+        for(HtmlTag tag : children) {
+            if (tag.orderNumber > startOrder) {
+                tag.orderNumber--;
+            }
+        }
     }
 
     public List<HtmlTag> getChildren() {
@@ -129,5 +154,13 @@ public class HtmlTag extends ProjectItem<HtmlProject> implements Serializable {
 
     public void setParent(HtmlTag parent) {
         this.parent = parent;
+    }
+
+    public int getOrderNumber() {
+        return orderNumber;
+    }
+
+    public void setOrderNumber(int orderNumber) {
+        this.orderNumber = orderNumber;
     }
 }
