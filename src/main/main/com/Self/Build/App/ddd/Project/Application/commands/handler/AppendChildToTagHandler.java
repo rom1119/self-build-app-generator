@@ -35,6 +35,6 @@ public class AppendChildToTagHandler implements CommandHandler<AppendChildToTagC
         command.getTag().getCssStyleList().forEach((CssStyle e) -> {
             e.setHtmlTag(command.getTag());
         });
-        return parentTag;
+        return command.getTag();
     }
 }

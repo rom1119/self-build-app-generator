@@ -73,18 +73,18 @@ public class HtmlProjectData {
         width.setUnit(new Pixel());
         CssStyle height = new CssStyle("height", "200");
         height.setUnit(new Pixel());
-        CssStyle backgroundColor = new CssStyle("backgroundColor", "red");
+        CssStyle backgroundColor = new CssStyle("background-color", "red");
         backgroundColor.setUnit(new Named());
-        CssStyle boxSizing = new CssStyle("boxSizing", "content-box");
+        CssStyle boxSizing = new CssStyle("box-sizing", "content-box");
         boxSizing.setUnit(new Named());
 
         CssStyle width2 = new CssStyle("width", "200");
         width2.setUnit(new Pixel());
         CssStyle height2 = new CssStyle("height", "100");
         height2.setUnit(new Pixel());
-        CssStyle backgroundColor2 = new CssStyle("backgroundColor", "blue");
+        CssStyle backgroundColor2 = new CssStyle("background-color", "blue");
         backgroundColor2.setUnit(new Named());
-        CssStyle boxSizing2 = new CssStyle("boxSizing", "content-box");
+        CssStyle boxSizing2 = new CssStyle("box-sizing", "content-box");
         boxSizing2.setUnit(new Named());
 
         h1.addCssStyle(width);

@@ -31,23 +31,17 @@ public class UpdateHtmlTagHandler implements CommandHandler<UpdateHtmlTagCommand
     public HtmlTag handle(UpdateHtmlTagCommand command) {
 //        tagRepository.save(command.getTag());
         HtmlTag dto = command.getTag();
-        HtmlTag DbENtity = tagRepository.load(dto.getId());
+        HtmlTag DbENtity = tagRepository.load(command.getTagId().getId());
 
         List<Long> issetEntitiesIds = new ArrayList<>();
         for (CssStyle css : dto.getCssStyleList()) {
             if(css.getId() != null && css.getId() > 0) {
-                issetEntitiesIds.add(css.getId());
                 CssStyle dbCss = cssStyleRepository.getOne(css.getId());
                 if (dbCss != null) {
+                    issetEntitiesIds.add(css.getId());
                     dbCss.setValue(css.getValue());
                     dbCss.setUnitName(css.getUnitName());
-                } else {
-                    css.setHtmlTag(DbENtity);
-                    cssStyleRepository.save(css);
                 }
-            } else {
-                css.setHtmlTag(DbENtity);
-                cssStyleRepository.save(css);
             }
         }
 
@@ -58,6 +52,19 @@ public class UpdateHtmlTagHandler implements CommandHandler<UpdateHtmlTagCommand
             if (!issetEntitiesIds.contains(css.getId())) {
 //                cssStyleRepository.delete(css);
                 DbENtity.removeCssStyle(css);
+            }
+        }
+
+        for (CssStyle css : dto.getCssStyleList()) {
+            if(css.getId() != null && css.getId() > 0) {
+                CssStyle dbCss = cssStyleRepository.getOne(css.getId());
+                if (dbCss == null) {
+                    css.setHtmlTag(DbENtity);
+                    cssStyleRepository.save(css);
+                }
+            } else {
+                css.setHtmlTag(DbENtity);
+                cssStyleRepository.save(css);
             }
         }
 //        cssStyleRepository.flush();

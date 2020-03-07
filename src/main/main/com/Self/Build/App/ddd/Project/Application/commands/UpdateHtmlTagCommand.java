@@ -11,9 +11,12 @@ import java.io.Serializable;
 public class UpdateHtmlTagCommand implements Serializable {
 
     private HtmlTag tag;
+    private AggregateId tagId;
 
-    public UpdateHtmlTagCommand( HtmlTag tag) {
+
+    public UpdateHtmlTagCommand(AggregateId tagId, HtmlTag tag) {
         this.tag = tag;
+        this.tagId = tagId;
     }
 
     public HtmlTag getTag() {
@@ -24,4 +27,11 @@ public class UpdateHtmlTagCommand implements Serializable {
         this.tag = tag;
     }
 
+    public AggregateId getTagId() {
+        return tagId;
+    }
+
+    public void setTagId(AggregateId tagId) {
+        this.tagId = tagId;
+    }
 }

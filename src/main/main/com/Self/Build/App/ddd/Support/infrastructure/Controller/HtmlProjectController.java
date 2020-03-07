@@ -70,7 +70,7 @@ public class HtmlProjectController {
         AppendTagToHtmlProjectCommand command = new AppendTagToHtmlProjectCommand(new AggregateId(id), htmlTag);
         gate.dispatch(command);
 
-        return ResponseEntity.ok(entity);
+        return ResponseEntity.ok(htmlTag);
     }
 
 //    @RequestMapping(method = RequestMethod.GET)

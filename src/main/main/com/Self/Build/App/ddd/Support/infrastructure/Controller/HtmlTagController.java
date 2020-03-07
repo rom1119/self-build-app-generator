@@ -20,6 +20,9 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.transaction.Transactional;
 import java.util.Optional;
 
 @RestController
@@ -28,6 +31,9 @@ public class HtmlTagController {
 
     @Autowired
     private HtmlTagRepository repository;
+
+    @PersistenceContext
+    protected EntityManager entityManager;
 //
     @Autowired
     private StandardGate gate;
@@ -54,11 +60,8 @@ public class HtmlTagController {
         HtmlTag entity = Optional.ofNullable(repository.load(id))
                 .orElseThrow(() -> new ResourceNotFoundException("Not found"));
 
-        if (!entity.equals(htmlTag)) {
-            throw new AccessDeniedException("Not Access  to html tag");
-        }
 
-        UpdateHtmlTagCommand command = new UpdateHtmlTagCommand(htmlTag);
+        UpdateHtmlTagCommand command = new UpdateHtmlTagCommand(new AggregateId(id), htmlTag);
         HtmlTag res = (HtmlTag) gate.dispatch(command);
 
         return ResponseEntity.ok(res);
@@ -83,13 +86,17 @@ public class HtmlTagController {
         return ResponseEntity.ok(entity);
     }
 
-//    @RequestMapping(method = RequestMethod.GET)
-//    public ResponseEntity<List<User>> getAll()
-//    {
-//        List<User> all = userRepository.findAllOrderByScoreDesc();
-//
-//        return ResponseEntity.ok(all);
-//    }
+    @DeleteMapping("/{id}")
+    @Transactional
+    public ResponseEntity delete(@PathVariable String id)
+    {
+        HtmlTag entity = Optional.ofNullable(repository.load(id))
+                .orElseThrow(() -> new ResourceNotFoundException("Not found"));
+
+        this.entityManager.remove(entity);
+
+        return ResponseEntity.ok(entity);
+    }
 //
 //    @PutMapping( path = "/{id}")
 //    public ResponseEntity update(
