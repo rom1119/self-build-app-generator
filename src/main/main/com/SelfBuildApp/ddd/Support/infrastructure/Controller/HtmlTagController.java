@@ -1,0 +1,167 @@
+package com.SelfBuildApp.ddd.Support.infrastructure.Controller;
+
+import com.SelfBuildApp.cqrs.command.impl.StandardGate;
+import com.SelfBuildApp.ddd.CanonicalModel.AggregateId;
+import com.SelfBuildApp.ddd.Project.Application.commands.AppendChildToTagCommand;
+import com.SelfBuildApp.ddd.Project.Application.commands.AppendTextToTagCommand;
+import com.SelfBuildApp.ddd.Project.Application.commands.UpdateHtmlTagCommand;
+import com.SelfBuildApp.ddd.Project.Application.commands.UpdateTextNodeCommand;
+import com.SelfBuildApp.ddd.Project.domain.HtmlNode;
+import com.SelfBuildApp.ddd.Project.domain.HtmlTag;
+import com.SelfBuildApp.ddd.Project.domain.TextNode;
+import com.SelfBuildApp.ddd.Support.infrastructure.repository.HtmlTagRepository;
+import com.SelfBuildApp.ddd.Support.infrastructure.repository.TextNodeRepository;
+import com.SelfBuildApp.infrastructure.User.exception.ApiError;
+import com.SelfBuildApp.infrastructure.User.exception.ResourceNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.transaction.Transactional;
+import java.util.Optional;
+
+@RestController
+@RequestMapping("/api/html-tag")
+public class HtmlTagController {
+
+    @Autowired
+    private HtmlTagRepository repository;
+
+    @Autowired
+    private TextNodeRepository textNodeRepository;
+
+    @PersistenceContext
+    protected EntityManager entityManager;
+//
+    @Autowired
+    private StandardGate gate;
+//
+//    @Autowired
+//    private StorageService storageService;
+
+//    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    @GetMapping("/{id}")
+    public HtmlTag getOne(@PathVariable String id, Authentication auth) {
+        return Optional.ofNullable(repository.load(id)).orElseThrow(() -> new ResourceNotFoundException("Not found"));
+    }
+
+    @PutMapping("/text/{id}")
+    public ResponseEntity updateTextNode(@PathVariable String id,
+                                         @RequestBody @Validated() TextNode textNode,
+                                         BindingResult bindingResult
+    )
+    {
+
+        if (bindingResult.hasErrors()) {
+            return new ResponseEntity(new ApiError(HttpStatus.BAD_REQUEST, "Invalid data", bindingResult.getFieldErrors()), HttpStatus.BAD_REQUEST);
+        }
+        TextNode entity = Optional.ofNullable(textNodeRepository.load(id))
+                .orElseThrow(() -> new ResourceNotFoundException("Not found"));
+
+        UpdateTextNodeCommand command = new UpdateTextNodeCommand(new AggregateId(id), textNode);
+        TextNode res = (TextNode) gate.dispatch(command);
+
+        return ResponseEntity.ok(res);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity update(@PathVariable String id,
+                                 @RequestBody @Validated() HtmlTag htmlTag,
+                                 BindingResult bindingResult
+                                 )
+    {
+
+        if (bindingResult.hasErrors()) {
+             return new ResponseEntity(new ApiError(HttpStatus.BAD_REQUEST, "Invalid data", bindingResult.getFieldErrors()), HttpStatus.BAD_REQUEST);
+        }
+        HtmlTag entity = Optional.ofNullable(repository.load(id))
+                .orElseThrow(() -> new ResourceNotFoundException("Not found"));
+
+        UpdateHtmlTagCommand command = new UpdateHtmlTagCommand(new AggregateId(id), htmlTag);
+        HtmlTag res = (HtmlTag) gate.dispatch(command);
+
+        return ResponseEntity.ok(res);
+    }
+
+    @PostMapping("/{id}/append-text")
+    public ResponseEntity addText(@PathVariable String id,
+                                   @RequestBody @Validated() TextNode textNode,
+                                   BindingResult bindingResult
+    )
+    {
+
+        if (bindingResult.hasErrors()) {
+            return new ResponseEntity(new ApiError(HttpStatus.BAD_REQUEST, "Invalid data", bindingResult.getFieldErrors()), HttpStatus.BAD_REQUEST);
+        }
+        HtmlTag entity = Optional.ofNullable(repository.load(id))
+                .orElseThrow(() -> new ResourceNotFoundException("Not found"));
+
+        AppendTextToTagCommand command = new AppendTextToTagCommand(new AggregateId(id), textNode);
+        gate.dispatch(command);
+
+        return ResponseEntity.ok(entity);
+    }
+
+
+    @PostMapping("/{id}/append-tag")
+    public ResponseEntity addChild(@PathVariable String id,
+                                 @RequestBody @Validated() HtmlTag htmlTag,
+                                 BindingResult bindingResult
+    )
+    {
+
+        if (bindingResult.hasErrors()) {
+            return new ResponseEntity(new ApiError(HttpStatus.BAD_REQUEST, "Invalid data", bindingResult.getFieldErrors()), HttpStatus.BAD_REQUEST);
+        }
+        HtmlTag entity = Optional.ofNullable(repository.load(id))
+                .orElseThrow(() -> new ResourceNotFoundException("Not found"));
+
+        AppendChildToTagCommand command = new AppendChildToTagCommand(new AggregateId(id), htmlTag);
+        gate.dispatch(command);
+
+        return ResponseEntity.ok(entity);
+    }
+
+    @DeleteMapping("/{id}")
+    @Transactional
+    public ResponseEntity delete(@PathVariable String id)
+    {
+        HtmlNode entity = Optional.ofNullable(this.entityManager.find(HtmlNode.class, Integer.valueOf(id)))
+                .orElseThrow(() -> new ResourceNotFoundException("Not found"));
+
+        this.entityManager.remove(entity);
+
+        return ResponseEntity.ok(entity);
+    }
+//
+//    @PutMapping( path = "/{id}")
+//    public ResponseEntity update(
+//                            @PathVariable final Long id,
+//                             @RequestBody @Validated(Edited.class) UserDetails userDetails,
+////                                 @RequestPart( "imageFile") MultipartFil imageFile,
+//                            BindingResult bindingResult
+//                 ) throws Exception {
+//
+//        if (bindingResult.hasErrors()) {
+//             return new ResponseEntity(new ApiError(HttpStatus.BAD_REQUEST, "Invalid data", bindingResult.getFieldErrors()), HttpStatus.BAD_REQUEST);
+//
+//        }
+//
+//        User userDb = Optional.ofNullable(userService.findByIdToEdit(id))
+//                .orElseThrow(() -> new ResourceNotFoundException("Nie znaleziono strony"));
+//////
+//        UserDetails user = userService.updateUserDetails(userDb.getUserDetails(), userDetails);
+////
+//        return ResponseEntity.ok(userDb);
+//
+//    }
+
+}
+
+
