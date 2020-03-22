@@ -33,7 +33,10 @@ public class HtmlProject extends Project<HtmlNode> implements Serializable {
     public Set<HtmlNode> getMainItems()
     {
         Set<HtmlNode> list = new HashSet<>();
-        for (HtmlNode item: items) {
+        this.getItems().size();
+        Set<HtmlNode> asd = this.items;
+
+        for (HtmlNode item: asd) {
             if (!item.hasParent()) {
                 list.add(item);
             }
@@ -53,6 +56,10 @@ public class HtmlProject extends Project<HtmlNode> implements Serializable {
         addItem(item);
         item.setOrderNumber(firsttLvlCount);
         return this;
+    }
+
+    public Set<HtmlNode> getItems() {
+        return items;
     }
 
     public Project<HtmlNode> addItem(HtmlNode item) {

@@ -32,7 +32,7 @@ public class CssSelectorCodeItem implements CodeGeneratedItem {
         for (Map.Entry<String, CssPropertyCodeItem> item :
                 cssProperties.entrySet()) {
             CssPropertyCodeItem css = item.getValue();
-            result += css.getKey()  +  ": " + css.getValue() + "; \n";
+            result += css.getContent() + "\n";
         }
 
         result += "}";

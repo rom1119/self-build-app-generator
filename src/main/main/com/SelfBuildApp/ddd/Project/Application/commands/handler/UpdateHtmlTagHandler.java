@@ -52,6 +52,8 @@ public class UpdateHtmlTagHandler implements CommandHandler<UpdateHtmlTagCommand
             if (!issetEntitiesIds.contains(css.getId())) {
 //                cssStyleRepository.delete(css);
                 DbENtity.removeCssStyle(css);
+                sizeCssList--;
+                i--;
             }
         }
 

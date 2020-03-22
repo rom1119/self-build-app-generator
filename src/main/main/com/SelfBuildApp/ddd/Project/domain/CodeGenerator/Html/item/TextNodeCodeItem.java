@@ -1,14 +1,8 @@
 package com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Html.item;
 
-import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.CodeGeneratedItem;
-import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Exception.DuplicateHtmlClass;
-import com.SelfBuildApp.ddd.Project.domain.HtmlTag;
 import com.SelfBuildApp.ddd.Project.domain.TextNode;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class TextNodeCodeItem extends HtmlNode implements CodeGeneratedItem {
+public class TextNodeCodeItem extends HtmlNodeCodeItem {
 
     protected TextNode textNode;
 
@@ -20,7 +14,14 @@ public class TextNodeCodeItem extends HtmlNode implements CodeGeneratedItem {
     @Override
     public String getContent() {
 
-        return textNode.getText();
+        StringBuilder res = this.stringBuilder;
+        if (this.stringBuilder == null) {
+            res = new StringBuilder();
+
+        }
+
+        res.append(textNode.getText() + "\n");
+        return res.toString();
     }
 
 

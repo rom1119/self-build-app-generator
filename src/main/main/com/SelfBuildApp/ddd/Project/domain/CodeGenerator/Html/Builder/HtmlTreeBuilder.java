@@ -1,13 +1,16 @@
 package com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Html.Builder;
 
-import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Html.item.HtmlNode;
+import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Html.item.HtmlNodeCodeItem;
 import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Html.item.HtmlTagCodeItem;
 import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Html.item.TextNodeCodeItem;
 import com.SelfBuildApp.ddd.Project.domain.HtmlTag;
 import com.SelfBuildApp.ddd.Project.domain.TextNode;
+import org.springframework.stereotype.Component;
 
+@Component
 public class HtmlTreeBuilder {
-    public HtmlNode build(com.SelfBuildApp.ddd.Project.domain.HtmlNode tag)
+
+    public HtmlNodeCodeItem build(com.SelfBuildApp.ddd.Project.domain.HtmlNode tag)
     {
         HtmlTagCodeItem codeItem = new HtmlTagCodeItem((HtmlTag) tag);
 
@@ -15,10 +18,10 @@ public class HtmlTreeBuilder {
         return buildRecursive(tag, codeItem);
     }
 
-    private HtmlNode buildRecursive(com.SelfBuildApp.ddd.Project.domain.HtmlNode tag, HtmlTagCodeItem parent)
+    private HtmlNodeCodeItem buildRecursive(com.SelfBuildApp.ddd.Project.domain.HtmlNode tag, HtmlTagCodeItem parent)
     {
 //        HtmlTagCodeItem codeItem = new HtmlTagCodeItem(this.tag);
-        HtmlNode codeItemChildren = null;
+        HtmlNodeCodeItem codeItemChildren = null;
 
         if (tag instanceof HtmlTag) {
             codeItemChildren = new HtmlTagCodeItem((HtmlTag) tag);

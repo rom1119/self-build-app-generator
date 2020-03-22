@@ -14,7 +14,7 @@ class CssPropertyCodeItem implements CodeGeneratedItem {
 
     @Override
     public String getContent() {
-        return key + ": " + value;
+        return key + ": " + value + ";";
     }
 
     public String getKey() {

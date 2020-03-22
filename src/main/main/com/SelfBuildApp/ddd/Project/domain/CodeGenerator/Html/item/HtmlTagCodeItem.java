@@ -1,18 +1,17 @@
 package com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Html.item;
 
-import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.CodeGeneratedItem;
 import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Exception.DuplicateHtmlClass;
 import com.SelfBuildApp.ddd.Project.domain.HtmlTag;
-import com.SelfBuildApp.ddd.Project.domain.TextNode;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class HtmlTagCodeItem extends HtmlNode implements CodeGeneratedItem {
+public class HtmlTagCodeItem extends HtmlNodeCodeItem {
 
     protected HtmlTag tag;
-    private List<HtmlNode> children;
+    private List<HtmlNodeCodeItem> children;
     protected List<String> classList;
+
 
 
     public HtmlTagCodeItem(HtmlTag tag) {
@@ -20,6 +19,7 @@ public class HtmlTagCodeItem extends HtmlNode implements CodeGeneratedItem {
         classList = new ArrayList<>();
         children = new ArrayList<>();
     }
+
 
     public void addClass(String classArg) throws DuplicateHtmlClass {
         classArg = classArg.toLowerCase();
@@ -29,19 +29,26 @@ public class HtmlTagCodeItem extends HtmlNode implements CodeGeneratedItem {
         this.classList.add(classArg);
     }
 
-    public void addChild(HtmlNode item)
+    public void addChild(HtmlNodeCodeItem item)
     {
         children.add(item);
     }
 
     @Override
     public String getContent() {
-        StringBuilder res = new StringBuilder();
+        StringBuilder res = this.stringBuilder;
+        if (this.stringBuilder == null) {
+            res = new StringBuilder();
+
+        }
 
         this.openTagWithName(res);
         this.appendClassToContent(res);
         this.closeOpenedTag(res);
 
+        for (HtmlNodeCodeItem item : children) {
+            res.append(item.getContent());
+        }
 
         this.closeTagWithName(res);
 
@@ -58,12 +65,12 @@ public class HtmlTagCodeItem extends HtmlNode implements CodeGeneratedItem {
     {
         res.append("</")
             .append(this.tag.getTagName())
-            .append(">");
+            .append(">\n");
     }
 
     private void closeOpenedTag(StringBuilder res)
     {
-        res.append(">");
+        res.append(">\n");
     }
     private void appendClassToContent(StringBuilder res)
     {

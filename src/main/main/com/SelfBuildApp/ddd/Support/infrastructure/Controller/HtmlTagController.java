@@ -103,9 +103,9 @@ public class HtmlTagController {
                 .orElseThrow(() -> new ResourceNotFoundException("Not found"));
 
         AppendTextToTagCommand command = new AppendTextToTagCommand(new AggregateId(id), textNode);
-        gate.dispatch(command);
+        TextNode dispatch = (TextNode) gate.dispatch(command);
 
-        return ResponseEntity.ok(entity);
+        return ResponseEntity.ok(textNode);
     }
 
 
@@ -125,14 +125,14 @@ public class HtmlTagController {
         AppendChildToTagCommand command = new AppendChildToTagCommand(new AggregateId(id), htmlTag);
         gate.dispatch(command);
 
-        return ResponseEntity.ok(entity);
+        return ResponseEntity.ok(htmlTag);
     }
 
     @DeleteMapping("/{id}")
     @Transactional
     public ResponseEntity delete(@PathVariable String id)
     {
-        HtmlNode entity = Optional.ofNullable(this.entityManager.find(HtmlNode.class, Integer.valueOf(id)))
+        HtmlNode entity = Optional.ofNullable(this.entityManager.find(HtmlNode.class, id))
                 .orElseThrow(() -> new ResourceNotFoundException("Not found"));
 
         this.entityManager.remove(entity);

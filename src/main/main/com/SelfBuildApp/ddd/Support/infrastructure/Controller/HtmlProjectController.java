@@ -4,6 +4,7 @@ import com.SelfBuildApp.cqrs.command.impl.StandardGate;
 import com.SelfBuildApp.cqrs.query.PaginatedResult;
 import com.SelfBuildApp.ddd.CanonicalModel.AggregateId;
 import com.SelfBuildApp.ddd.Project.Application.commands.AppendTagToHtmlProjectCommand;
+import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.impl.DefaultHtmlCodeGenerator;
 import com.SelfBuildApp.ddd.Project.domain.HtmlProject;
 import com.SelfBuildApp.ddd.Project.domain.HtmlTag;
 import com.SelfBuildApp.ddd.Support.infrastructure.PropertyAccess;
@@ -32,6 +33,9 @@ public class HtmlProjectController {
     private HtmlProjectRepository repository;
 
     @Autowired
+    private DefaultHtmlCodeGenerator htmlCodeGenerator;
+
+    @Autowired
     private HtmlProjectPageableRepository repositoryPageable;
 //
     @Autowired
@@ -45,6 +49,12 @@ public class HtmlProjectController {
     @JsonView(PropertyAccess.Details.class)
     public HtmlProject getOne(@PathVariable String id, Authentication auth) {
         return Optional.ofNullable(repository.load(id)).orElseThrow(() -> new ResourceNotFoundException("Not found"));
+    }
+
+    @GetMapping("/test/{id}")
+    public String getTest(@PathVariable String id) {
+        HtmlProject entity = Optional.ofNullable(repository.load(id)).orElseThrow(() -> new ResourceNotFoundException("Not found"));
+        return htmlCodeGenerator.generate(entity).getContent();
     }
 
     @GetMapping()

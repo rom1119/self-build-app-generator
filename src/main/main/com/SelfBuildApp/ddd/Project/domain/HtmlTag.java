@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@NamedNativeQuery(name = "HtmlTag.findMainHtmlTagsForProject", query = "SELECT * FROM html_node WHERE parent_id is null and project_id = ?;", resultClass = HtmlNode.class)
 public class HtmlTag extends HtmlNode {
 
     @JsonView(PropertyAccess.Details.class)
