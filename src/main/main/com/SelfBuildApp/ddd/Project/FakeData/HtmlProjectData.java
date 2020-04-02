@@ -70,6 +70,8 @@ public class HtmlProjectData {
         h1.appendChild(h1Child);
         h1.appendChild(text);
 
+        CssStyle padding = new CssStyle("padding", "20");
+        padding.setUnit(new Pixel());
         CssStyle border = new CssStyle("border", "40");
         border.setUnit(new Pixel());
         border.setUnitNameSecond(Named.NAME);
@@ -99,6 +101,7 @@ public class HtmlProjectData {
         h1.addCssStyle(backgroundColor);
         h1.addCssStyle(boxSizing);
 
+        h1Child.addCssStyle(padding);
         h1Child.addCssStyle(border);
         h1Child.addCssStyle(width2);
         h1Child.addCssStyle(height2);

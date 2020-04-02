@@ -17,7 +17,6 @@ import java.io.Serializable;
 
 @Entity
 @Table( name = "css_style" )
-@NamedNativeQuery(name = "CssStyle.findAllForProject", query = "SELECT * FROM css_style JOIN html_node ON css_style.html_tag_id=html_node.id WHERE html_node.project_id = ?;", resultClass = CssStyle.class)
 public class CssStyle implements Serializable {
 
     @Id
@@ -172,6 +171,10 @@ public class CssStyle implements Serializable {
 
     private String getUnitNameFromName(String name)
     {
+
+        if (name == null) {
+            return "";
+        }
         switch(name) {
             case Named.NAME:
                 return Named.NAME;

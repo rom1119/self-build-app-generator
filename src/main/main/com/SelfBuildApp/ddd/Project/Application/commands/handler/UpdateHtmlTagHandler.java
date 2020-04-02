@@ -40,7 +40,11 @@ public class UpdateHtmlTagHandler implements CommandHandler<UpdateHtmlTagCommand
                 if (dbCss != null) {
                     issetEntitiesIds.add(css.getId());
                     dbCss.setValue(css.getValue());
+                    dbCss.setValueSecond(css.getValueSecond());
+                    dbCss.setValueThird(css.getValueThird());
                     dbCss.setUnitName(css.getUnitName());
+                    dbCss.setUnitNameSecond(css.getUnitNameSecond());
+                    dbCss.setUnitNameThird(css.getUnitNameThird());
                 }
             }
         }
