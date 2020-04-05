@@ -10,9 +10,9 @@ public class RGBA extends ColorUnit
     protected int r;
     protected int g;
     protected int b;
-    protected float a;
+    protected double a;
 
-    public RGBA(int r, int g, int b, float a) {
+    public RGBA(int r, int g, int b, double a) {
         this.r = r;
         this.g = g;
         this.b = b;

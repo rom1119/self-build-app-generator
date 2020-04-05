@@ -1,15 +1,26 @@
 package com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Css.item;
 
 import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.CodeGeneratedItem;
+import com.SelfBuildApp.ddd.Project.domain.CssStyle;
 
-class CssPropertyCodeItem implements CodeGeneratedItem {
+import java.util.Map;
+
+public class CssPropertyCodeItem implements CodeGeneratedItem {
 
     private String key;
     private String value;
+    private CssStyle css;
 
-    public CssPropertyCodeItem(String key, String value) {
-        this.key = key;
-        this.value = value;
+    public CssPropertyCodeItem(CssStyle css) throws Exception {
+        this.css = css;
+        this.key = css.getName();
+        this.value = css.getFullValue();
+    }
+
+    @Override
+    public int hashCode() {
+
+        return css.hashCode();
     }
 
     @Override
@@ -24,4 +35,7 @@ class CssPropertyCodeItem implements CodeGeneratedItem {
     public String getValue() {
         return value;
     }
+
+
+
 }

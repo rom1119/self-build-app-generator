@@ -33,6 +33,10 @@ public class HtmlProjectCodeItem extends HtmlNodeCodeItem implements CodeGenerat
         children.add(item);
     }
 
+    public List<HtmlNodeCodeItem> getChildren() {
+        return children;
+    }
+
     @Override
     public String getContent() {
         StringBuilder res = new StringBuilder();
@@ -59,7 +63,7 @@ public class HtmlProjectCodeItem extends HtmlNodeCodeItem implements CodeGenerat
     private void openBody(StringBuilder res)
     {
         res
-            .append("<body>");
+            .append("<body>\n");
     }
 
     private void closeBodyWithHtml(StringBuilder res)

@@ -44,7 +44,7 @@ public class HtmlProjectData {
 
 
     @Transactional
-    @PostConstruct
+//    @PostConstruct
     public void init() {
 
         if (alreadySetup)

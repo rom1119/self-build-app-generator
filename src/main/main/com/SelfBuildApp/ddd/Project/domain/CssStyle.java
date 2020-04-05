@@ -9,11 +9,14 @@ import com.SelfBuildApp.ddd.Support.infrastructure.PropertyAccess;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.codec.binary.Hex;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
+import java.util.Map;
 
 @Entity
 @Table( name = "css_style" )
@@ -57,6 +60,9 @@ public class CssStyle implements Serializable {
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     private String valueThird;
 
+
+    private String cssIdentity;
+
     @ManyToOne( fetch = FetchType.LAZY)
     @JoinColumn(name = "html_tag_id")
     @JsonIgnore()
@@ -76,6 +82,52 @@ public class CssStyle implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        CssStyle cssStyle = (CssStyle) o;
+
+        if (!getName().equals(cssStyle.getName())) return false;
+        if (!getUnitName().equals(cssStyle.getUnitName())) return false;
+        if (getUnitNameSecond() != null ? !getUnitNameSecond().equals(cssStyle.getUnitNameSecond()) : cssStyle.getUnitNameSecond() != null)
+            return false;
+        if (getUnitNameThird() != null ? !getUnitNameThird().equals(cssStyle.getUnitNameThird()) : cssStyle.getUnitNameThird() != null)
+            return false;
+        if (!getValue().equals(cssStyle.getValue())) return false;
+        if (getValueSecond() != null ? !getValueSecond().equals(cssStyle.getValueSecond()) : cssStyle.getValueSecond() != null)
+            return false;
+        return getValueThird() != null ? getValueThird().equals(cssStyle.getValueThird()) : cssStyle.getValueThird() == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = getName().trim().hashCode();
+        result = 3 * result + getUnitName().trim().hashCode();
+        result = 2 * result + (getUnitNameSecond() != null ? getUnitNameSecond().trim().hashCode() : 0);
+        result = 4 * result + (getUnitNameThird() != null ? getUnitNameThird().trim().hashCode() : 0);
+        result = 6 * result + getValue().trim().hashCode();
+        result = 5 * result + (getValueSecond() != null ? getValueSecond().trim().hashCode() : 0);
+        result = 7 * result + (getValueThird() != null ? getValueThird().trim().hashCode() : 0);
+        return result;
+    }
+    @PreUpdate
+    public void preUpdate() {
+        cssIdentity = Integer.toHexString(hashCode());
+    }
+
+
+    @PrePersist
+    public void prePersist() {
+        cssIdentity = Integer.toHexString(hashCode());
+
+    }
+
+    public String getCssIdentity() {
+        return cssIdentity;
     }
 
     public String getName() {
@@ -106,6 +158,7 @@ public class CssStyle implements Serializable {
         return valueThird;
     }
 
+
     public void setValueThird(String valueThird) {
         this.valueThird = valueThird;
     }
@@ -119,19 +172,19 @@ public class CssStyle implements Serializable {
     }
 
     @JsonIgnore
-    public BaseUnit getUnit() {
+    public BaseUnit getUnit() throws Exception {
 //        unitName
         return getUnitFromNameAndValue(unitName, value);
     }
 
     @JsonIgnore
-    public BaseUnit getUnitSecond() {
+    public BaseUnit getUnitSecond() throws Exception {
 //        unitName
         return getUnitFromNameAndValue(unitNameSecond, valueSecond);
     }
 
     @JsonIgnore
-    public BaseUnit getUnitThird() {
+    public BaseUnit getUnitThird() throws Exception {
         return getUnitFromNameAndValue(unitNameThird, valueThird);
     }
 
@@ -169,6 +222,28 @@ public class CssStyle implements Serializable {
         this.unitNameThird = unit.getName();
     }
 
+    @JsonIgnore
+    public String getFullValue() throws Exception {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        BaseUnit firstUnit = getUnitFromNameAndValue(getUnitName(), getValue());
+        stringBuilder.append(firstUnit.getValue());
+
+        if (getUnitNameSecond() != null && !getUnitNameThird().isEmpty()) {
+            BaseUnit secUnit = getUnitFromNameAndValue(getUnitNameSecond(), getValueSecond());
+            stringBuilder.append(" ");
+            stringBuilder.append(secUnit.getValue());
+        }
+
+        if (getUnitNameThird() != null && !getUnitNameThird().isEmpty()) {
+            BaseUnit secUnit = getUnitFromNameAndValue(getUnitNameThird(), getValueThird());
+            stringBuilder.append(" ");
+            stringBuilder.append(secUnit.getValue());
+        }
+
+        return stringBuilder.toString();
+    }
+
     private String getUnitNameFromName(String name)
     {
 
@@ -188,27 +263,38 @@ public class CssStyle implements Serializable {
         throw new NotImplementedException();
     }
 
-    private BaseUnit getUnitFromNameAndValue(String name, String value)
-    {
+    private BaseUnit getUnitFromNameAndValue(String name, String value) throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+        Map map;
         switch(name) {
             case Named.NAME:
-                return new Named();
+                return new Named(value);
             case Pixel.NAME:
-                return new Pixel();
+                return new Pixel(value);
             case RGB.NAME:
-                String[] params = value.split(RGB.DELIMITER, 3);
-                int r = Integer.valueOf(params[0]);
-                int g = Integer.valueOf(params[1]);
-                int b = Integer.valueOf(params[2]);
+//                String[] params = value.split(RGB.DELIMITER, 3);
+                // convert JSON string to Map
+                map = mapper.readValue(value, Map.class);
+                int r = (int) map.get("r");
+                int g = (int) map.get("g");
+                int b = (int) map.get("b");
                 return new RGB(r, g, b);
             case RGBA.NAME:
                 String[] paramsRgba = value.split(RGBA.DELIMITER, 4);
-                int rSec = Integer.valueOf(paramsRgba[0]);
-                int gSec = Integer.valueOf(paramsRgba[1]);
-                int bSec = Integer.valueOf(paramsRgba[2]);
-                float aSec = Float.valueOf(paramsRgba[3]);
+                map = mapper.readValue(value, Map.class);
+
+                double aSec = 1.0;
+                if (map.get("a") instanceof Integer) {
+                    aSec = ((int) map.get("a"));
+                }  else if (map.get("a") instanceof Double) {
+                    aSec = ((double) map.get("a"));
+                }
+                int rSec = (int) map.get("r");
+                int gSec = (int) map.get("g");
+                int bSec = (int) map.get("b");
                 return new RGBA(rSec, gSec, bSec, aSec);
+            default:
+                throw new IllegalStateException("Unexpected value: " + name);
         }
-        throw new NotImplementedException();
     }
 }

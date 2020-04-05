@@ -16,4 +16,8 @@ public interface CssStyleRepository extends JpaRepository<CssStyle, Long> {
             nativeQuery = true)
     public List<CssStyle> findAllForProjectId(String projectId);
 
+    @Query(value = "SELECT * FROM css_style  WHERE css_identity = ? limit 1;",
+            nativeQuery = true)
+    public CssStyle findOneByCssIdentity(String cssID);
+
 }

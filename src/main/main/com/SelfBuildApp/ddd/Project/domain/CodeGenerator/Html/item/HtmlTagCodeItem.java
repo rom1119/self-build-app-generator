@@ -20,6 +20,11 @@ public class HtmlTagCodeItem extends HtmlNodeCodeItem {
         children = new ArrayList<>();
     }
 
+    public boolean hasUUID(String uuid)
+    {
+        return tag.getId().equals(uuid);
+    }
+
 
     public void addClass(String classArg) throws DuplicateHtmlClass {
         classArg = classArg.toLowerCase();
@@ -29,9 +34,21 @@ public class HtmlTagCodeItem extends HtmlNodeCodeItem {
         this.classList.add(classArg);
     }
 
+    public void removeClass(String classArg) throws DuplicateHtmlClass {
+        classArg = classArg.toLowerCase();
+        if (!classList.contains(classArg)) {
+            throw new DuplicateHtmlClass("Html class \"" + classArg + "\" not exist in tag with id " + tag.getId());
+        }
+        this.classList.remove(classArg);
+    }
+
     public void addChild(HtmlNodeCodeItem item)
     {
         children.add(item);
+    }
+
+    public List<HtmlNodeCodeItem> getChildren() {
+        return children;
     }
 
     @Override
@@ -75,7 +92,7 @@ public class HtmlTagCodeItem extends HtmlNodeCodeItem {
     private void appendClassToContent(StringBuilder res)
     {
         if (classList.size() > 0) {
-            res.append("class=\"");
+            res.append(" class=\"");
 
             for (String classEl: this.classList){
                 res.append(classEl).append(" ");

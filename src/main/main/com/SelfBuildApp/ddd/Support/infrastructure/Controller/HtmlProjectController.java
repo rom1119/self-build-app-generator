@@ -4,6 +4,11 @@ import com.SelfBuildApp.cqrs.command.impl.StandardGate;
 import com.SelfBuildApp.cqrs.query.PaginatedResult;
 import com.SelfBuildApp.ddd.CanonicalModel.AggregateId;
 import com.SelfBuildApp.ddd.Project.Application.commands.AppendTagToHtmlProjectCommand;
+import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Css.AdvanceCssStyleCodeGenerator;
+import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Css.SimpleCssStyleCodeGenerator;
+import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Css.item.CssProjectCodeItem;
+import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Html.item.HtmlProjectCodeItem;
+import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Struct.HtmlProjectCode;
 import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.impl.DefaultHtmlCodeGenerator;
 import com.SelfBuildApp.ddd.Project.domain.HtmlProject;
 import com.SelfBuildApp.ddd.Project.domain.HtmlTag;
@@ -36,6 +41,9 @@ public class HtmlProjectController {
     private DefaultHtmlCodeGenerator htmlCodeGenerator;
 
     @Autowired
+    private AdvanceCssStyleCodeGenerator cssStyleCodeGenerator;
+
+    @Autowired
     private HtmlProjectPageableRepository repositoryPageable;
 //
     @Autowired
@@ -52,9 +60,15 @@ public class HtmlProjectController {
     }
 
     @GetMapping("/test/{id}")
-    public String getTest(@PathVariable String id) {
+    public HtmlProjectCode getTest(@PathVariable String id) {
         HtmlProject entity = Optional.ofNullable(repository.load(id)).orElseThrow(() -> new ResourceNotFoundException("Not found"));
-        return htmlCodeGenerator.generate(entity).getContent();
+        HtmlProjectCodeItem generateHtml = (HtmlProjectCodeItem)htmlCodeGenerator.generate(entity);
+        cssStyleCodeGenerator.setTagsCodeItem(generateHtml.getChildren());
+        CssProjectCodeItem generateCss = (CssProjectCodeItem)cssStyleCodeGenerator.generate(entity);
+
+
+        return new HtmlProjectCode(generateHtml.getContent(),
+                generateCss.getContent());
     }
 
     @GetMapping()

@@ -1,20 +1,20 @@
 package com.SelfBuildApp.ddd.Support.infrastructure.Controller;
 
 import com.SelfBuildApp.cqrs.command.impl.StandardGate;
+import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Css.AdvanceCssStyleCodeGenerator;
+import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Css.SimpleCssStyleCodeGenerator;
+import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Css.item.CssProjectCodeItem;
+import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Html.item.HtmlProjectCodeItem;
 import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Struct.HtmlProjectCode;
 import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.impl.DefaultHtmlCodeGenerator;
 import com.SelfBuildApp.ddd.Project.domain.HtmlProject;
-import com.SelfBuildApp.ddd.Project.domain.TextNode;
-import com.SelfBuildApp.ddd.Support.infrastructure.repository.HtmlProjectPageableRepository;
 import com.SelfBuildApp.ddd.Support.infrastructure.repository.HtmlProjectRepository;
 import com.SelfBuildApp.infrastructure.User.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.stereotype.Controller;
 
-import java.security.Principal;
 import java.util.Optional;
 
 @Controller
@@ -25,6 +25,9 @@ public class WebSocketController {
 
     @Autowired
     private DefaultHtmlCodeGenerator htmlCodeGenerator;
+
+    @Autowired
+    private AdvanceCssStyleCodeGenerator cssStyleCodeGenerator;
 //
     @Autowired
     private StandardGate gate;
@@ -75,8 +78,13 @@ public class WebSocketController {
         System.out.println(projectUuid);
         HtmlProject entity = Optional.ofNullable(projectRepository.load(projectUuid))
                 .orElseThrow(() -> new ResourceNotFoundException("Not found"));
+        HtmlProjectCodeItem generateHtml = (HtmlProjectCodeItem)htmlCodeGenerator.generate(entity);
+        cssStyleCodeGenerator.setTagsCodeItem(generateHtml.getChildren());
+        CssProjectCodeItem generateCss = (CssProjectCodeItem)cssStyleCodeGenerator.generate(entity);
 
-        return new HtmlProjectCode(htmlCodeGenerator.generate(entity).getContent(), "");
+
+        return new HtmlProjectCode(generateHtml.getContent(),
+                generateCss.getContent());
 
 
     }

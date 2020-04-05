@@ -7,12 +7,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class CssSelectorCodeItem implements CodeGeneratedItem {
+    static String SELECTOR_PREFIX = "_";
 
     protected Map<String, CssPropertyCodeItem> cssProperties;
     public String selector;
 
-    public CssSelectorCodeItem() {
+    public CssSelectorCodeItem(String selector) {
+        this.selector = selector;
         cssProperties = new HashMap<>();
+
     }
 
     public void addProperty(CssPropertyCodeItem propertyCodeItem) throws DuplicateCssPropertyInSelector {
@@ -25,9 +28,18 @@ public class CssSelectorCodeItem implements CodeGeneratedItem {
     }
 
     @Override
+    public int hashCode() {
+        int hash = 0;
+        for (Map.Entry<String, CssPropertyCodeItem> el: cssProperties.entrySet()) {
+            hash += el.getValue().hashCode();
+        }
+        return hash;
+    }
+
+    @Override
     public String getContent() {
         
-        String result = selector + "{ \n";
+        String result = "." + CssSelectorCodeItem.SELECTOR_PREFIX + selector + "{ \n";
 
         for (Map.Entry<String, CssPropertyCodeItem> item :
                 cssProperties.entrySet()) {
@@ -35,8 +47,12 @@ public class CssSelectorCodeItem implements CodeGeneratedItem {
             result += css.getContent() + "\n";
         }
 
-        result += "}";
+        result += "}\n";
         
         return result;
+    }
+
+    public String getSelector() {
+        return Integer.toHexString(hashCode());
     }
 }
