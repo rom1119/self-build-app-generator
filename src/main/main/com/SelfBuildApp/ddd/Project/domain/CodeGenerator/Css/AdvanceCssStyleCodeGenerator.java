@@ -47,44 +47,83 @@ public class AdvanceCssStyleCodeGenerator implements CodeGenerator<HtmlProject> 
         for (Map.Entry<String, List<HtmlTag>> el : uniqueStyles.entrySet()) {
 
             CssStyle css = cssStyleRepository.findOneByCssIdentity(el.getKey());
-
             if (el.getValue().size() == 1) {
 
-                CssSelectorCodeItem selector = findSelector(projectCodeItem, el.getKey());
+                HtmlTag tag = el.getValue().iterator().next();
+                HtmlTagCodeItem tagCodeItem = null;
+                try {
+                    tagCodeItem = getTagCodeItemByUUID(tag.getId());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                if (tagCodeItem == null) {
+                    continue;
+                }
+//                System.out.println("start");
+//
+//                System.out.println(tagCodeItem);
+//                System.out.println(selector);
+                CssSelectorCodeItem selector = tagCodeItem.getOwnerSelector();
+                CssPropertyCodeItem property = createProperty(css);
+                String oldSelectorKey = null;
 
                 if (selector == null) {
-                    selector = new CssSelectorCodeItem(el.getKey());
+                    selector = new CssSelectorCodeItem(true);
+                    tagCodeItem.addSelector(selector);
+                } else {
+                    oldSelectorKey = selector.getSelector();
                 }
 
-                CssPropertyCodeItem property = createProperty(css);
-                selector = this.addPropertyToSelector(property, selector);
+                CssSelectorCodeItem selector2 = selector;
+                this.addPropertyToSelector(property, selector);
+                System.out.println("START");
+                System.out.println("====================================================");
+                System.out.println(property.hashCode());
+                System.out.println(property.getKey());
+                System.out.println(property.getValue());
 
+                if (oldSelectorKey != null) {
+                    System.out.println("ZZZZZZZ");
+                    projectCodeItem.updateSelectorWithKey(oldSelectorKey, selector2);
+                } else {
+                    System.out.println("XXXXX");
+                    projectCodeItem.addChild(selector2);
+                }
+//                tagCodeItem.addSelector(selector2);
+//                System.out.println(selector);
+//                System.out.println(selector.hashCode());
 
-
-//                if (!projectCodeItem) {
+//                if (!projectCodeItem.hasSelector(selector)) {
 //
 //                }
-                projectCodeItem.addChild(selector);
+                System.out.println(selector.hashCode());
+                System.out.println("end");
+
+
+
+            } else {
+
+                CssSelectorCodeItem selectorMany = null;
+//
+                if (selectorMany == null) {
+                    selectorMany = new CssSelectorCodeItem();
+                    CssPropertyCodeItem propertyMany = createProperty(css);
+                    addPropertyToSelector(propertyMany, selectorMany);
+                }
+//
+//                CssPropertyCodeItem property = createProperty(css);
+//                selector = this.addPropertyToSelector(property, selector);
+//
+                projectCodeItem.addChild(selectorMany);
                 for (HtmlTag tag : el.getValue()) {
                     try {
-                        System.out.println(css.getName());
                         HtmlTagCodeItem tagCodeItem = getTagCodeItemByUUID(tag.getId());
-                        tagCodeItem.addClass(selector.getSelector());
+                        tagCodeItem.addSelector(selectorMany);
+                        System.out.println(css.getName());
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
-
-            } else {
-
-                CssSelectorCodeItem selector = findSelector(projectCodeItem, el.getKey());
-
-                if (selector == null) {
-                    selector = new CssSelectorCodeItem(el.getKey());
-                }
-
-                CssPropertyCodeItem property = createProperty(css);
-                selector = this.addPropertyToSelector(property, selector);
 
             }
 
@@ -96,6 +135,19 @@ public class AdvanceCssStyleCodeGenerator implements CodeGenerator<HtmlProject> 
     }
 
     private CssSelectorCodeItem findSelector(CssProjectCodeItem projectCodeItem, String identity)
+    {
+        CssSelectorCodeItem selector = null;
+
+        try {
+            selector = projectCodeItem.getSelectorByHexString(identity);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return selector;
+    }
+
+    private CssSelectorCodeItem findSelectorByTagCodeItem(CssProjectCodeItem projectCodeItem, String identity)
     {
         CssSelectorCodeItem selector = null;
 

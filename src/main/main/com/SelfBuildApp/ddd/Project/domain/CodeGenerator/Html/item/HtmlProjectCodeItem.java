@@ -11,21 +11,13 @@ public class HtmlProjectCodeItem extends HtmlNodeCodeItem implements CodeGenerat
 
     protected HtmlProject htmlProject;
     private List<HtmlNodeCodeItem> children;
-    protected List<String> classList;
+//    protected List<String> classList;
 
 
     public HtmlProjectCodeItem(HtmlProject tag) {
         this.htmlProject = tag;
-        classList = new ArrayList<>();
+//        classList = new ArrayList<>();
         children = new ArrayList<>();
-    }
-
-    public void addClass(String classArg) throws DuplicateHtmlClass {
-        classArg = classArg.toLowerCase();
-        if (classList.contains(classArg)) {
-            throw new DuplicateHtmlClass("Html class \"" + classArg + "\" exist in tag with id " + htmlProject.getId());
-        }
-        this.classList.add(classArg);
     }
 
     public void addChild(HtmlNodeCodeItem item)

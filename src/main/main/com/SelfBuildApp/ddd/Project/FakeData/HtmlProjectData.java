@@ -108,7 +108,7 @@ public class HtmlProjectData {
         h1Child.addCssStyle(backgroundColor2);
         h1Child.addCssStyle(boxSizing2);
 
-        htmlProject.setName("CBC Project");
+        htmlProject.setName("ESSILLOR Project");
 
 //        cssStyleRepository.save(width);
 //        cssStyleRepository.save(height);

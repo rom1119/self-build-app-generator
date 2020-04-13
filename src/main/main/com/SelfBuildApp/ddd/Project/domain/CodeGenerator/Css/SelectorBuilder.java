@@ -4,14 +4,13 @@ import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Css.item.CssSelectorCod
 
 import java.util.Map;
 
-public class SelectorBuilder {
+public abstract class SelectorBuilder {
 
     private Map<String, CssSelectorCodeItem> selectors;
 
-    public CssSelectorCodeItem build()
-    {
-
-
-        return null;
+    public SelectorBuilder(Map<String, CssSelectorCodeItem> selectors) {
+        this.selectors = selectors;
     }
+
+    public abstract CssSelectorCodeItem build();
 }

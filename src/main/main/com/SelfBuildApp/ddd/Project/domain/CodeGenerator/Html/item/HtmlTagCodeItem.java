@@ -1,16 +1,17 @@
 package com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Html.item;
 
+import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Css.item.CssSelectorCodeItem;
 import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Exception.DuplicateHtmlClass;
 import com.SelfBuildApp.ddd.Project.domain.HtmlTag;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class HtmlTagCodeItem extends HtmlNodeCodeItem {
 
     protected HtmlTag tag;
     private List<HtmlNodeCodeItem> children;
     protected List<String> classList;
+    protected Map<String, CssSelectorCodeItem> selectorsClass;
 
 
 
@@ -18,6 +19,7 @@ public class HtmlTagCodeItem extends HtmlNodeCodeItem {
         this.tag = tag;
         classList = new ArrayList<>();
         children = new ArrayList<>();
+        selectorsClass = new HashMap<>();
     }
 
     public boolean hasUUID(String uuid)
@@ -28,10 +30,19 @@ public class HtmlTagCodeItem extends HtmlNodeCodeItem {
 
     public void addClass(String classArg) throws DuplicateHtmlClass {
         classArg = classArg.toLowerCase();
-        if (classList.contains(classArg)) {
-            throw new DuplicateHtmlClass("Html class \"" + classArg + "\" exist in tag with id " + tag.getId());
+        if (!classList.contains(classArg)) {
+            this.classList.add(classArg);
+//            throw new DuplicateHtmlClass("Html class \"" + classArg + "\" exist in tag with id " + tag.getId());
         }
-        this.classList.add(classArg);
+    }
+
+    public void addSelector(CssSelectorCodeItem selectorCodeItem) {
+//        System.out.println(this.selectorsClass.size());
+        this.selectorsClass.put(selectorCodeItem.getSelector(), selectorCodeItem);
+//        System.out.println(this.selectorsClass.size());
+//        if (!classList.contains(classArg)) {
+////            throw new DuplicateHtmlClass("Html class \"" + classArg + "\" exist in tag with id " + tag.getId());
+//        }
     }
 
     public void removeClass(String classArg) throws DuplicateHtmlClass {
@@ -91,11 +102,12 @@ public class HtmlTagCodeItem extends HtmlNodeCodeItem {
     }
     private void appendClassToContent(StringBuilder res)
     {
-        if (classList.size() > 0) {
+        if (selectorsClass.size() > 0) {
             res.append(" class=\"");
 
-            for (String classEl: this.classList){
-                res.append(classEl).append(" ");
+            for (Map.Entry<String, CssSelectorCodeItem> node : this.selectorsClass.entrySet()) {
+                CssSelectorCodeItem selector = node.getValue();
+                res.append(selector.getSelectorClass()).append(" ");
             }
 
             res.append("\"");
@@ -104,4 +116,21 @@ public class HtmlTagCodeItem extends HtmlNodeCodeItem {
     }
 
 
+    public CssSelectorCodeItem getSelector() {
+        if (selectorsClass.entrySet().iterator().hasNext()) {
+            return selectorsClass.entrySet().iterator().next().getValue();
+        }
+        return null;
+    }
+
+    public CssSelectorCodeItem getOwnerSelector() {
+        for (Map.Entry<String, CssSelectorCodeItem> el: selectorsClass.entrySet()){
+            CssSelectorCodeItem selectorCodeItem = el.getValue();
+
+            if (selectorCodeItem.isOwnerTag()) {
+                return selectorCodeItem;
+            }
+        }
+        return null;
+    }
 }

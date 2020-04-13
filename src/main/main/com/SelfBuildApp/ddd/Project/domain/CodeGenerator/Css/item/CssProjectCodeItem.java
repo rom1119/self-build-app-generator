@@ -11,16 +11,20 @@ import java.util.*;
 public class CssProjectCodeItem implements CodeGeneratedItem {
 
     protected HtmlProject htmlProject;
-    private Set<CssSelectorCodeItem> children;
+    private Map<String, CssSelectorCodeItem> children;
 
     public CssProjectCodeItem(HtmlProject htmlProject) {
         this.htmlProject = htmlProject;
-        this.children = new HashSet<>();
+        this.children = new HashMap<>();
     }
 
     public void addChild(CssSelectorCodeItem item)
     {
-        children.add(item);
+        System.out.println("add-chi");
+        System.out.println(children.size());
+        children.put(item.getSelector(), item);
+        System.out.println(children.size());
+        System.out.println("end-add-chi");
     }
 
     @Override
@@ -32,9 +36,10 @@ public class CssProjectCodeItem implements CodeGeneratedItem {
 //        this.appendSectionHead(res);
 //        this.openBody(res);
 
-        for (CssSelectorCodeItem node : this.children) {
+        for (Map.Entry<String, CssSelectorCodeItem> node : this.children.entrySet()) {
+            CssSelectorCodeItem value = node.getValue();
             res
-                .append(node.getContent());
+                .append(value.getContent());
 //                .append("\n");
         }
 
@@ -46,10 +51,12 @@ public class CssProjectCodeItem implements CodeGeneratedItem {
     public CssSelectorCodeItem getSelectorByHexString(String key) throws Exception {
         long s = Long.parseLong(key, 16);
 
-        for (CssSelectorCodeItem selector : children) {
+        for (Map.Entry<String, CssSelectorCodeItem> node : this.children.entrySet()) {
+            CssSelectorCodeItem selector = node.getValue();
             System.out.println(selector.hashCode());
             System.out.println(key);
             System.out.println(s);
+            System.out.println("SSSSS");
             if (selector.hashCode() == s) {
                 throw new Exception("działa :)"  + key + " : " + s);
             }
@@ -57,4 +64,48 @@ public class CssProjectCodeItem implements CodeGeneratedItem {
 
         return null;
     }
+
+    public void removeSelector(CssSelectorCodeItem selectorCodeItem)
+    {
+//        if (children.containsKey(selectorCodeItem.getSelectorClass())) {
+            children.remove(selectorCodeItem.getSelector());
+            System.out.println("remove selector");
+//        }
+
+    }
+
+    public boolean hasOneSelector() {
+
+        return children.size() == 1;
+    }
+    public CssSelectorCodeItem getFirstSelector() {
+        if (children.entrySet().iterator().hasNext()) {
+            return children.entrySet().iterator().next().getValue();
+        }
+        return null;
+    }
+
+    public void updateSelectorWithKey(String oldSelectorKey, CssSelectorCodeItem selector2) {
+        System.out.println("remove");
+        System.out.println(oldSelectorKey);
+        System.out.println(selector2.getSelector());
+        System.out.println(children.size());
+        children.remove(oldSelectorKey);
+        System.out.println(children.size());
+        addChild(selector2);
+        System.out.println(children.size());
+        System.out.println("end-remove");
+    }
+
+//    public boolean hasSelector(CssSelectorCodeItem selector) {
+//        System.out.println("contains");
+//        System.out.println(selector);
+//        System.out.println(selector.hashCode());
+//        System.out.println(children.(selector));
+////        for (CssSelectorCodeItem selector :
+////                children) {
+////
+////        }
+//        return children.contains(selector);
+//    }
 }

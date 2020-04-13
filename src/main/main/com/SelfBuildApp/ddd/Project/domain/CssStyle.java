@@ -6,21 +6,37 @@ import com.SelfBuildApp.ddd.Project.domain.Unit.Color.RGBA;
 import com.SelfBuildApp.ddd.Project.domain.Unit.Named;
 import com.SelfBuildApp.ddd.Project.domain.Unit.Size.Pixel;
 import com.SelfBuildApp.ddd.Support.infrastructure.PropertyAccess;
+import com.SelfBuildApp.infrastructure.Validation.Image;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.codec.binary.Hex;
+import org.springframework.web.multipart.MultipartFile;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
-import java.io.Serializable;
+import java.io.*;
 import java.util.Map;
 
 @Entity
 @Table( name = "css_style" )
 public class CssStyle implements Serializable {
+
+    public String UPLOAD_DIR()
+    {
+        StringBuilder dir = new StringBuilder();
+        dir.append("./uploads/project/");
+        dir.append(htmlTag.getProjectId());
+        dir.append("/css_style/");
+        dir.append(getId());
+        dir.append("/");
+
+        return dir.toString();
+    }
+
+    @Image
+    private MultipartFile file;
 
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
@@ -60,6 +76,11 @@ public class CssStyle implements Serializable {
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     private String valueThird;
 
+    @JsonIgnore()
+    private String resourceFilename;
+
+    @JsonIgnore()
+    private String resourceFileExtension;
 
     private String cssIdentity;
 
@@ -123,6 +144,18 @@ public class CssStyle implements Serializable {
     @PrePersist
     public void prePersist() {
         cssIdentity = Integer.toHexString(hashCode());
+    }
+
+    @PostRemove
+    public void postRemove() {
+//        cssIdentity = Integer.toHexString(hashCode());
+
+        if (getResourceFilename() != null) {
+            File file = new File(getResourcePath());
+
+            file.delete();
+
+        }
 
     }
 
@@ -222,6 +255,33 @@ public class CssStyle implements Serializable {
         this.unitNameThird = unit.getName();
     }
 
+    public String getResourcePath()
+    {
+        if (getResourceFilename() ==  null) {
+            return null;
+        }
+
+        return UPLOAD_DIR() + "/" + getResourceFilename() + "." + getResourceFileExtension();
+    }
+
+    @JsonIgnore
+    public String getResourceFilename() {
+        return resourceFilename;
+    }
+
+    public void setResourceFilename(String resourceFilename) {
+        this.resourceFilename = resourceFilename;
+    }
+
+    @JsonIgnore
+    public String getResourceFileExtension() {
+        return resourceFileExtension;
+    }
+
+    public void setResourceFileExtension(String resourceFileExtension) {
+        this.resourceFileExtension = resourceFileExtension;
+    }
+
     @JsonIgnore
     public String getFullValue() throws Exception {
         StringBuilder stringBuilder = new StringBuilder();
@@ -295,6 +355,27 @@ public class CssStyle implements Serializable {
                 return new RGBA(rSec, gSec, bSec, aSec);
             default:
                 throw new IllegalStateException("Unexpected value: " + name);
+        }
+    }
+
+    public void saveResource(InputStream inputStream, String filename, String extension) {
+//        new File(inputStream.)
+
+        byte[] buffer = new byte[0];
+        try {
+            buffer = new byte[inputStream.available()];
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        File targetFile = new File(UPLOAD_DIR() + filename  + "."  + extension);
+        OutputStream outStream = null;
+        try {
+            outStream = new FileOutputStream(targetFile);
+            outStream.write(buffer);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

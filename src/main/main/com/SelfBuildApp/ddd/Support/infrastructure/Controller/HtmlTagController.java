@@ -20,6 +20,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -113,6 +114,26 @@ public class HtmlTagController {
     public ResponseEntity addChild(@PathVariable String id,
                                  @RequestBody @Validated() HtmlTag htmlTag,
                                  BindingResult bindingResult
+    )
+    {
+
+        if (bindingResult.hasErrors()) {
+            return new ResponseEntity(new ApiError(HttpStatus.BAD_REQUEST, "Invalid data", bindingResult.getFieldErrors()), HttpStatus.BAD_REQUEST);
+        }
+        HtmlTag entity = Optional.ofNullable(repository.load(id))
+                .orElseThrow(() -> new ResourceNotFoundException("Not found"));
+
+        AppendChildToTagCommand command = new AppendChildToTagCommand(new AggregateId(id), htmlTag);
+        gate.dispatch(command);
+
+        return ResponseEntity.ok(htmlTag);
+    }
+
+    @PostMapping("/{id}/resource")
+    public ResponseEntity updateResource(@PathVariable String id,
+                             @RequestParam("file") MultipartFile file,
+                             @RequestBody @Validated() HtmlTag htmlTag,
+                             BindingResult bindingResult
     )
     {
 

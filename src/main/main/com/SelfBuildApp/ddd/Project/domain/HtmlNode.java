@@ -69,4 +69,7 @@ public abstract class HtmlNode extends ProjectItem<HtmlProject> implements Seria
         this.parent = parent;
     }
 
+    public String getProjectId() {
+        return project.getId();
+    }
 }

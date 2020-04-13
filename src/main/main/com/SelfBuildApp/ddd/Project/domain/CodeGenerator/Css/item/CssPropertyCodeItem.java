@@ -25,6 +25,8 @@ public class CssPropertyCodeItem implements CodeGeneratedItem {
 
     @Override
     public String getContent() {
+//        System.out.println(key);
+//        System.out.println(hashCode());
         return key + ": " + value + ";";
     }
 
@@ -34,6 +36,11 @@ public class CssPropertyCodeItem implements CodeGeneratedItem {
 
     public String getValue() {
         return value;
+    }
+
+    public String getIdentity()
+    {
+        return css.getCssIdentity();
     }
 
 

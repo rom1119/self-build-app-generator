@@ -10,12 +10,23 @@ public class CssSelectorCodeItem implements CodeGeneratedItem {
     static String SELECTOR_PREFIX = "_";
 
     protected Map<String, CssPropertyCodeItem> cssProperties;
-    public String selector;
+    protected String selector;
+    protected boolean ownerTag = false;
 
-    public CssSelectorCodeItem(String selector) {
-        this.selector = selector;
+    public CssSelectorCodeItem() {
+//        this.selector = selector;
         cssProperties = new HashMap<>();
+//        cssProperties.put(css.getKey(), css);
+//        this.reChangeSelector();
+    }
 
+    public CssSelectorCodeItem(boolean ownerTag) {
+        this();
+        this.ownerTag = ownerTag;
+    }
+
+    private void reChangeSelector() {
+        selector = Integer.toHexString(hashCode());
     }
 
     public void addProperty(CssPropertyCodeItem propertyCodeItem) throws DuplicateCssPropertyInSelector {
@@ -24,7 +35,18 @@ public class CssSelectorCodeItem implements CodeGeneratedItem {
         }
 
         cssProperties.put(propertyCodeItem.getKey(),  propertyCodeItem);
+        reChangeSelector();
 
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof CssSelectorCodeItem)) return false;
+
+        CssSelectorCodeItem that = (CssSelectorCodeItem) o;
+
+        return selector.hashCode() == that.hashCode();
     }
 
     @Override
@@ -37,13 +59,19 @@ public class CssSelectorCodeItem implements CodeGeneratedItem {
     }
 
     @Override
+    public String toString() {
+        return getClass().getName() + "@" + hashCode();
+    }
+
+    @Override
     public String getContent() {
         
-        String result = "." + CssSelectorCodeItem.SELECTOR_PREFIX + selector + "{ \n";
-
+        String result = "." + getSelectorClass() + "{ \n";
+//        System.out.println("build ----------");
         for (Map.Entry<String, CssPropertyCodeItem> item :
                 cssProperties.entrySet()) {
             CssPropertyCodeItem css = item.getValue();
+//        System.out.println(item.getKey());
             result += css.getContent() + "\n";
         }
 
@@ -52,7 +80,17 @@ public class CssSelectorCodeItem implements CodeGeneratedItem {
         return result;
     }
 
+    public String getSelectorClass() {
+        return CssSelectorCodeItem.SELECTOR_PREFIX + selector;
+//        return selector;
+    }
+
     public String getSelector() {
-        return Integer.toHexString(hashCode());
+//        return CssSelectorCodeItem.SELECTOR_PREFIX + Integer.toHexString(hashCode());
+        return selector;
+    }
+
+    public boolean isOwnerTag() {
+        return ownerTag;
     }
 }

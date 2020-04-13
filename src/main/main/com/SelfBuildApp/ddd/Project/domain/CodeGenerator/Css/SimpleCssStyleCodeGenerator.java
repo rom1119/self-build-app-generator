@@ -39,11 +39,6 @@ public class SimpleCssStyleCodeGenerator implements CodeGenerator<HtmlProject> {
 
         CssProjectCodeItem projectCodeItem = new CssProjectCodeItem(arg);
         List<CssStyle> allForProjectId = cssStyleRepository.findAllForProjectId(arg.getId());
-//        for (:
-//             ) {
-//
-//        }
-        String selectorPrefix = "_";
 
         Map<String, List<HtmlTag>> uniqueStyles = uniqueStyles(allForProjectId);
 
@@ -51,26 +46,28 @@ public class SimpleCssStyleCodeGenerator implements CodeGenerator<HtmlProject> {
 
             CssStyle css = cssStyleRepository.findOneByCssIdentity(el.getKey());
 
-            CssSelectorCodeItem cssSelectorCodeItem = new CssSelectorCodeItem(selectorPrefix + el.getKey());
-
-
-
-            for (HtmlTag tag : el.getValue()) {
-                try {
-                    HtmlTagCodeItem tagCodeItem = getTagCodeItemByUUID(tag.getId());
-                    tagCodeItem.addClass(cssSelectorCodeItem.selector);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-            }
-
             CssPropertyCodeItem cssPropertyCodeItem = null;
             try {
                 cssPropertyCodeItem = new CssPropertyCodeItem(css);
             } catch (Exception e) {
                 e.printStackTrace();
             }
+
+            CssSelectorCodeItem cssSelectorCodeItem = new CssSelectorCodeItem();
+
+
+
+            for (HtmlTag tag : el.getValue()) {
+                try {
+                    HtmlTagCodeItem tagCodeItem = getTagCodeItemByUUID(tag.getId());
+//                    tagCodeItem.addClass(cssSelectorCodeItem.selector);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            }
+
+
 
             try {
                 cssSelectorCodeItem.addProperty(cssPropertyCodeItem);
