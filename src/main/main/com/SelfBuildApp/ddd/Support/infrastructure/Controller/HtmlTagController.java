@@ -1,5 +1,6 @@
 package com.SelfBuildApp.ddd.Support.infrastructure.Controller;
 
+import com.SelfBuildApp.Storage.PathFileManager;
 import com.SelfBuildApp.cqrs.command.impl.StandardGate;
 import com.SelfBuildApp.ddd.CanonicalModel.AggregateId;
 import com.SelfBuildApp.ddd.Project.Application.commands.AppendChildToTagCommand;
@@ -42,6 +43,9 @@ public class HtmlTagController {
 //
     @Autowired
     private StandardGate gate;
+
+    @Autowired
+    private PathFileManager pathFileManager;
 //
 //    @Autowired
 //    private StorageService storageService;
@@ -49,7 +53,13 @@ public class HtmlTagController {
 //    @PreAuthorize("hasRole('SUPER_ADMIN')")
     @GetMapping("/{id}")
     public HtmlTag getOne(@PathVariable String id, Authentication auth) {
-        return Optional.ofNullable(repository.load(id)).orElseThrow(() -> new ResourceNotFoundException("Not found"));
+        Optional<HtmlTag> load = Optional.ofNullable(repository.load(id));
+        load.orElseThrow(() -> new ResourceNotFoundException("Not found"));
+
+        HtmlTag htmlTag = load.get();
+        htmlTag.setPathFileManager(pathFileManager);
+
+        return htmlTag;
     }
 
     @PutMapping("/text/{id}")
@@ -155,6 +165,8 @@ public class HtmlTagController {
     {
         HtmlNode entity = Optional.ofNullable(this.entityManager.find(HtmlNode.class, id))
                 .orElseThrow(() -> new ResourceNotFoundException("Not found"));
+
+        entity.setPathFileManager(pathFileManager);
 
         this.entityManager.remove(entity);
 

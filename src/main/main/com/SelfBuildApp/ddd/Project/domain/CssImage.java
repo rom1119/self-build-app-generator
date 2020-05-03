@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.persistence.*;
@@ -19,17 +20,23 @@ import javax.validation.constraints.NotEmpty;
 import java.io.*;
 import java.util.Map;
 
-public class CssImage implements Serializable {
+public class CssImage {
 
-    @Image
+    @Image(maxWidth = 2000, maxHeight = 2000)
     private MultipartFile file;
 
-    @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
-    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
-    @Column(name = "id", unique = true)
-    @JsonView(PropertyAccess.Details.class)
-    private Long id;
+    public CssImage(MultipartFile file) {
+        this.file = file;
+    }
 
+    public CssImage() {
+    }
 
+    public MultipartFile getFile() {
+        return file;
+    }
+
+    public void setFile(MultipartFile file) {
+        this.file = file;
+    }
 }

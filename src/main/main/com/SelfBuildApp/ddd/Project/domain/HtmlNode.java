@@ -1,5 +1,6 @@
 package com.SelfBuildApp.ddd.Project.domain;
 
+import com.SelfBuildApp.Storage.PathFileManager;
 import com.SelfBuildApp.ddd.Project.ProjectItem;
 import com.SelfBuildApp.ddd.Support.infrastructure.PropertyAccess;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -36,6 +37,22 @@ public abstract class HtmlNode extends ProjectItem<HtmlProject> implements Seria
     @JoinColumn(name = "parent_id")
     @JsonIgnore()
     protected HtmlNode parent;
+
+    @Transient
+    @JsonIgnore
+    private PathFileManager pathFileManager;
+
+
+    public void setPathFileManager(PathFileManager pathFileManager) {
+        this.pathFileManager = pathFileManager;
+    }
+
+    public PathFileManager getPathFileManager() {
+        if (pathFileManager == null) {
+            return project.getPathFileManager();
+        }
+        return pathFileManager;
+    }
 
     @Override
     public HtmlProject getProject() {

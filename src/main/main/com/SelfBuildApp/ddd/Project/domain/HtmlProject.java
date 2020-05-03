@@ -1,7 +1,9 @@
 package com.SelfBuildApp.ddd.Project.domain;
 
+import com.SelfBuildApp.Storage.PathFileManager;
 import com.SelfBuildApp.ddd.Project.Project;
 import com.SelfBuildApp.ddd.Support.infrastructure.PropertyAccess;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -24,8 +26,20 @@ public class HtmlProject extends Project<HtmlNode> implements Serializable {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     protected Set<HtmlNode> items;
 
+    @Transient
+    @JsonIgnore
+    private PathFileManager pathFileManager;
+
     public HtmlProject() {
         items = new HashSet<>();
+    }
+
+    public void setPathFileManager(PathFileManager pathFileManager) {
+        this.pathFileManager = pathFileManager;
+    }
+
+    public PathFileManager getPathFileManager() {
+        return pathFileManager;
     }
 
     @JsonView(PropertyAccess.Details.class)

@@ -1,5 +1,6 @@
 package com.SelfBuildApp.ddd.Support.infrastructure.Controller;
 
+import com.SelfBuildApp.Storage.PathFileManager;
 import com.SelfBuildApp.cqrs.command.impl.StandardGate;
 import com.SelfBuildApp.ddd.CanonicalModel.AggregateId;
 import com.SelfBuildApp.ddd.Project.Application.commands.AppendChildToTagCommand;
@@ -37,6 +38,9 @@ public class CssStyleController {
     @Autowired
     private TextNodeRepository textNodeRepository;
 
+    @Autowired
+    private PathFileManager pathFileManager;
+
     @PersistenceContext
     protected EntityManager entityManager;
 //
@@ -51,10 +55,9 @@ public class CssStyleController {
 
 
     @PostMapping("/{id}/resource")
+    @Transactional
     public ResponseEntity updateResource(@PathVariable String id,
-                             @RequestParam("file") MultipartFile file,
-
-                             @RequestBody @Validated() CssImage htmlTag,
+                                 @ModelAttribute @Validated() CssImage image,
                              BindingResult bindingResult
     )
     {
@@ -62,30 +65,27 @@ public class CssStyleController {
         if (bindingResult.hasErrors()) {
             return new ResponseEntity(new ApiError(HttpStatus.BAD_REQUEST, "Invalid data", bindingResult.getFieldErrors()), HttpStatus.BAD_REQUEST);
         }
+        MultipartFile file = image.getFile();
         CssStyle entity = Optional.ofNullable(this.entityManager.find(CssStyle.class, Long.valueOf(id)))
                 .orElseThrow(() -> new ResourceNotFoundException("Not found"));
 
-        System.out.println(file);
-//        try {
-////            entity.saveResource(file.getInputStream(), file.getOriginalFilename(), file.);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+        entity.setPathFileManager(pathFileManager);
+        entity.saveResource(file);
 
-
-        return ResponseEntity.ok("ass");
+        return ResponseEntity.ok("ok");
     }
 
     @DeleteMapping("/{id}/resource")
     @Transactional
     public ResponseEntity deleteResource(@PathVariable String id)
     {
-        CssStyle entity = Optional.ofNullable(this.entityManager.find(CssStyle.class, id))
+        CssStyle entity = Optional.ofNullable(this.entityManager.find(CssStyle.class, Long.valueOf(id)))
                 .orElseThrow(() -> new ResourceNotFoundException("Not found"));
 
-//        this.entityManager.remove(entity);
+        entity.setPathFileManager(pathFileManager);
+        entity.deleteResource();
 
-        return ResponseEntity.ok(entity);
+        return ResponseEntity.ok("ok");
     }
 //
 //    @PutMapping( path = "/{id}")

@@ -1,5 +1,6 @@
 package com.SelfBuildApp.ddd.Project.domain;
 
+import com.SelfBuildApp.Storage.PathFileManager;
 import com.SelfBuildApp.ddd.Project.ProjectItem;
 import com.SelfBuildApp.ddd.Support.infrastructure.PropertyAccess;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -40,10 +41,14 @@ public class HtmlTag extends HtmlNode {
     @JsonView(PropertyAccess.Details.class)
     protected List<HtmlNode> children;
 
+
+
     public HtmlTag() {
         cssStyleList = new ArrayList<>();
         children = new ArrayList<>();
     }
+
+
 
     public List<CssStyle> getCssStyleList() {
         return cssStyleList;
@@ -62,7 +67,6 @@ public class HtmlTag extends HtmlNode {
 
     public HtmlTag removeCssStyle(CssStyle cssStyle) {
         cssStyleList.remove(cssStyle);
-        cssStyle.setHtmlTag(null);
 
         return this;
     }

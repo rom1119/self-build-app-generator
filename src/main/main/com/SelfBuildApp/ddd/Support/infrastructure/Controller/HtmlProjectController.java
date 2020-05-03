@@ -1,5 +1,6 @@
 package com.SelfBuildApp.ddd.Support.infrastructure.Controller;
 
+import com.SelfBuildApp.Storage.PathFileManager;
 import com.SelfBuildApp.cqrs.command.impl.StandardGate;
 import com.SelfBuildApp.cqrs.query.PaginatedResult;
 import com.SelfBuildApp.ddd.CanonicalModel.AggregateId;
@@ -52,11 +53,20 @@ public class HtmlProjectController {
 //    @Autowired
 //    private StorageService storageService;
 
+    @Autowired
+    private PathFileManager pathFileManager;
+
 //    @PreAuthorize("hasRole('SUPER_ADMIN')")
     @GetMapping("/{id}")
     @JsonView(PropertyAccess.Details.class)
     public HtmlProject getOne(@PathVariable String id, Authentication auth) {
-        return Optional.ofNullable(repository.load(id)).orElseThrow(() -> new ResourceNotFoundException("Not found"));
+        Optional<HtmlProject> load = Optional.ofNullable(repository.load(id));
+        load.orElseThrow(() -> new ResourceNotFoundException("Not found"));
+        HtmlProject htmlProject = load.get();
+
+        htmlProject.setPathFileManager(pathFileManager);
+
+        return htmlProject;
     }
 
     @GetMapping("/test/{id}")

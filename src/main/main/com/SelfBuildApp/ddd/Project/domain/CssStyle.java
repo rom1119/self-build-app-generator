@@ -1,32 +1,46 @@
 package com.SelfBuildApp.ddd.Project.domain;
 
+import com.SelfBuildApp.Storage.FileInterface;
+import com.SelfBuildApp.Storage.PathFileManager;
 import com.SelfBuildApp.ddd.Project.domain.Unit.BaseUnit;
 import com.SelfBuildApp.ddd.Project.domain.Unit.Color.RGB;
 import com.SelfBuildApp.ddd.Project.domain.Unit.Color.RGBA;
 import com.SelfBuildApp.ddd.Project.domain.Unit.Named;
+import com.SelfBuildApp.ddd.Project.domain.Unit.Size.EM;
+import com.SelfBuildApp.ddd.Project.domain.Unit.Size.Percent;
 import com.SelfBuildApp.ddd.Project.domain.Unit.Size.Pixel;
+import com.SelfBuildApp.ddd.Project.domain.Unit.Size.REM;
+import com.SelfBuildApp.ddd.Project.domain.Unit.UrlUnit;
 import com.SelfBuildApp.ddd.Support.infrastructure.PropertyAccess;
 import com.SelfBuildApp.infrastructure.Validation.Image;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.io.FileUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.web.multipart.MultipartFile;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.persistence.*;
+import javax.transaction.Transactional;
 import javax.validation.constraints.NotEmpty;
 import java.io.*;
 import java.util.Map;
 
 @Entity
 @Table( name = "css_style" )
-public class CssStyle implements Serializable {
+public class CssStyle implements Serializable, FileInterface {
 
-    public String UPLOAD_DIR()
-    {
+    public String UPLOAD_DIR() throws Exception {
         StringBuilder dir = new StringBuilder();
-        dir.append("./uploads/project/");
+        if (getPathFileManager() == null) {
+            throw new Exception("pathFileManager is null");
+        }
+        dir.append(getPathFileManager().getBaseUploadDir());
+        dir.append("project/");
         dir.append(htmlTag.getProjectId());
         dir.append("/css_style/");
         dir.append(getId());
@@ -35,8 +49,33 @@ public class CssStyle implements Serializable {
         return dir.toString();
     }
 
-    @Image
-    private MultipartFile file;
+    public String RESOURCE_DIR() throws Exception {
+        StringBuilder dir = new StringBuilder();
+        if (getPathFileManager() == null) {
+            throw new Exception("pathFileManager is null");
+        }
+        dir.append(getPathFileManager().getResourceUploadDir());
+        dir.append("project/");
+        dir.append(htmlTag.getProjectId());
+        dir.append("/css_style/");
+        dir.append(getId());
+        dir.append("/");
+
+        return dir.toString();
+    }
+
+    private String baseDir()
+    {
+        StringBuilder dir = new StringBuilder();
+
+        dir.append("project/");
+        dir.append(htmlTag.getProjectId());
+        dir.append("/css_style/");
+        dir.append(getId());
+        dir.append("/");
+
+        return dir.toString();
+    }
 
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
@@ -63,7 +102,6 @@ public class CssStyle implements Serializable {
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     private String unitNameThird;
 
-    @NotEmpty()
     @JsonView(PropertyAccess.Details.class)
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     private String value;
@@ -82,6 +120,11 @@ public class CssStyle implements Serializable {
     @JsonIgnore()
     private String resourceFileExtension;
 
+    @Transient
+    @JsonIgnore
+    private PathFileManager pathFileManager;
+
+    @JsonIgnore
     private String cssIdentity;
 
     @ManyToOne( fetch = FetchType.LAZY)
@@ -95,6 +138,17 @@ public class CssStyle implements Serializable {
     public CssStyle(@NotEmpty() String name, @NotEmpty() String value) {
         this.name = name;
         this.value = value;
+    }
+
+    public PathFileManager getPathFileManager() {
+        if (pathFileManager == null) {
+            return htmlTag.getPathFileManager();
+        }
+        return pathFileManager;
+    }
+
+    public void setPathFileManager(PathFileManager pathFileManager) {
+        this.pathFileManager = pathFileManager;
     }
 
     public Long getId() {
@@ -130,7 +184,7 @@ public class CssStyle implements Serializable {
         result = 3 * result + getUnitName().trim().hashCode();
         result = 2 * result + (getUnitNameSecond() != null ? getUnitNameSecond().trim().hashCode() : 0);
         result = 4 * result + (getUnitNameThird() != null ? getUnitNameThird().trim().hashCode() : 0);
-        result = 6 * result + getValue().trim().hashCode();
+        result = 6 * result + (getValue() != null ? getValue().trim().hashCode() : 0);
         result = 5 * result + (getValueSecond() != null ? getValueSecond().trim().hashCode() : 0);
         result = 7 * result + (getValueThird() != null ? getValueThird().trim().hashCode() : 0);
         return result;
@@ -148,15 +202,7 @@ public class CssStyle implements Serializable {
 
     @PostRemove
     public void postRemove() {
-//        cssIdentity = Integer.toHexString(hashCode());
-
-        if (getResourceFilename() != null) {
-            File file = new File(getResourcePath());
-
-            file.delete();
-
-        }
-
+        deleteResource();
     }
 
     public String getCssIdentity() {
@@ -255,16 +301,20 @@ public class CssStyle implements Serializable {
         this.unitNameThird = unit.getName();
     }
 
-    public String getResourcePath()
-    {
+    @JsonView(PropertyAccess.Details.class)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    public String getResourcePath() throws Exception {
         if (getResourceFilename() ==  null) {
             return null;
         }
-
-        return UPLOAD_DIR() + "/" + getResourceFilename() + "." + getResourceFileExtension();
+        if (getResourceFilename().isEmpty()) {
+            return null;
+        }
+//        System.out.println(RESOURCE_DIR());
+//        System.out.println(UPLOAD_DIR());
+        return RESOURCE_DIR() + getResourceFilename() + "." + getResourceFileExtension();
     }
 
-    @JsonIgnore
     public String getResourceFilename() {
         return resourceFilename;
     }
@@ -313,12 +363,20 @@ public class CssStyle implements Serializable {
         switch(name) {
             case Named.NAME:
                 return Named.NAME;
+            case Percent.NAME:
+                return Percent.NAME;
+            case EM.NAME:
+                return EM.NAME;
+            case REM.NAME:
+                return REM.NAME;
             case Pixel.NAME:
                 return Pixel.NAME;
             case RGB.NAME:
                 return RGB.NAME;
             case RGBA.NAME:
                 return RGBA.NAME;
+            case UrlUnit.NAME:
+                return UrlUnit.NAME;
         }
         throw new NotImplementedException();
     }
@@ -331,6 +389,14 @@ public class CssStyle implements Serializable {
                 return new Named(value);
             case Pixel.NAME:
                 return new Pixel(value);
+            case Percent.NAME:
+                return new Percent(value);
+            case EM.NAME:
+                return new EM(value);
+            case REM.NAME:
+                return new REM(value);
+            case UrlUnit.NAME:
+                return new UrlUnit(value);
             case RGB.NAME:
 //                String[] params = value.split(RGB.DELIMITER, 3);
                 // convert JSON string to Map
@@ -358,24 +424,79 @@ public class CssStyle implements Serializable {
         }
     }
 
-    public void saveResource(InputStream inputStream, String filename, String extension) {
-//        new File(inputStream.)
+    public void deleteResource()
+    {
+        if (resourceFilename == null) {
+            return;
+        }
+        if (resourceFilename.isEmpty()) {
+            return;
+        }
 
-        byte[] buffer = new byte[0];
+        String DIR = null;
         try {
-            buffer = new byte[inputStream.available()];
+            DIR = UPLOAD_DIR();
+            DIR = DIR.substring(0, DIR.length() - 1);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        System.out.println(DIR);
+        File targetFile = new File(DIR);
+        try {
+            FileUtils.deleteDirectory(targetFile);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        File targetFile = new File(UPLOAD_DIR() + filename  + "."  + extension);
-        OutputStream outStream = null;
+        setResourceFileExtension(null);
+        setResourceFilename(null);
+    }
+
+    public void saveResource(MultipartFile file) {
+        String filename = getCssIdentity();
+        String extension = file.getOriginalFilename().split("[.]")[1];
+
+        String DIR = null;
         try {
-            outStream = new FileOutputStream(targetFile);
-            outStream.write(buffer);
+            DIR = UPLOAD_DIR();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        File directory = new File(DIR);
+        if (! directory.exists()){
+            directory.mkdirs();
+            // If you require it to make the entire directory path including parents,
+            // use directory.mkdirs(); here instead.
+        }
+
+        File targetFile = new File(DIR + filename  + "."  + extension);
+        try {
+            file.transferTo(targetFile);
+            setResourceFileExtension(extension);
+            setResourceFilename(filename);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    @JsonIgnore
+    public String getFileName() {
+        return resourceFilename + "." + resourceFileExtension;
+    }
+
+    @Override
+    @JsonIgnore
+    public String getDirName() {
+        StringBuilder dir = new StringBuilder();
+        dir.append("project/");
+        dir.append(htmlTag.getProjectId());
+        dir.append("/css_style/");
+        dir.append(getId());
+        dir.append("/");
+
+        return dir.toString();
     }
 }

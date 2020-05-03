@@ -1,15 +1,15 @@
 package com.SelfBuildApp.ddd.Project.domain.Unit;
 
-public class Url extends BaseUnit
+public class UrlUnit extends BaseUnit
 {
     public static final String NAME = "url-unit";
     protected String value;
 
-    public Url(String value) {
+    public UrlUnit(String value) {
         this.value = value;
     }
 
-    public Url() {
+    public UrlUnit() {
     }
 
     @Override
@@ -19,6 +19,6 @@ public class Url extends BaseUnit
 
     @Override
     public String getName() {
-        return Url.NAME;
+        return UrlUnit.NAME;
     }
 }
