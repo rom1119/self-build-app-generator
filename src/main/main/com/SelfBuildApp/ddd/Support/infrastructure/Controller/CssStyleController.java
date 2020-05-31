@@ -87,6 +87,19 @@ public class CssStyleController {
 
         return ResponseEntity.ok("ok");
     }
+
+    @DeleteMapping("/value/{id}")
+    @Transactional
+    public ResponseEntity deleteValue(@PathVariable String id)
+    {
+        System.out.println("DELETE VALUE=" + id);
+        CssValue entity = Optional.ofNullable(this.entityManager.find(CssValue.class, Long.valueOf(id)))
+                .orElseThrow(() -> new ResourceNotFoundException("Not found"));
+
+        entityManager.remove(entity);
+
+        return ResponseEntity.ok("ok");
+    }
 //
 //    @PutMapping( path = "/{id}")
 //    public ResponseEntity update(

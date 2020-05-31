@@ -19,7 +19,7 @@ public class RGB extends ColorUnit
 
     @Override
     public String getValue() {
-        return "rgba(" + r + ", " + g + ", " + b + ")";
+        return "rgb(" + r + ", " + g + ", " + b + ")";
     }
 
     @Override

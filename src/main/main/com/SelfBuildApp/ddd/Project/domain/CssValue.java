@@ -12,31 +12,28 @@ import com.SelfBuildApp.ddd.Project.domain.Unit.Size.Pixel;
 import com.SelfBuildApp.ddd.Project.domain.Unit.Size.REM;
 import com.SelfBuildApp.ddd.Project.domain.Unit.UrlUnit;
 import com.SelfBuildApp.ddd.Support.infrastructure.PropertyAccess;
-import com.SelfBuildApp.infrastructure.Validation.Image;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.FileUtils;
 import org.hibernate.annotations.Cascade;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.web.multipart.MultipartFile;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.persistence.*;
-import javax.transaction.Transactional;
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
-import java.io.*;
-import java.util.ArrayList;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
 @Entity
-@Table( name = "css_style" )
-public class CssStyle implements Serializable, FileInterface {
+@Table( name = "css_value" )
+public class CssValue implements Serializable {
 
 
 
@@ -46,11 +43,6 @@ public class CssStyle implements Serializable, FileInterface {
     @Column(name = "id", unique = true)
     @JsonView(PropertyAccess.Details.class)
     private Long id;
-
-    @NotEmpty()
-    @JsonView(PropertyAccess.Details.class)
-    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
-    private String name;
 
     @NotEmpty()
     @JsonView(PropertyAccess.Details.class)
@@ -67,6 +59,14 @@ public class CssStyle implements Serializable, FileInterface {
 
     @JsonView(PropertyAccess.Details.class)
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
+    private String unitNameFourth;
+
+    @JsonView(PropertyAccess.Details.class)
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
+    private String unitNameFifth;
+
+    @JsonView(PropertyAccess.Details.class)
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     private String value;
 
     @JsonView(PropertyAccess.Details.class)
@@ -79,25 +79,17 @@ public class CssStyle implements Serializable, FileInterface {
 
     @JsonView(PropertyAccess.Details.class)
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
-    private String resourceUrl;
+    private String valueFourth;
 
-    @JsonIgnore()
-    private String resourceFilename;
-
-    @JsonIgnore()
-    private String resourceFileExtension;
-
-    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     @JsonView(PropertyAccess.Details.class)
-    private boolean multipleValue;
-
-    @Valid
-    @OneToMany(mappedBy = "cssStyle", cascade = CascadeType.ALL,
-            fetch = FetchType.EAGER, orphanRemoval = true)
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
-    @JsonView(PropertyAccess.Details.class)
-    @Cascade(org.hibernate.annotations.CascadeType.ALL)
-    protected List<CssValue> cssValues;
+    private String valueFifth;
+
+//    @JsonIgnore()
+//    private String resourceFilename;
+//
+//    @JsonIgnore()
+//    private String resourceFileExtension;
 
     @Transient
     @JsonIgnore
@@ -106,25 +98,26 @@ public class CssStyle implements Serializable, FileInterface {
     @JsonIgnore
     private String cssIdentity;
 
-    @ManyToOne( fetch = FetchType.LAZY)
-    @JoinColumn(name = "html_tag_id")
+    @ManyToOne( fetch = FetchType.LAZY, targetEntity = CssStyle.class)
+    @JoinColumn(name = "css_style_id")
     @JsonIgnore()
-    private HtmlTag htmlTag;
+    private CssStyle cssStyle;
 
-    public CssStyle() {
-        cssValues = new ArrayList<>();
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
+    @JsonView(PropertyAccess.Details.class)
+    private boolean inset = false;
 
+    public CssValue() {
     }
 
-    public CssStyle(@NotEmpty() String name, @NotEmpty() String value) {
-        this();
-        this.name = name;
+    public CssValue(@NotEmpty() String value, @NotEmpty() String unitName) {
         this.value = value;
+        this.unitName = unitName;
     }
 
     public PathFileManager getPathFileManager() {
         if (pathFileManager == null) {
-            return htmlTag.getPathFileManager();
+            return cssStyle.getPathFileManager();
         }
         return pathFileManager;
     }
@@ -146,9 +139,8 @@ public class CssStyle implements Serializable, FileInterface {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        CssStyle cssStyle = (CssStyle) o;
+        CssValue cssStyle = (CssValue) o;
 
-        if (!getName().equals(cssStyle.getName())) return false;
         if (!getUnitName().equals(cssStyle.getUnitName())) return false;
         if (getUnitNameSecond() != null ? !getUnitNameSecond().equals(cssStyle.getUnitNameSecond()) : cssStyle.getUnitNameSecond() != null)
             return false;
@@ -162,7 +154,7 @@ public class CssStyle implements Serializable, FileInterface {
 
     @Override
     public int hashCode() {
-        int result = getName().trim().hashCode();
+        int result = 0;
         result = 3 * result + getUnitName().trim().hashCode();
         result = 2 * result + (getUnitNameSecond() != null ? getUnitNameSecond().trim().hashCode() : 0);
         result = 4 * result + (getUnitNameThird() != null ? getUnitNameThird().trim().hashCode() : 0);
@@ -182,21 +174,10 @@ public class CssStyle implements Serializable, FileInterface {
         cssIdentity = Integer.toHexString(hashCode());
     }
 
-    @PostRemove
-    public void postRemove() {
-        deleteResource();
-    }
+
 
     public String getCssIdentity() {
         return cssIdentity;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getValue() {
@@ -222,14 +203,6 @@ public class CssStyle implements Serializable, FileInterface {
 
     public void setValueThird(String valueThird) {
         this.valueThird = valueThird;
-    }
-
-    public HtmlTag getHtmlTag() {
-        return htmlTag;
-    }
-
-    public void setHtmlTag(HtmlTag htmlTag) {
-        this.htmlTag = htmlTag;
     }
 
     @JsonIgnore
@@ -283,36 +256,70 @@ public class CssStyle implements Serializable, FileInterface {
         this.unitNameThird = unit.getName();
     }
 
-    @JsonView(PropertyAccess.Details.class)
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    public String getResourcePath() throws Exception {
-        if (getResourceFilename() ==  null) {
-            return null;
-        }
-        if (getResourceFilename().isEmpty()) {
-            return null;
-        }
-//        System.out.println(RESOURCE_DIR());
-//        System.out.println(UPLOAD_DIR());
-        return RESOURCE_DIR() + getResourceFilename() + "." + getResourceFileExtension();
+    public String getUnitNameFourth() {
+        return unitNameFourth;
     }
 
-    public String getResourceFilename() {
-        return resourceFilename;
+    public void setUnitNameFourth(String unitNameFourth) {
+        this.unitNameFourth = unitNameFourth;
     }
 
-    public void setResourceFilename(String resourceFilename) {
-        this.resourceFilename = resourceFilename;
+    public String getUnitNameFifth() {
+        return unitNameFifth;
     }
 
-    @JsonIgnore
-    public String getResourceFileExtension() {
-        return resourceFileExtension;
+    public void setUnitNameFifth(String unitNameFifth) {
+        this.unitNameFifth = unitNameFifth;
     }
 
-    public void setResourceFileExtension(String resourceFileExtension) {
-        this.resourceFileExtension = resourceFileExtension;
+    public String getValueFourth() {
+        return valueFourth;
     }
+
+    public void setValueFourth(String valueFourth) {
+        this.valueFourth = valueFourth;
+    }
+
+    public String getValueFifth() {
+        return valueFifth;
+    }
+
+    public void setValueFifth(String valueFifth) {
+        this.valueFifth = valueFifth;
+    }
+
+    public CssStyle getCssStyle() {
+        return cssStyle;
+    }
+
+    public void setCssStyle(CssStyle cssStyle) {
+        this.cssStyle = cssStyle;
+    }
+
+    public boolean isInset() {
+        return inset;
+    }
+
+    public void setInset(boolean inset) {
+        this.inset = inset;
+    }
+
+    //    public String getResourceFilename() {
+//        return resourceFilename;
+//    }
+//
+//    public void setResourceFilename(String resourceFilename) {
+//        this.resourceFilename = resourceFilename;
+//    }
+//
+//    @JsonIgnore
+//    public String getResourceFileExtension() {
+//        return resourceFileExtension;
+//    }
+//
+//    public void setResourceFileExtension(String resourceFileExtension) {
+//        this.resourceFileExtension = resourceFileExtension;
+//    }
 
     @JsonIgnore
     public String getFullValue() throws Exception {
@@ -406,145 +413,8 @@ public class CssStyle implements Serializable, FileInterface {
         }
     }
 
-    public void deleteResource()
-    {
-        if (resourceFilename == null) {
-            return;
-        }
-        if (resourceFilename.isEmpty()) {
-            return;
-        }
 
-        String DIR = null;
-        try {
-            DIR = UPLOAD_DIR();
-            DIR = DIR.substring(0, DIR.length() - 1);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        System.out.println(DIR);
-        File targetFile = new File(DIR);
-        try {
-            FileUtils.deleteDirectory(targetFile);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        setResourceFileExtension(null);
-        setResourceFilename(null);
-    }
 
-    public void saveResource(MultipartFile file) {
-        String filename = getCssIdentity();
-        String extension = file.getOriginalFilename().split("[.]")[1];
 
-        String DIR = null;
-        try {
-            DIR = UPLOAD_DIR();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
-        File directory = new File(DIR);
-        if (! directory.exists()){
-            directory.mkdirs();
-            // If you require it to make the entire directory path including parents,
-            // use directory.mkdirs(); here instead.
-        }
-
-        File targetFile = new File(DIR + filename  + "."  + extension);
-        try {
-            file.transferTo(targetFile);
-            setResourceFileExtension(extension);
-            setResourceFilename(filename);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    @JsonIgnore
-    public String getFileName() {
-        return resourceFilename + "." + resourceFileExtension;
-    }
-
-    @Override
-    @JsonIgnore
-    public String getDirName() {
-        StringBuilder dir = new StringBuilder();
-        dir.append("project/");
-        dir.append(htmlTag.getProjectId());
-        dir.append("/css_style/");
-        dir.append(getId());
-        dir.append("/");
-
-        return dir.toString();
-    }
-
-    public boolean isMultipleValue() {
-        return multipleValue;
-    }
-
-    public void setMultipleValue(boolean multipleValue) {
-        this.multipleValue = multipleValue;
-    }
-
-    public CssStyle addCssValue(CssValue value) {
-        cssValues.add(value);
-        value.setCssStyle(this);
-        return this;
-    }
-
-    public CssStyle removeCssValue(CssValue value) {
-        cssValues.remove(value);
-
-        return this;
-    }
-
-    public List<CssValue> getCssValues() {
-        return cssValues;
-    }
-
-    public void setCssValues(List<CssValue> cssValues) {
-        this.cssValues = cssValues;
-    }
-
-    public String getResourceUrl() {
-        return resourceUrl;
-    }
-
-    public void setResourceUrl(String resourceUrl) {
-        this.resourceUrl = resourceUrl;
-    }
-
-    public String UPLOAD_DIR() throws Exception {
-        StringBuilder dir = new StringBuilder();
-        if (getPathFileManager() == null) {
-            throw new Exception("pathFileManager is null");
-        }
-        dir.append(getPathFileManager().getBaseUploadDir());
-        dir.append("project/");
-        dir.append(htmlTag.getProjectId());
-        dir.append("/css_style/");
-        dir.append(getId());
-        dir.append("/");
-
-        return dir.toString();
-    }
-
-    public String RESOURCE_DIR() throws Exception {
-        StringBuilder dir = new StringBuilder();
-        if (getPathFileManager() == null) {
-            throw new Exception("pathFileManager is null");
-        }
-        dir.append(getPathFileManager().getResourceUploadDir());
-        dir.append("project/");
-        dir.append(htmlTag.getProjectId());
-        dir.append("/css_style/");
-        dir.append(getId());
-        dir.append("/");
-
-        return dir.toString();
-    }
 }
