@@ -3,6 +3,7 @@ package com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Html.item;
 import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Css.item.CssSelectorCodeItem;
 import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Exception.DuplicateHtmlClass;
 import com.SelfBuildApp.ddd.Project.domain.HtmlTag;
+import com.SelfBuildApp.ddd.Project.domain.HtmlTagAttr;
 
 import java.util.*;
 
@@ -69,16 +70,23 @@ public class HtmlTagCodeItem extends HtmlNodeCodeItem {
             res = new StringBuilder();
 
         }
-
         this.openTagWithName(res);
+        this.appendAttrsToContent(res);
         this.appendClassToContent(res);
-        this.closeOpenedTag(res);
 
-        for (HtmlNodeCodeItem item : children) {
-            res.append(item.getContent());
+        if (this.tag.isClosingTag()){
+
+            this.closeOpenedTag(res);
+
+            for (HtmlNodeCodeItem item : children) {
+                res.append(item.getContent());
+            }
+
+            this.closeTagWithName(res);
+        } else {
+            this.shortCloseTag(res);
         }
 
-        this.closeTagWithName(res);
 
         return res.toString();
     }
@@ -100,6 +108,11 @@ public class HtmlTagCodeItem extends HtmlNodeCodeItem {
     {
         res.append(">\n");
     }
+
+    private void shortCloseTag(StringBuilder res)
+    {
+        res.append("/>\n");
+    }
     private void appendClassToContent(StringBuilder res)
     {
         if (selectorsClass.size() > 0) {
@@ -111,6 +124,21 @@ public class HtmlTagCodeItem extends HtmlNodeCodeItem {
             }
 
             res.append("\"");
+        }
+
+    }
+
+    private void appendAttrsToContent(StringBuilder res)
+    {
+        if (tag.getAttrs().size() > 0) {
+            for (Map.Entry<String, HtmlTagAttr> node : tag.getAttrs().entrySet()) {
+                HtmlTagAttr attr = node.getValue();
+                res.append(" ");
+                res.append(attr.key);
+                res.append("=\"");
+                res.append(attr.value);
+                res.append("\"");
+            }
         }
 
     }

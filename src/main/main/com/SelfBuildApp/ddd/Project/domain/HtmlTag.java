@@ -2,11 +2,13 @@ package com.SelfBuildApp.ddd.Project.domain;
 
 import com.SelfBuildApp.Storage.PathFileManager;
 import com.SelfBuildApp.ddd.Project.ProjectItem;
+import com.SelfBuildApp.ddd.Project.infrastructure.repo.HtmlAttrConverter;
 import com.SelfBuildApp.ddd.Support.infrastructure.PropertyAccess;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import javax.validation.Valid;
@@ -14,6 +16,7 @@ import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Entity
 @NamedNativeQuery(name = "HtmlTag.findMainHtmlTagsForProject", query = "SELECT * FROM html_node WHERE parent_id is null and project_id = ?;", resultClass = HtmlNode.class)
@@ -23,6 +26,11 @@ public class HtmlTag extends HtmlNode {
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     @NotNull
     protected String tagName;
+
+    @JsonView(PropertyAccess.Details.class)
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
+    @Convert(converter = HtmlAttrConverter.class)
+    protected Map<String, HtmlTagAttr> attrs;
 
     @Valid
     @OneToMany(mappedBy = "htmlTag", cascade = CascadeType.ALL,
@@ -41,14 +49,14 @@ public class HtmlTag extends HtmlNode {
     @JsonView(PropertyAccess.Details.class)
     protected List<HtmlNode> children;
 
-
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
+    @JsonView(PropertyAccess.Details.class)
+    private boolean closingTag = true;
 
     public HtmlTag() {
         cssStyleList = new ArrayList<>();
         children = new ArrayList<>();
     }
-
-
 
     public List<CssStyle> getCssStyleList() {
         return cssStyleList;
@@ -128,5 +136,22 @@ public class HtmlTag extends HtmlNode {
 
     public void setOrderNumber(int orderNumber) {
         this.orderNumber = orderNumber;
+    }
+
+
+    public Map<String, HtmlTagAttr> getAttrs() {
+        return attrs;
+    }
+
+    public void setAttrs(Map<String, HtmlTagAttr> attrs) {
+        this.attrs = attrs;
+    }
+
+    public boolean isClosingTag() {
+        return closingTag;
+    }
+
+    public void setClosingTag(boolean closingTag) {
+        this.closingTag = closingTag;
     }
 }

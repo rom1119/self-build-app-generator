@@ -316,6 +316,10 @@ public class CssStyle implements Serializable, FileInterface {
 
     @JsonIgnore
     public String getFullValue() throws Exception {
+
+        if (isMultipleValue()) {
+            return buildFromMultipleValue();
+        }
         StringBuilder stringBuilder = new StringBuilder();
 
         BaseUnit firstUnit = getUnitFromNameAndValue(getUnitName(), getValue());
@@ -334,6 +338,55 @@ public class CssStyle implements Serializable, FileInterface {
         }
 
         return stringBuilder.toString();
+    }
+
+    protected String buildFromMultipleValue() throws Exception {
+        StringBuilder stringBuilder = new StringBuilder();
+        int i = 0;
+        int length = cssValues.size();
+        for (CssValue cssValue : cssValues) {
+            if (cssValue.isInset()) {
+                stringBuilder.append("inset ");
+
+            }
+            BaseUnit firstUnit = getUnitFromNameAndValue(cssValue.getUnitName(), cssValue.getValue());
+            stringBuilder.append(firstUnit.getValue());
+
+            if (cssValue.getUnitNameSecond() != null && !cssValue.getUnitNameThird().isEmpty()) {
+                BaseUnit unit = getUnitFromNameAndValue(cssValue.getUnitNameSecond(), cssValue.getValueSecond());
+                stringBuilder.append(" ");
+                stringBuilder.append(unit.getValue());
+            }
+
+            if (cssValue.getUnitNameThird() != null && !cssValue.getUnitNameThird().isEmpty()) {
+                BaseUnit unit = getUnitFromNameAndValue(cssValue.getUnitNameThird(), cssValue.getValueThird());
+                stringBuilder.append(" ");
+                stringBuilder.append(unit.getValue());
+            }
+
+            if (cssValue.getUnitNameFourth() != null && !cssValue.getUnitNameFourth().isEmpty()) {
+                BaseUnit unit = getUnitFromNameAndValue(cssValue.getUnitNameFourth(), cssValue.getValueFourth());
+                stringBuilder.append(" ");
+                stringBuilder.append(unit.getValue());
+            }
+
+            if (cssValue.getUnitNameFifth() != null && !cssValue.getUnitNameFifth().isEmpty()) {
+                BaseUnit unit = getUnitFromNameAndValue(cssValue.getUnitNameFifth(), cssValue.getValueFifth());
+                stringBuilder.append(" ");
+                stringBuilder.append(unit.getValue());
+            }
+
+
+            i++;
+
+            if (i < length) {
+                stringBuilder.append(", ");
+            }
+        }
+
+
+        return stringBuilder.toString();
+
     }
 
     private String getUnitNameFromName(String name)
