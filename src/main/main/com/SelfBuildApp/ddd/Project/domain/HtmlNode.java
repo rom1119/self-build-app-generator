@@ -6,13 +6,9 @@ import com.SelfBuildApp.ddd.Support.infrastructure.PropertyAccess;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
-import org.hibernate.annotations.Cascade;
 
 import javax.persistence.*;
-import javax.validation.Valid;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table( name = "html_node" )
@@ -22,6 +18,11 @@ public abstract class HtmlNode extends ProjectItem<HtmlProject> implements Seria
 //    @JsonView(PropertyAccess.Details.class)
 //    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
 //    protected String nodeType;
+
+    @Column(name = "short_uuid")
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @JsonView(PropertyAccess.Details.class)
+    protected String shortUuid;
 
     @JsonView(PropertyAccess.Details.class)
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
@@ -88,5 +89,13 @@ public abstract class HtmlNode extends ProjectItem<HtmlProject> implements Seria
 
     public String getProjectId() {
         return project.getId();
+    }
+
+    public String getShortUuid() {
+        return shortUuid;
+    }
+
+    public void setShortUuid(String shortUuid) {
+        this.shortUuid = shortUuid;
     }
 }

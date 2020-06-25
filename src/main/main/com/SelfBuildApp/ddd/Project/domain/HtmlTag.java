@@ -41,6 +41,14 @@ public class HtmlTag extends HtmlNode {
     protected List<CssStyle> cssStyleList;
 
     @Valid
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL,
+            fetch = FetchType.EAGER, orphanRemoval = true)
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
+    @JsonView(PropertyAccess.Details.class)
+    @Cascade(org.hibernate.annotations.CascadeType.ALL)
+    protected List<PseudoSelector> pseudoSelectors;
+
+    @Valid
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL,
             fetch = FetchType.EAGER, orphanRemoval = true)
     @Cascade(org.hibernate.annotations.CascadeType.ALL)
@@ -55,6 +63,7 @@ public class HtmlTag extends HtmlNode {
 
     public HtmlTag() {
         cssStyleList = new ArrayList<>();
+        pseudoSelectors = new ArrayList<>();
         children = new ArrayList<>();
     }
 
@@ -81,6 +90,31 @@ public class HtmlTag extends HtmlNode {
 
     public void setCssStyleList(List<CssStyle> cssStyleList) {
         this.cssStyleList = cssStyleList;
+    }
+
+    public HtmlTag addPseudoSelector(PseudoSelector pseudoSelector) {
+        pseudoSelectors.add(pseudoSelector);
+        pseudoSelector.setOwner(this);
+        return this;
+    }
+
+    public boolean hasPseudoSelector(PseudoSelector pseudoSelector) {
+
+        return pseudoSelectors.contains(pseudoSelector);
+    }
+
+    public HtmlTag removePseudoSelector(PseudoSelector pseudoSelector) {
+        pseudoSelectors.remove(pseudoSelector);
+
+        return this;
+    }
+
+    public List<PseudoSelector> getPseudoSelectors() {
+        return pseudoSelectors;
+    }
+
+    public void setPseudoSelectors(List<PseudoSelector> pseudoSelectors) {
+        this.pseudoSelectors = pseudoSelectors;
     }
 
     public String getTagName() {

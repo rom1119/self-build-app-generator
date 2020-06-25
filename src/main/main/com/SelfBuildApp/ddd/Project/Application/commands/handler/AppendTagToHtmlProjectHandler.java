@@ -6,14 +6,14 @@ import com.SelfBuildApp.ddd.Project.Application.commands.AppendTagToHtmlProjectC
 import com.SelfBuildApp.ddd.Project.domain.CssStyle;
 import com.SelfBuildApp.ddd.Project.domain.HtmlNode;
 import com.SelfBuildApp.ddd.Project.domain.HtmlProject;
-import com.SelfBuildApp.ddd.Project.domain.HtmlTag;
+import com.SelfBuildApp.ddd.Support.infrastructure.Generator.impl.HtmlNodeShortUUID;
 import com.SelfBuildApp.ddd.Support.infrastructure.repository.HtmlNodeRepository;
 import com.SelfBuildApp.ddd.Support.infrastructure.repository.HtmlProjectRepository;
 import com.SelfBuildApp.ddd.Support.infrastructure.repository.HtmlTagRepository;
-import com.SelfBuildApp.ddd.Support.infrastructure.repository.TextNodeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.transaction.Transactional;
+import javax.validation.Validator;
 
 @CommandHandlerAnnotation
 public class AppendTagToHtmlProjectHandler implements CommandHandler<AppendTagToHtmlProjectCommand, HtmlProject> {
@@ -27,10 +27,15 @@ public class AppendTagToHtmlProjectHandler implements CommandHandler<AppendTagTo
     @Autowired
     private HtmlNodeRepository htmlNodeRepository;
 
+    @Autowired
+    private HtmlNodeShortUUID shortUUID;
+
     @Override
     @Transactional
     public HtmlProject handle(AppendTagToHtmlProjectCommand command) {
         HtmlProject htmlProject = projectRepository.load(command.getProjectId().getId());
+        String generate = shortUUID.generateUnique(command.getProjectId().getId());
+        command.getTag().setShortUuid(generate);
         htmlProject.appendChild(command.getTag());
         command.getTag().getChildren().forEach((HtmlNode e) -> {
             htmlNodeRepository.save(e);

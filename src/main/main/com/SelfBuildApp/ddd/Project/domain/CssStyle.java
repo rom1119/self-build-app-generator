@@ -39,7 +39,6 @@ import java.util.Map;
 public class CssStyle implements Serializable, FileInterface {
 
 
-
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
@@ -111,9 +110,13 @@ public class CssStyle implements Serializable, FileInterface {
     @JsonIgnore()
     private HtmlTag htmlTag;
 
+    @ManyToOne( fetch = FetchType.LAZY)
+    @JoinColumn(name = "pseudo_selector_id")
+    @JsonIgnore()
+    private PseudoSelector pseudoSelector;
+
     public CssStyle() {
         cssValues = new ArrayList<>();
-
     }
 
     public CssStyle(@NotEmpty() String name, @NotEmpty() String value) {
@@ -185,6 +188,14 @@ public class CssStyle implements Serializable, FileInterface {
     @PostRemove
     public void postRemove() {
         deleteResource();
+    }
+
+    public PseudoSelector getPseudoSelector() {
+        return pseudoSelector;
+    }
+
+    public void setPseudoSelector(PseudoSelector pseudoSelector) {
+        this.pseudoSelector = pseudoSelector;
     }
 
     public String getCssIdentity() {

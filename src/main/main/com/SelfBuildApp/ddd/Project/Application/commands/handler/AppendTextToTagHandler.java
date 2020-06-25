@@ -7,6 +7,7 @@ import com.SelfBuildApp.ddd.Project.Application.commands.AppendTextToTagCommand;
 import com.SelfBuildApp.ddd.Project.domain.CssStyle;
 import com.SelfBuildApp.ddd.Project.domain.HtmlTag;
 import com.SelfBuildApp.ddd.Project.domain.TextNode;
+import com.SelfBuildApp.ddd.Support.infrastructure.Generator.impl.HtmlNodeShortUUID;
 import com.SelfBuildApp.ddd.Support.infrastructure.repository.HtmlProjectRepository;
 import com.SelfBuildApp.ddd.Support.infrastructure.repository.HtmlTagRepository;
 import com.SelfBuildApp.ddd.Support.infrastructure.repository.TextNodeRepository;
@@ -26,11 +27,16 @@ public class AppendTextToTagHandler implements CommandHandler<AppendTextToTagCom
     @Autowired
     private TextNodeRepository textRepository;
 
+    @Autowired
+    private HtmlNodeShortUUID shortUUID;
+
     @Override
     @Transactional
     public TextNode handle(AppendTextToTagCommand command) {
         HtmlTag parentTag = tagRepository.load(command.getParentTagId().getId());
         parentTag.appendChild(command.getTextNode());
+        String generate = shortUUID.generateUnique(command.getTextNode().getProject().getId());
+        command.getTextNode().setShortUuid(generate);
 //        command.getTag().getChildren().forEach((HtmlTag e) -> {
 //            tagRepository.save(e);
 //            e.setParent(command.getTag());
