@@ -3,14 +3,12 @@ package com.SelfBuildApp.ddd.Project.Application.commands.handler;
 import com.SelfBuildApp.Storage.PathFileManager;
 import com.SelfBuildApp.cqrs.annotation.CommandHandlerAnnotation;
 import com.SelfBuildApp.cqrs.command.handler.CommandHandler;
-import com.SelfBuildApp.ddd.Project.Application.commands.UpdateHtmlTagCommand;
+import com.SelfBuildApp.ddd.Project.Application.commands.UpdatePseudoSelectorCommand;
 import com.SelfBuildApp.ddd.Project.domain.CssStyle;
 import com.SelfBuildApp.ddd.Project.domain.CssValue;
 import com.SelfBuildApp.ddd.Project.domain.HtmlTag;
-import com.SelfBuildApp.ddd.Support.infrastructure.repository.CssStyleRepository;
-import com.SelfBuildApp.ddd.Support.infrastructure.repository.CssValueRepository;
-import com.SelfBuildApp.ddd.Support.infrastructure.repository.HtmlProjectRepository;
-import com.SelfBuildApp.ddd.Support.infrastructure.repository.HtmlTagRepository;
+import com.SelfBuildApp.ddd.Project.domain.PseudoSelector;
+import com.SelfBuildApp.ddd.Support.infrastructure.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.transaction.Transactional;
@@ -18,13 +16,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 @CommandHandlerAnnotation
-public class UpdateHtmlTagHandler implements CommandHandler<UpdateHtmlTagCommand, HtmlTag> {
+public class UpdatePseudoSelectorHandler implements CommandHandler<UpdatePseudoSelectorCommand, PseudoSelector> {
 
     @Autowired
     private HtmlProjectRepository projectRepository;
 
     @Autowired
-    private HtmlTagRepository tagRepository;
+    private PseudoSelectorRepository selectorRepository;
 
     @Autowired
     private CssStyleRepository cssStyleRepository;
@@ -37,10 +35,10 @@ public class UpdateHtmlTagHandler implements CommandHandler<UpdateHtmlTagCommand
 
     @Override
     @Transactional
-    public HtmlTag handle(UpdateHtmlTagCommand command) {
+    public PseudoSelector handle(UpdatePseudoSelectorCommand command) {
 //        tagRepository.save(command.getTag());
-        HtmlTag dto = command.getTag();
-        HtmlTag DbENtity = tagRepository.load(command.getTagId().getId());
+        PseudoSelector dto = command.getPseudoSelector();
+        PseudoSelector DbENtity = selectorRepository.findById(command.getId()).get();
         DbENtity.setPathFileManager(pathFileManager);
 
         List<Long> issetEntitiesIds = new ArrayList<>();
@@ -149,7 +147,7 @@ public class UpdateHtmlTagHandler implements CommandHandler<UpdateHtmlTagCommand
                 }
             } else {
                 DbENtity.addCssStyle(css);
-                css.setHtmlTag(DbENtity);
+                css.setPseudoSelector(DbENtity);
                 for (CssValue cssVal : css.getCssValues()) {
                     if (cssVal.getId() != null && cssVal.getId() > 0) {
                         CssValue dbCssVal = cssValueRepository.getOne(cssVal.getId());
@@ -170,9 +168,9 @@ public class UpdateHtmlTagHandler implements CommandHandler<UpdateHtmlTagCommand
     }
 
     @Transactional
-    private CssStyle createCssStyle(CssStyle css, HtmlTag DbENtity)
+    private CssStyle createCssStyle(CssStyle css, PseudoSelector DbENtity)
     {
-        css.setHtmlTag(DbENtity);
+        css.setPseudoSelector(DbENtity);
         DbENtity.addCssStyle(css);
         cssStyleRepository.save(css);
 

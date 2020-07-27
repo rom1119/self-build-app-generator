@@ -127,7 +127,13 @@ public class CssStyle implements Serializable, FileInterface {
 
     public PathFileManager getPathFileManager() {
         if (pathFileManager == null) {
-            return htmlTag.getPathFileManager();
+            if (htmlTag != null) {
+                return htmlTag.getPathFileManager();
+
+            } else {
+                return pseudoSelector.getPathFileManager();
+
+            }
         }
         return pathFileManager;
     }
@@ -589,7 +595,13 @@ public class CssStyle implements Serializable, FileInterface {
         }
         dir.append(getPathFileManager().getBaseUploadDir());
         dir.append("project/");
-        dir.append(htmlTag.getProjectId());
+        if (htmlTag != null) {
+            dir.append(htmlTag.getProjectId());
+
+        } else {
+            dir.append(pseudoSelector.getOwner().getProjectId());
+
+        }
         dir.append("/css_style/");
         dir.append(getId());
         dir.append("/");
@@ -604,7 +616,13 @@ public class CssStyle implements Serializable, FileInterface {
         }
         dir.append(getPathFileManager().getResourceUploadDir());
         dir.append("project/");
-        dir.append(htmlTag.getProjectId());
+        if (htmlTag != null) {
+            dir.append(htmlTag.getProjectId());
+
+        } else {
+            dir.append(pseudoSelector.getOwner().getProjectId());
+
+        }
         dir.append("/css_style/");
         dir.append(getId());
         dir.append("/");

@@ -1,5 +1,6 @@
 package com.SelfBuildApp.ddd.Project.domain;
 
+import com.SelfBuildApp.Storage.PathFileManager;
 import com.SelfBuildApp.ddd.Support.infrastructure.PropertyAccess;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -42,6 +43,22 @@ public class PseudoSelector implements Serializable {
     @JoinColumn(name = "html_tag_id")
     @JsonIgnore()
     private HtmlTag owner;
+
+    @Transient
+    @JsonIgnore
+    private PathFileManager pathFileManager;
+
+
+    public void setPathFileManager(PathFileManager pathFileManager) {
+        this.pathFileManager = pathFileManager;
+    }
+
+    public PathFileManager getPathFileManager() {
+        if (pathFileManager == null) {
+            return owner.getPathFileManager();
+        }
+        return pathFileManager;
+    }
 
     public PseudoSelector() {
         cssStyleList = new ArrayList<>();

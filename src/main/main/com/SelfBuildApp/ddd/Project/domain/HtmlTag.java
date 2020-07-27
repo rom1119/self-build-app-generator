@@ -1,6 +1,5 @@
 package com.SelfBuildApp.ddd.Project.domain;
 
-import com.SelfBuildApp.Storage.PathFileManager;
 import com.SelfBuildApp.ddd.Project.ProjectItem;
 import com.SelfBuildApp.ddd.Project.infrastructure.repo.HtmlAttrConverter;
 import com.SelfBuildApp.ddd.Support.infrastructure.PropertyAccess;

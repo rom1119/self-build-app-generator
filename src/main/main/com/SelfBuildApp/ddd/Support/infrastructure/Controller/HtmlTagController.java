@@ -3,12 +3,10 @@ package com.SelfBuildApp.ddd.Support.infrastructure.Controller;
 import com.SelfBuildApp.Storage.PathFileManager;
 import com.SelfBuildApp.cqrs.command.impl.StandardGate;
 import com.SelfBuildApp.ddd.CanonicalModel.AggregateId;
-import com.SelfBuildApp.ddd.Project.Application.commands.AppendChildToTagCommand;
-import com.SelfBuildApp.ddd.Project.Application.commands.AppendTextToTagCommand;
-import com.SelfBuildApp.ddd.Project.Application.commands.UpdateHtmlTagCommand;
-import com.SelfBuildApp.ddd.Project.Application.commands.UpdateTextNodeCommand;
+import com.SelfBuildApp.ddd.Project.Application.commands.*;
 import com.SelfBuildApp.ddd.Project.domain.HtmlNode;
 import com.SelfBuildApp.ddd.Project.domain.HtmlTag;
+import com.SelfBuildApp.ddd.Project.domain.PseudoSelector;
 import com.SelfBuildApp.ddd.Project.domain.TextNode;
 import com.SelfBuildApp.ddd.Support.infrastructure.repository.HtmlTagRepository;
 import com.SelfBuildApp.ddd.Support.infrastructure.repository.TextNodeRepository;
@@ -137,6 +135,25 @@ public class HtmlTagController {
         gate.dispatch(command);
 
         return ResponseEntity.ok(htmlTag);
+    }
+
+    @PostMapping("/{id}/append-selector")
+    public ResponseEntity addSelector(@PathVariable String id,
+                                   @RequestBody @Validated() PseudoSelector pseudoSelector,
+                                   BindingResult bindingResult
+    )
+    {
+
+        if (bindingResult.hasErrors()) {
+            return new ResponseEntity(new ApiError(HttpStatus.BAD_REQUEST, "Invalid data", bindingResult.getFieldErrors()), HttpStatus.BAD_REQUEST);
+        }
+        HtmlTag entity = Optional.ofNullable(repository.load(id))
+                .orElseThrow(() -> new ResourceNotFoundException("Not found"));
+
+        AppendSelectorToTagCommand command = new AppendSelectorToTagCommand(new AggregateId(id), pseudoSelector);
+        gate.dispatch(command);
+
+        return ResponseEntity.ok(pseudoSelector);
     }
 
     @PostMapping("/{id}/resource")
