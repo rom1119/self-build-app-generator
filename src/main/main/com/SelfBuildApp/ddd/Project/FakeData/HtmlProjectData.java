@@ -3,6 +3,7 @@ package com.SelfBuildApp.ddd.Project.FakeData;
 import com.SelfBuildApp.ddd.Project.domain.*;
 import com.SelfBuildApp.ddd.Project.domain.Unit.Named;
 import com.SelfBuildApp.ddd.Project.domain.Unit.Size.Pixel;
+import com.SelfBuildApp.ddd.Support.infrastructure.Generator.impl.HtmlNodeShortUUID;
 import com.SelfBuildApp.ddd.Support.infrastructure.repository.CssStyleRepository;
 import com.SelfBuildApp.ddd.Support.infrastructure.repository.HtmlProjectRepository;
 import com.SelfBuildApp.ddd.Support.infrastructure.repository.HtmlTagRepository;
@@ -34,6 +35,9 @@ public class HtmlProjectData {
     @Autowired
     private CssStyleRepository cssStyleRepository;
 
+    @Autowired
+    private HtmlNodeShortUUID shortUUID;
+
 
 //    @Autowired
 //    private PasswordEncoder passwordEncoder;
@@ -43,7 +47,7 @@ public class HtmlProjectData {
     }
 
 
-    @Transactional
+//    @Transactional
 //    @PostConstruct
     public void init() {
 
@@ -58,17 +62,18 @@ public class HtmlProjectData {
 //        }
 
         HtmlProject htmlProject = new HtmlProject();
-        HtmlTag h1 = new HtmlTag();
+        HtmlTag div = new HtmlTag();
         HtmlNode text = new TextNode("example text asd");
+
         text.setProject(htmlProject);
-        htmlProject.appendChild(h1);
-        h1.setProject(htmlProject);
-        h1.setTagName("h1");
-        HtmlTag h1Child = new HtmlTag();
-        h1Child.setTagName("h1");
-        h1Child.setProject(htmlProject);
-        h1.appendChild(h1Child);
-        h1.appendChild(text);
+        htmlProject.appendChild(div);
+        div.setProject(htmlProject);
+        div.setTagName("div");
+        HtmlTag divChild = new HtmlTag();
+        divChild.setTagName("div");
+        divChild.setProject(htmlProject);
+        div.appendChild(divChild);
+        div.appendChild(text);
 
         CssStyle padding = new CssStyle("padding", "20");
         padding.setUnit(new Pixel());
@@ -96,17 +101,17 @@ public class HtmlProjectData {
         CssStyle boxSizing2 = new CssStyle("box-sizing", "content-box");
         boxSizing2.setUnit(new Named());
 
-        h1.addCssStyle(width);
-        h1.addCssStyle(height);
-        h1.addCssStyle(backgroundColor);
-        h1.addCssStyle(boxSizing);
+        div.addCssStyle(width);
+        div.addCssStyle(height);
+        div.addCssStyle(backgroundColor);
+        div.addCssStyle(boxSizing);
 
-        h1Child.addCssStyle(padding);
-        h1Child.addCssStyle(border);
-        h1Child.addCssStyle(width2);
-        h1Child.addCssStyle(height2);
-        h1Child.addCssStyle(backgroundColor2);
-        h1Child.addCssStyle(boxSizing2);
+        divChild.addCssStyle(padding);
+        divChild.addCssStyle(border);
+        divChild.addCssStyle(width2);
+        divChild.addCssStyle(height2);
+        divChild.addCssStyle(backgroundColor2);
+        divChild.addCssStyle(boxSizing2);
 
         htmlProject.setName("ESSILLOR Project");
 
@@ -114,7 +119,18 @@ public class HtmlProjectData {
 //        cssStyleRepository.save(height);
 //        cssStyleRepository.save(backgroundColor);
         projectRepository.save(htmlProject);
-        tagRepository.save(h1);
+        tagRepository.save(div);
+
+        entityManager.flush();
+
+        String generate = shortUUID.generateUnique(htmlProject.getId());
+        String generatetwo = shortUUID.generateUnique(htmlProject.getId());
+        String generatethree = shortUUID.generateUnique(htmlProject.getId());
+
+        div.setShortUuid(generate);
+        divChild.setShortUuid(generatetwo);
+        text.setShortUuid(generatethree);
+        entityManager.flush();
 
         alreadySetup = true;
     }

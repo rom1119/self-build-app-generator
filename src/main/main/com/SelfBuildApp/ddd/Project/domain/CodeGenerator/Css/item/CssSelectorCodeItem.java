@@ -11,6 +11,7 @@ public class CssSelectorCodeItem implements CodeGeneratedItem {
 
     protected Map<String, CssPropertyCodeItem> cssProperties;
     protected String selector;
+    protected String pseudoClass;
     protected boolean ownerTag = false;
 
     public CssSelectorCodeItem() {
@@ -66,7 +67,12 @@ public class CssSelectorCodeItem implements CodeGeneratedItem {
     @Override
     public String getContent() {
         
-        String result = "." + getSelectorClass() + "{ \n";
+        String result = "." + getSelectorClass();
+
+        if (pseudoClass != null) {
+//            result += ':' + pseudoClass;
+        }
+        result += "{ \n";;
 //        System.out.println("build ----------");
         for (Map.Entry<String, CssPropertyCodeItem> item :
                 cssProperties.entrySet()) {
@@ -81,13 +87,29 @@ public class CssSelectorCodeItem implements CodeGeneratedItem {
     }
 
     public String getSelectorClass() {
+        if (pseudoClass != null) {
+            return CssSelectorCodeItem.SELECTOR_PREFIX + selector + ":" + pseudoClass;
+
+        }
         return CssSelectorCodeItem.SELECTOR_PREFIX + selector;
 //        return selector;
+    }
+
+    public void setSelector(String selector) {
+        this.selector = selector;
     }
 
     public String getSelector() {
 //        return CssSelectorCodeItem.SELECTOR_PREFIX + Integer.toHexString(hashCode());
         return selector;
+    }
+
+    public String getPseudoClass() {
+        return pseudoClass;
+    }
+
+    public void setPseudoClass(String pseudoClass) {
+        this.pseudoClass = pseudoClass;
     }
 
     public boolean isOwnerTag() {

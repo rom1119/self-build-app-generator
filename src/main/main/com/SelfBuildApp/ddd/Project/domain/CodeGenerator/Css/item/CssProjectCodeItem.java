@@ -22,7 +22,7 @@ public class CssProjectCodeItem implements CodeGeneratedItem {
     {
         System.out.println("add-chi");
         System.out.println(children.size());
-        children.put(item.getSelector(), item);
+        children.put(item.getSelectorClass(), item);
         System.out.println(children.size());
         System.out.println("end-add-chi");
     }
@@ -68,7 +68,7 @@ public class CssProjectCodeItem implements CodeGeneratedItem {
     public void removeSelector(CssSelectorCodeItem selectorCodeItem)
     {
 //        if (children.containsKey(selectorCodeItem.getSelectorClass())) {
-            children.remove(selectorCodeItem.getSelector());
+            children.remove(selectorCodeItem.getSelectorClass());
             System.out.println("remove selector");
 //        }
 

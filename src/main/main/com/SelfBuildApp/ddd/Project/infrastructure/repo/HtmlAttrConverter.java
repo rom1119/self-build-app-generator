@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.persistence.AttributeConverter;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 public class HtmlAttrConverter implements AttributeConverter<Map<String, HtmlTagAttr>, String> {
@@ -39,7 +40,7 @@ public class HtmlAttrConverter implements AttributeConverter<Map<String, HtmlTag
     @Override
     public Map<String, HtmlTagAttr> convertToEntityAttribute(String customerInfoJSON) {
 
-        Map<String, HtmlTagAttr> customerInfo = null;
+        Map<String, HtmlTagAttr> customerInfo = new HashMap<>();
         TypeReference<Map<String, HtmlTagAttr>> typeRef
                 = new TypeReference<Map<String, HtmlTagAttr>>() {};
         try {

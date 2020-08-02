@@ -12,8 +12,10 @@ import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Html.item.TextNodeCodeI
 import com.SelfBuildApp.ddd.Project.domain.CssStyle;
 import com.SelfBuildApp.ddd.Project.domain.HtmlProject;
 import com.SelfBuildApp.ddd.Project.domain.HtmlTag;
+import com.SelfBuildApp.ddd.Project.domain.PseudoSelector;
 import com.SelfBuildApp.ddd.Support.infrastructure.repository.CssStyleRepository;
 import com.SelfBuildApp.ddd.Support.infrastructure.repository.HtmlTagRepository;
+import com.SelfBuildApp.ddd.Support.infrastructure.repository.PseudoSelectorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -30,6 +32,9 @@ public class AdvanceCssStyleCodeGenerator implements CodeGenerator<HtmlProject> 
 
     @Autowired
     private CssStyleRepository cssStyleRepository;
+
+    @Autowired
+    private PseudoSelectorRepository pseudoSelectorRepository;
 
     protected List<HtmlNodeCodeItem> tagsCodeItem;
 
@@ -71,7 +76,7 @@ public class AdvanceCssStyleCodeGenerator implements CodeGenerator<HtmlProject> 
                     selector = new CssSelectorCodeItem(true);
                     tagCodeItem.addSelector(selector);
                 } else {
-                    oldSelectorKey = selector.getSelector();
+                    oldSelectorKey = selector.getSelectorClass();
                 }
 
                 CssSelectorCodeItem selector2 = selector;
@@ -128,6 +133,32 @@ public class AdvanceCssStyleCodeGenerator implements CodeGenerator<HtmlProject> 
             }
 
         }
+
+        List<PseudoSelector> allPseudoSelectors = pseudoSelectorRepository.findAllForProjectId(arg.getId());
+
+        for (PseudoSelector pseudoSelector : allPseudoSelectors) {
+            CssSelectorCodeItem sel = new CssSelectorCodeItem();
+
+
+            for (CssStyle el : pseudoSelector.getCssStyleList()) {
+                CssPropertyCodeItem propertyMany = createProperty(el);
+                addPropertyToSelector(propertyMany, sel);
+            }
+
+
+            try {
+                HtmlTagCodeItem tagCodeItem = getTagCodeItemByUUID(pseudoSelector.getOwner().getId());
+                sel.setSelector(tagCodeItem.getSelector().getSelector());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+
+            sel.setPseudoClass(pseudoSelector.getName());
+            projectCodeItem.addChild(sel);
+
+        }
+
 
         int a  = 0;
 

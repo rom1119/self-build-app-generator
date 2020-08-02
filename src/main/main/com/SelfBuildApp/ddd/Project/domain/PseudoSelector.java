@@ -30,6 +30,15 @@ public class PseudoSelector implements Serializable {
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     private String name;
 
+    @JsonView(PropertyAccess.Details.class)
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
+    private String delimiter;
+
+//    @NotEmpty()
+//    @JsonView(PropertyAccess.Details.class)
+//    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
+//    private String targetSelector;
+
     @Valid
     @OneToMany(mappedBy = "pseudoSelector", cascade = CascadeType.ALL,
             fetch = FetchType.EAGER, orphanRemoval = true)
@@ -118,4 +127,11 @@ public class PseudoSelector implements Serializable {
         this.cssStyleList = cssStyleList;
     }
 
+    public String getDelimiter() {
+        return delimiter;
+    }
+
+    public void setDelimiter(String delimiter) {
+        this.delimiter = delimiter;
+    }
 }
