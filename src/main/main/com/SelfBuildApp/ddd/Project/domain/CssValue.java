@@ -6,6 +6,7 @@ import com.SelfBuildApp.ddd.Project.domain.Unit.BaseUnit;
 import com.SelfBuildApp.ddd.Project.domain.Unit.Color.RGB;
 import com.SelfBuildApp.ddd.Project.domain.Unit.Color.RGBA;
 import com.SelfBuildApp.ddd.Project.domain.Unit.Named;
+import com.SelfBuildApp.ddd.Project.domain.Unit.SecondUnit;
 import com.SelfBuildApp.ddd.Project.domain.Unit.Size.EM;
 import com.SelfBuildApp.ddd.Project.domain.Unit.Size.Percent;
 import com.SelfBuildApp.ddd.Project.domain.Unit.Size.Pixel;
@@ -366,6 +367,8 @@ public class CssValue implements Serializable {
                 return RGBA.NAME;
             case UrlUnit.NAME:
                 return UrlUnit.NAME;
+            case SecondUnit.NAME:
+                return SecondUnit.NAME;
         }
         throw new NotImplementedException();
     }
@@ -386,6 +389,8 @@ public class CssValue implements Serializable {
                 return new REM(value);
             case UrlUnit.NAME:
                 return new UrlUnit(value);
+            case SecondUnit.NAME:
+                return new SecondUnit(value);
             case RGB.NAME:
 //                String[] params = value.split(RGB.DELIMITER, 3);
                 // convert JSON string to Map
