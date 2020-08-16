@@ -2,16 +2,13 @@ package com.SelfBuildApp.ddd.Project.domain;
 
 import com.SelfBuildApp.Storage.FileInterface;
 import com.SelfBuildApp.Storage.PathFileManager;
-import com.SelfBuildApp.ddd.Project.domain.Unit.BaseUnit;
+import com.SelfBuildApp.ddd.Project.domain.Unit.*;
 import com.SelfBuildApp.ddd.Project.domain.Unit.Color.RGB;
 import com.SelfBuildApp.ddd.Project.domain.Unit.Color.RGBA;
-import com.SelfBuildApp.ddd.Project.domain.Unit.Named;
-import com.SelfBuildApp.ddd.Project.domain.Unit.SecondUnit;
 import com.SelfBuildApp.ddd.Project.domain.Unit.Size.EM;
 import com.SelfBuildApp.ddd.Project.domain.Unit.Size.Percent;
 import com.SelfBuildApp.ddd.Project.domain.Unit.Size.Pixel;
 import com.SelfBuildApp.ddd.Project.domain.Unit.Size.REM;
-import com.SelfBuildApp.ddd.Project.domain.Unit.UrlUnit;
 import com.SelfBuildApp.ddd.Support.infrastructure.PropertyAccess;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -369,6 +366,10 @@ public class CssValue implements Serializable {
                 return UrlUnit.NAME;
             case SecondUnit.NAME:
                 return SecondUnit.NAME;
+            case DegUnit.NAME:
+                return DegUnit.NAME;
+            case TurnUnit.NAME:
+                return TurnUnit.NAME;
         }
         throw new NotImplementedException();
     }
@@ -391,6 +392,10 @@ public class CssValue implements Serializable {
                 return new UrlUnit(value);
             case SecondUnit.NAME:
                 return new SecondUnit(value);
+            case DegUnit.NAME:
+                return new DegUnit(value);
+            case TurnUnit.NAME:
+                return new TurnUnit(value);
             case RGB.NAME:
 //                String[] params = value.split(RGB.DELIMITER, 3);
                 // convert JSON string to Map
