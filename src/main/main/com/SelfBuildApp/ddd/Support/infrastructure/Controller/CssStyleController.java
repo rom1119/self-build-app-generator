@@ -72,7 +72,7 @@ public class CssStyleController {
         entity.setPathFileManager(pathFileManager);
         entity.saveResource(file);
 
-        return ResponseEntity.ok("ok");
+        return ResponseEntity.ok(entity);
     }
 
     @DeleteMapping("/{id}/resource")

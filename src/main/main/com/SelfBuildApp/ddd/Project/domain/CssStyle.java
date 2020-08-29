@@ -2,6 +2,10 @@ package com.SelfBuildApp.ddd.Project.domain;
 
 import com.SelfBuildApp.Storage.FileInterface;
 import com.SelfBuildApp.Storage.PathFileManager;
+import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Css.ValueGenerator;
+import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Css.propertyValueImpl.BaseGradientValue;
+import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Css.propertyValueImpl.LinearGradientValue;
+import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Css.propertyValueImpl.RadialGradientValue;
 import com.SelfBuildApp.ddd.Project.domain.Unit.*;
 import com.SelfBuildApp.ddd.Project.domain.Unit.Color.RGB;
 import com.SelfBuildApp.ddd.Project.domain.Unit.Color.RGBA;
@@ -96,6 +100,19 @@ public class CssStyle implements Serializable, FileInterface {
     @Cascade(org.hibernate.annotations.CascadeType.ALL)
     protected List<CssValue> cssValues;
 
+    @Valid
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL,
+            fetch = FetchType.EAGER, orphanRemoval = true)
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
+    @JsonView(PropertyAccess.Details.class)
+    @Cascade(org.hibernate.annotations.CascadeType.ALL)
+    protected List<CssStyle> children;
+
+    @ManyToOne( fetch = FetchType.LAZY, targetEntity = CssStyle.class)
+    @JoinColumn(name = "parent_id")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private CssStyle parent;
+
     @Transient
     @JsonIgnore
     private PathFileManager pathFileManager;
@@ -115,6 +132,7 @@ public class CssStyle implements Serializable, FileInterface {
 
     public CssStyle() {
         cssValues = new ArrayList<>();
+        children = new ArrayList<>();
     }
 
     public CssStyle(@NotEmpty() String name, @NotEmpty() String value) {
@@ -161,7 +179,7 @@ public class CssStyle implements Serializable, FileInterface {
             return false;
         if (getUnitNameThird() != null ? !getUnitNameThird().equals(cssStyle.getUnitNameThird()) : cssStyle.getUnitNameThird() != null)
             return false;
-        if (!getValue().equals(cssStyle.getValue())) return false;
+        if (getValue() != null ? !getValue().equals(cssStyle.getValue()) : cssStyle.getValue() != null) return false;
         if (getValueSecond() != null ? !getValueSecond().equals(cssStyle.getValueSecond()) : cssStyle.getValueSecond() != null)
             return false;
         return getValueThird() != null ? getValueThird().equals(cssStyle.getValueThird()) : cssStyle.getValueThird() == null;
@@ -329,18 +347,81 @@ public class CssStyle implements Serializable, FileInterface {
         this.resourceFileExtension = resourceFileExtension;
     }
 
+    public boolean isGradient()
+    {
+        if (name == null) {
+            return false;
+        }
+        return name.contains("gradient");
+    }
+
+    public boolean isLinearGradient()
+    {
+        if (name == null) {
+            return false;
+        }
+        return name.contains("linear-gradient");
+    }
+
+    public boolean isRadialGradient()
+    {
+        if (name == null) {
+            return false;
+        }
+        return name.contains("radial-gradient");
+    }
+
+    private String generateValueForGradient() throws Exception {
+        BaseGradientValue gradientValue;
+        if (isLinearGradient()) {
+            gradientValue = new LinearGradientValue();
+        } else if (isRadialGradient()) {
+            gradientValue = new RadialGradientValue();
+
+        } else {
+            throw new Exception("Gradient value with name " + getName() + " is not implemented.");
+        }
+
+        return  gradientValue.generateValue(this);
+    }
+
     @JsonIgnore
     public String getFullValue() throws Exception {
 
-        if (isMultipleValue()) {
-            return buildFromMultipleValue();
-        }
         StringBuilder stringBuilder = new StringBuilder();
 
-        BaseUnit firstUnit = getUnitFromNameAndValue(getUnitName(), getValue());
-        stringBuilder.append(firstUnit.getValue());
+        if (children.size() > 0) {
 
-        if (getUnitNameSecond() != null && !getUnitNameThird().isEmpty()) {
+            for (CssStyle child : children) {
+                if (child.isGradient()) {
+                    stringBuilder.append(child.generateValueForGradient());
+
+                } else {
+                    throw new Exception("Property with name " + getName() + " is not implemented to generate value as child");
+                }
+            }
+        } else  {
+
+                stringBuilder.append(generateBaseValue());
+        }
+
+
+        return stringBuilder.toString();
+    }
+
+    private String generateBaseValue() throws Exception {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        if (isMultipleValue()) {
+            stringBuilder.append(buildFromMultipleValue()) ;
+        }
+
+        if (getUnitName() != null && !getUnitName().isEmpty()) {
+            BaseUnit firstUnit = getUnitFromNameAndValue(getUnitName(), getValue());
+            stringBuilder.append(firstUnit.getValue());
+
+        }
+        if (getUnitNameSecond() != null && !getUnitNameSecond().isEmpty()) {
             BaseUnit secUnit = getUnitFromNameAndValue(getUnitNameSecond(), getValueSecond());
             stringBuilder.append(" ");
             stringBuilder.append(secUnit.getValue());
@@ -353,6 +434,7 @@ public class CssStyle implements Serializable, FileInterface {
         }
 
         return stringBuilder.toString();
+
     }
 
     protected String buildFromMultipleValue() throws Exception {
@@ -406,84 +488,11 @@ public class CssStyle implements Serializable, FileInterface {
 
     private String getUnitNameFromName(String name)
     {
-
-        if (name == null) {
-            return "";
-        }
-        switch(name) {
-            case Named.NAME:
-                return Named.NAME;
-            case Percent.NAME:
-                return Percent.NAME;
-            case EM.NAME:
-                return EM.NAME;
-            case REM.NAME:
-                return REM.NAME;
-            case Pixel.NAME:
-                return Pixel.NAME;
-            case RGB.NAME:
-                return RGB.NAME;
-            case RGBA.NAME:
-                return RGBA.NAME;
-            case UrlUnit.NAME:
-                return UrlUnit.NAME;
-            case SecondUnit.NAME:
-                return SecondUnit.NAME;
-            case DegUnit.NAME:
-                return DegUnit.NAME;
-            case TurnUnit.NAME:
-                return TurnUnit.NAME;
-        }
-        throw new NotImplementedException();
+        return ValueGenerator.getUnitNameFromName(name);
     }
 
     private BaseUnit getUnitFromNameAndValue(String name, String value) throws Exception {
-        ObjectMapper mapper = new ObjectMapper();
-        Map map;
-        switch(name) {
-            case Named.NAME:
-                return new Named(value);
-            case Pixel.NAME:
-                return new Pixel(value);
-            case Percent.NAME:
-                return new Percent(value);
-            case EM.NAME:
-                return new EM(value);
-            case REM.NAME:
-                return new REM(value);
-            case UrlUnit.NAME:
-                return new UrlUnit(value);
-            case SecondUnit.NAME:
-                return new SecondUnit(value);
-            case DegUnit.NAME:
-                return new DegUnit(value);
-            case TurnUnit.NAME:
-                return new TurnUnit(value);
-            case RGB.NAME:
-//                String[] params = value.split(RGB.DELIMITER, 3);
-                // convert JSON string to Map
-                map = mapper.readValue(value, Map.class);
-                int r = (int) map.get("r");
-                int g = (int) map.get("g");
-                int b = (int) map.get("b");
-                return new RGB(r, g, b);
-            case RGBA.NAME:
-                String[] paramsRgba = value.split(RGBA.DELIMITER, 4);
-                map = mapper.readValue(value, Map.class);
-
-                double aSec = 1.0;
-                if (map.get("a") instanceof Integer) {
-                    aSec = ((int) map.get("a"));
-                }  else if (map.get("a") instanceof Double) {
-                    aSec = ((double) map.get("a"));
-                }
-                int rSec = (int) map.get("r");
-                int gSec = (int) map.get("g");
-                int bSec = (int) map.get("b");
-                return new RGBA(rSec, gSec, bSec, aSec);
-            default:
-                throw new IllegalStateException("Unexpected value: " + name);
-        }
+        return ValueGenerator.getUnitFromNameAndValue(name, value);
     }
 
     public void deleteResource()
@@ -588,6 +597,35 @@ public class CssStyle implements Serializable, FileInterface {
 
     public void setCssValues(List<CssValue> cssValues) {
         this.cssValues = cssValues;
+    }
+
+    public List<CssStyle> getChildren() {
+        return children;
+    }
+
+    public void setChildren(List<CssStyle> children) {
+        this.children = children;
+    }
+
+    public CssStyle addChild(CssStyle value) {
+        children.add(value);
+        value.setParent(this);
+        return this;
+    }
+
+    public CssStyle removeChild(CssStyle value) {
+        children.remove(value);
+
+        return this;
+    }
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    public CssStyle getParent() {
+        return parent;
+    }
+
+    public void setParent(CssStyle parent) {
+        this.parent = parent;
     }
 
     public String getResourceUrl() {

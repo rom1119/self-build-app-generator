@@ -50,10 +50,10 @@ public class HtmlTag extends HtmlNode {
     @Valid
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL,
             fetch = FetchType.EAGER, orphanRemoval = true)
-    @Cascade(org.hibernate.annotations.CascadeType.ALL)
     @OrderBy("orderNumber")
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     @JsonView(PropertyAccess.Details.class)
+    @Cascade(org.hibernate.annotations.CascadeType.ALL)
     protected List<HtmlNode> children;
 
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)

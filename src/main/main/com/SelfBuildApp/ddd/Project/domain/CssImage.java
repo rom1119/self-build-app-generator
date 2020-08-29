@@ -22,7 +22,7 @@ import java.util.Map;
 
 public class CssImage {
 
-    @Image(maxWidth = 2000, maxHeight = 2000)
+    @Image(maxWidth = 10000, maxHeight = 10000, size = 30000)
     private MultipartFile file;
 
     public CssImage(MultipartFile file) {

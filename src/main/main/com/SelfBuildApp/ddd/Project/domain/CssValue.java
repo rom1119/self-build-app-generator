@@ -105,6 +105,10 @@ public class CssValue implements Serializable {
     @JsonView(PropertyAccess.Details.class)
     private boolean inset = false;
 
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
+    @JsonView(PropertyAccess.Details.class)
+    private boolean specialValGradient = false;
+
     public CssValue() {
     }
 
@@ -300,6 +304,14 @@ public class CssValue implements Serializable {
 
     public void setInset(boolean inset) {
         this.inset = inset;
+    }
+
+    public boolean isSpecialValGradient() {
+        return specialValGradient;
+    }
+
+    public void setSpecialValGradient(boolean specialValGradient) {
+        this.specialValGradient = specialValGradient;
     }
 
     //    public String getResourceFilename() {
