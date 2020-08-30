@@ -48,6 +48,7 @@ public class UpdatePseudoSelectorHandler implements CommandHandler<UpdatePseudoS
                 CssStyle dbCss = cssStyleRepository.getOne(css.getId());
                 if (dbCss != null) {
                     issetEntitiesIds.add(css.getId());
+                    dbCss.setResourceUrl(css.getResourceUrl());
                     dbCss.setValue(css.getValue());
                     dbCss.setValueSecond(css.getValueSecond());
                     dbCss.setValueThird(css.getValueThird());
@@ -77,10 +78,10 @@ public class UpdatePseudoSelectorHandler implements CommandHandler<UpdatePseudoS
                             }
                         }
                     }
+                    this.processChildren(css, dbCss);
                 }
             }
 
-            this.processChildren(css, DbENtity);
 
         }
 
@@ -93,14 +94,15 @@ public class UpdatePseudoSelectorHandler implements CommandHandler<UpdatePseudoS
 
             for (int m = 0; m < sizeCssValuesList; m++) {
                 CssValue cssVAL = css.getCssValues().get(m);
-                if (!issetEntitiesIdsValues.contains(cssVAL.getId())) {
+                if (cssVAL.getId() != null) {
+                    if (!issetEntitiesIdsValues.contains(cssVAL.getId())) {
 
-                    css.removeCssValue(cssVAL);
-                    sizeCssValuesList--;
-                    m--;
+                        css.removeCssValue(cssVAL);
+                        sizeCssValuesList--;
+                        m--;
+                    }
                 }
             }
-
             if (!issetEntitiesIds.contains(css.getId())) {
 //                cssStyleRepository.delete(css);
                 css.setPathFileManager(pathFileManager);
@@ -108,6 +110,8 @@ public class UpdatePseudoSelectorHandler implements CommandHandler<UpdatePseudoS
                 sizeCssList--;
                 i--;
             }
+
+
 
 
         }
@@ -120,6 +124,7 @@ public class UpdatePseudoSelectorHandler implements CommandHandler<UpdatePseudoS
                     dbCss = this.createCssStyle(css, DbENtity);
 
                     for (CssValue cssVal : css.getCssValues()) {
+                        cssVal.setCssStyle(dbCss);
                         if (cssVal.getId() != null && cssVal.getId() > 0) {
                             CssValue dbCssVal = cssValueRepository.getOne(cssVal.getId());
                             if (dbCssVal == null) {
@@ -135,6 +140,7 @@ public class UpdatePseudoSelectorHandler implements CommandHandler<UpdatePseudoS
                     }
                 } else {
                     for (CssValue cssVal : css.getCssValues()) {
+                        cssVal.setCssStyle(dbCss);
                         if (cssVal.getId() != null && cssVal.getId() > 0) {
                             CssValue dbCssVal = cssValueRepository.getOne(cssVal.getId());
                             if (dbCssVal == null) {
@@ -152,6 +158,14 @@ public class UpdatePseudoSelectorHandler implements CommandHandler<UpdatePseudoS
             } else {
                 DbENtity.addCssStyle(css);
                 css.setPseudoSelector(DbENtity);
+
+                for (CssStyle child : css.getChildren()) {
+                    child.setParent(css);
+                    for (CssValue cssValChild : child.getCssValues()) {
+                        cssValChild.setCssStyle(child);
+                    }
+                }
+
                 for (CssValue cssVal : css.getCssValues()) {
                     if (cssVal.getId() != null && cssVal.getId() > 0) {
                         CssValue dbCssVal = cssValueRepository.getOne(cssVal.getId());
@@ -191,7 +205,7 @@ public class UpdatePseudoSelectorHandler implements CommandHandler<UpdatePseudoS
         return css;
     }
 
-    private CssStyle processChildren(CssStyle dto, PseudoSelector DbENtity)
+    private CssStyle processChildren(CssStyle dto, CssStyle DbENtity)
     {
 
         List<Long> issetEntitiesIds = new ArrayList<>();
@@ -201,6 +215,8 @@ public class UpdatePseudoSelectorHandler implements CommandHandler<UpdatePseudoS
                 CssStyle dbCss = cssStyleRepository.getOne(css.getId());
                 if (dbCss != null) {
                     issetEntitiesIds.add(css.getId());
+                    dbCss.setResourceUrl(css.getResourceUrl());
+
                     dbCss.setValue(css.getValue());
                     dbCss.setValueSecond(css.getValueSecond());
                     dbCss.setValueThird(css.getValueThird());
@@ -234,29 +250,34 @@ public class UpdatePseudoSelectorHandler implements CommandHandler<UpdatePseudoS
             }
         }
 
-        int sizeCssList = DbENtity.getCssStyleList().size();
+        int sizeCssList = DbENtity.getChildren().size();
 
         for (int i = 0; i < sizeCssList; i++) {
-            CssStyle css = DbENtity.getCssStyleList().get(i);
+            CssStyle css = DbENtity.getChildren().get(i);
 
             int sizeCssValuesList = css.getCssValues().size();
 
             for (int m = 0; m < sizeCssValuesList; m++) {
                 CssValue cssVAL = css.getCssValues().get(m);
-                if (!issetEntitiesIdsValues.contains(cssVAL.getId())) {
+                if (cssVAL.getId() != null) {
+                    if (!issetEntitiesIdsValues.contains(cssVAL.getId())) {
 
-                    css.removeCssValue(cssVAL);
-                    sizeCssValuesList--;
-                    m--;
+                        css.removeCssValue(cssVAL);
+                        sizeCssValuesList--;
+                        m--;
+                    }
                 }
             }
 
-            if (!issetEntitiesIds.contains(css.getId())) {
+            if (css.getId() != null) {
+                if (!issetEntitiesIds.contains(css.getId())) {
 //                cssStyleRepository.delete(css);
-                css.setPathFileManager(pathFileManager);
-                DbENtity.removeCssStyle(css);
-                sizeCssList--;
-                i--;
+                    css.setPathFileManager(pathFileManager);
+                    DbENtity.removeChild(css);
+                    sizeCssList--;
+                    i--;
+                }
+
             }
 
 
@@ -270,6 +291,7 @@ public class UpdatePseudoSelectorHandler implements CommandHandler<UpdatePseudoS
                     dbCss = this.createCssStyleForChildren(css, dto);
 
                     for (CssValue cssVal : css.getCssValues()) {
+                        cssVal.setCssStyle(dbCss);
                         if (cssVal.getId() != null && cssVal.getId() > 0) {
                             CssValue dbCssVal = cssValueRepository.getOne(cssVal.getId());
                             if (dbCssVal == null) {
@@ -285,6 +307,7 @@ public class UpdatePseudoSelectorHandler implements CommandHandler<UpdatePseudoS
                     }
                 } else {
                     for (CssValue cssVal : css.getCssValues()) {
+                        cssVal.setCssStyle(dbCss);
                         if (cssVal.getId() != null && cssVal.getId() > 0) {
                             CssValue dbCssVal = cssValueRepository.getOne(cssVal.getId());
                             if (dbCssVal == null) {
@@ -300,8 +323,8 @@ public class UpdatePseudoSelectorHandler implements CommandHandler<UpdatePseudoS
                     }
                 }
             } else {
-                DbENtity.addCssStyle(css);
-                css.setPseudoSelector(DbENtity);
+                DbENtity.addChild(css);
+                css.setParent(DbENtity);
                 for (CssValue cssVal : css.getCssValues()) {
                     if (cssVal.getId() != null && cssVal.getId() > 0) {
                         CssValue dbCssVal = cssValueRepository.getOne(cssVal.getId());

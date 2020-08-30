@@ -141,11 +141,14 @@ public class CssStyle implements Serializable, FileInterface {
         this.value = value;
     }
 
+    @JsonIgnore
     public PathFileManager getPathFileManager() {
         if (pathFileManager == null) {
             if (htmlTag != null) {
                 return htmlTag.getPathFileManager();
 
+            } else if(parent != null){
+                return parent.getPathFileManager();
             } else {
                 return pseudoSelector.getPathFileManager();
 
@@ -417,7 +420,18 @@ public class CssStyle implements Serializable, FileInterface {
         }
 
         if (getUnitName() != null && !getUnitName().isEmpty()) {
-            BaseUnit firstUnit = getUnitFromNameAndValue(getUnitName(), getValue());
+            BaseUnit firstUnit;
+            if (getUnit() instanceof UrlUnit) {
+                if (getResourcePath() != null) {
+                    firstUnit = getUnitFromNameAndValue(getUnitName(), getResourcePath());
+                } else {
+                    firstUnit = getUnitFromNameAndValue(getUnitName(), getResourceUrl());
+
+                }
+            } else {
+                firstUnit = getUnitFromNameAndValue(getUnitName(), getValue());
+
+            }
             stringBuilder.append(firstUnit.getValue());
 
         }

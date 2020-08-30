@@ -52,6 +52,8 @@ public class UpdateHtmlTagHandler implements CommandHandler<UpdateHtmlTagCommand
                 CssStyle dbCss = cssStyleRepository.getOne(css.getId());
                 if (dbCss != null) {
                     issetEntitiesIds.add(css.getId());
+                    dbCss.setResourceUrl(css.getResourceUrl());
+
                     dbCss.setValue(css.getValue());
                     dbCss.setValueSecond(css.getValueSecond());
                     dbCss.setValueThird(css.getValueThird());
@@ -218,6 +220,8 @@ public class UpdateHtmlTagHandler implements CommandHandler<UpdateHtmlTagCommand
                 CssStyle dbCss = cssStyleRepository.getOne(css.getId());
                 if (dbCss != null) {
                     issetEntitiesIds.add(css.getId());
+                    dbCss.setResourceUrl(css.getResourceUrl());
+
                     dbCss.setValue(css.getValue());
                     dbCss.setValueSecond(css.getValueSecond());
                     dbCss.setValueThird(css.getValueThird());
