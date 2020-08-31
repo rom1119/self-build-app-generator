@@ -57,6 +57,7 @@ public abstract class BaseGradientValue extends ValueGenerator {
         int length = cssStyle.getCssValues().size();
         boolean commaToAddAfterDirection = false;
         for (CssValue cssValue : cssStyle.getCssValues()) {
+            i++;
             if (cssValue.isSpecialValGradient()) {
                 stringBuilder.append(generateDirectionValue(cssStyle));
                 commaToAddAfterDirection = true;
@@ -99,7 +100,7 @@ public abstract class BaseGradientValue extends ValueGenerator {
             }
 
 
-            i++;
+
 
             if (i < length) {
                 stringBuilder.append(", ");

@@ -197,16 +197,40 @@ public class CssStyle implements Serializable, FileInterface {
         result = 6 * result + (getValue() != null ? getValue().trim().hashCode() : 0);
         result = 5 * result + (getValueSecond() != null ? getValueSecond().trim().hashCode() : 0);
         result = 7 * result + (getValueThird() != null ? getValueThird().trim().hashCode() : 0);
+        result = 8 * result + (getResourceUrl() != null ? getResourceUrl().trim().hashCode() : 0);
+        result = 9 * result + (getResourceFilename() != null ? getResourceFilename().trim().hashCode() : 0);
+        int childrenHashCode = 0;
+        for (CssStyle css : children) {
+            childrenHashCode += css.hashCode();
+        }
+        result = result + childrenHashCode;
+
+        int valuesHashCode = 0;
+        for (CssValue cssValue : cssValues) {
+            valuesHashCode += cssValue.hashCode();
+        }
+        result = result + valuesHashCode;
         return result;
     }
     @PreUpdate
     public void preUpdate() {
-        cssIdentity = Integer.toHexString(hashCode());
+        this.updateCssIdentity();
+        if (parent != null) {
+            parent.updateCssIdentity();
+        }
     }
 
 
     @PrePersist
     public void prePersist() {
+        this.updateCssIdentity();
+        if (parent != null) {
+            parent.updateCssIdentity();
+        }
+    }
+
+    public void updateCssIdentity()
+    {
         cssIdentity = Integer.toHexString(hashCode());
     }
 

@@ -160,21 +160,33 @@ public class CssValue implements Serializable {
         result = 3 * result + getUnitName().trim().hashCode();
         result = 2 * result + (getUnitNameSecond() != null ? getUnitNameSecond().trim().hashCode() : 0);
         result = 4 * result + (getUnitNameThird() != null ? getUnitNameThird().trim().hashCode() : 0);
+        result = 11 * result + (getUnitNameFourth() != null ? getUnitNameFourth().trim().hashCode() : 0);
+        result = 8 * result + (getUnitNameFifth() != null ? getUnitNameFifth().trim().hashCode() : 0);
         result = 6 * result + (getValue() != null ? getValue().trim().hashCode() : 0);
         result = 5 * result + (getValueSecond() != null ? getValueSecond().trim().hashCode() : 0);
         result = 7 * result + (getValueThird() != null ? getValueThird().trim().hashCode() : 0);
+        result = 9 * result + (getValueFourth() != null ? getValueFourth().trim().hashCode() : 0);
+        result = 10 * result + (getValueFifth() != null ? getValueFifth().trim().hashCode() : 0);
         return result;
     }
     @PreUpdate
     public void preUpdate() {
         cssIdentity = Integer.toHexString(hashCode());
+        if (cssStyle != null) {
+            cssStyle.updateCssIdentity();
+        }
     }
 
 
     @PrePersist
     public void prePersist() {
         cssIdentity = Integer.toHexString(hashCode());
+
+        if (cssStyle != null) {
+            cssStyle.updateCssIdentity();
+        }
     }
+
 
 
 
