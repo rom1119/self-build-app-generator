@@ -130,6 +130,11 @@ public class CssStyle implements Serializable, FileInterface {
     @JsonIgnore()
     private PseudoSelector pseudoSelector;
 
+    @ManyToOne( fetch = FetchType.LAZY)
+    @JoinColumn(name = "media_query_id")
+    @JsonIgnore()
+    private MediaQuery mediaQuery;
+
     public CssStyle() {
         cssValues = new ArrayList<>();
         children = new ArrayList<>();
@@ -672,6 +677,14 @@ public class CssStyle implements Serializable, FileInterface {
 
     public void setResourceUrl(String resourceUrl) {
         this.resourceUrl = resourceUrl;
+    }
+
+    public MediaQuery getMediaQuery() {
+        return mediaQuery;
+    }
+
+    public void setMediaQuery(MediaQuery mediaQuery) {
+        this.mediaQuery = mediaQuery;
     }
 
     public String UPLOAD_DIR() throws Exception {

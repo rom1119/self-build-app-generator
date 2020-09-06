@@ -3,15 +3,12 @@ package com.SelfBuildApp.ddd.Project.Application.commands.handler;
 import com.SelfBuildApp.Storage.PathFileManager;
 import com.SelfBuildApp.cqrs.annotation.CommandHandlerAnnotation;
 import com.SelfBuildApp.cqrs.command.handler.CommandHandler;
-import com.SelfBuildApp.ddd.Project.Application.commands.UpdateHtmlTagCommand;
+import com.SelfBuildApp.ddd.Project.Application.commands.UpdateMediaQueryCommand;
 import com.SelfBuildApp.ddd.Project.domain.CssStyle;
 import com.SelfBuildApp.ddd.Project.domain.CssValue;
 import com.SelfBuildApp.ddd.Project.domain.HtmlTag;
-import com.SelfBuildApp.ddd.Project.domain.PseudoSelector;
-import com.SelfBuildApp.ddd.Support.infrastructure.repository.CssStyleRepository;
-import com.SelfBuildApp.ddd.Support.infrastructure.repository.CssValueRepository;
-import com.SelfBuildApp.ddd.Support.infrastructure.repository.HtmlProjectRepository;
-import com.SelfBuildApp.ddd.Support.infrastructure.repository.HtmlTagRepository;
+import com.SelfBuildApp.ddd.Project.domain.MediaQuery;
+import com.SelfBuildApp.ddd.Support.infrastructure.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.transaction.Transactional;
@@ -19,13 +16,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 @CommandHandlerAnnotation
-public class UpdateHtmlTagHandler implements CommandHandler<UpdateHtmlTagCommand, HtmlTag> {
+public class UpdateMediaQueryHandler implements CommandHandler<UpdateMediaQueryCommand, MediaQuery> {
 
     @Autowired
     private HtmlProjectRepository projectRepository;
 
     @Autowired
-    private HtmlTagRepository tagRepository;
+    private MediaQueryRepository mediaQueryRepository;
 
     @Autowired
     private CssStyleRepository cssStyleRepository;
@@ -38,152 +35,67 @@ public class UpdateHtmlTagHandler implements CommandHandler<UpdateHtmlTagCommand
 
     @Override
     @Transactional
-    public HtmlTag handle(UpdateHtmlTagCommand command) {
+    public MediaQuery handle(UpdateMediaQueryCommand command) {
 //        tagRepository.save(command.getTag());
-        HtmlTag dto = command.getTag();
-        HtmlTag DbENtity = tagRepository.load(command.getTagId().getId());
-        DbENtity.setPathFileManager(pathFileManager);
+        MediaQuery dto = command.getMediaQuery();
+        MediaQuery DbENtity = mediaQueryRepository.findById(Long.valueOf(command.getAggregateId().getId())).get();
 
-        List<Long> issetEntitiesIds = new ArrayList<>();
+//        List<Long> issetEntitiesIds = new ArrayList<>();
         List<Long> issetEntitiesIdsValues = new ArrayList<>();
-        for (CssStyle css : dto.getCssStyleList()) {
-            if(css.getId() != null && css.getId() > 0) {
-                CssStyle dbCss = cssStyleRepository.getOne(css.getId());
-                if (dbCss != null) {
-                    issetEntitiesIds.add(css.getId());
-                    dbCss.setResourceUrl(css.getResourceUrl());
+        for (CssValue cssVal : dto.getCssValues()) {
+            if(cssVal.getId() != null && cssVal.getId() > 0) {
+                CssValue dbCssVal = cssValueRepository.getOne(cssVal.getId());
 
-                    dbCss.setValue(css.getValue());
-                    dbCss.setValueSecond(css.getValueSecond());
-                    dbCss.setValueThird(css.getValueThird());
-                    dbCss.setUnitName(css.getUnitName());
-                    dbCss.setUnitNameSecond(css.getUnitNameSecond());
-                    dbCss.setUnitNameThird(css.getUnitNameThird());
-                    for (CssValue cssVal : css.getCssValues()) {
+                if (dbCssVal != null) {
+                    issetEntitiesIdsValues.add(cssVal.getId());
 
-                        if(cssVal.getId() != null && cssVal.getId() > 0) {
-                            CssValue dbCssVal = cssValueRepository.getOne(cssVal.getId());
-
-                            if (dbCssVal != null) {
-                                issetEntitiesIdsValues.add(cssVal.getId());
-
-                                dbCssVal.setInset(cssVal.isInset());
-                                dbCssVal.setSpecialValGradient(cssVal.isSpecialValGradient());
-                                dbCssVal.setValue(cssVal.getValue());
-                                dbCssVal.setValueSecond(cssVal.getValueSecond());
-                                dbCssVal.setValueThird(cssVal.getValueThird());
-                                dbCssVal.setValueFourth(cssVal.getValueFourth());
-                                dbCssVal.setValueFifth(cssVal.getValueFifth());
-                                dbCssVal.setUnitName(cssVal.getUnitName());
-                                dbCssVal.setUnitNameSecond(cssVal.getUnitNameSecond());
-                                dbCssVal.setUnitNameThird(cssVal.getUnitNameThird());
-                                dbCssVal.setUnitNameFourth(cssVal.getUnitNameFourth());
-                                dbCssVal.setUnitNameFifth(cssVal.getUnitNameFifth());
-                            }
-                        }
-                    }
-                this.processChildren(css, dbCss);
+                    dbCssVal.setInset(cssVal.isInset());
+                    dbCssVal.setSpecialValGradient(cssVal.isSpecialValGradient());
+                    dbCssVal.setValue(cssVal.getValue());
+                    dbCssVal.setValueSecond(cssVal.getValueSecond());
+                    dbCssVal.setValueThird(cssVal.getValueThird());
+                    dbCssVal.setValueFourth(cssVal.getValueFourth());
+                    dbCssVal.setValueFifth(cssVal.getValueFifth());
+                    dbCssVal.setUnitName(cssVal.getUnitName());
+                    dbCssVal.setUnitNameSecond(cssVal.getUnitNameSecond());
+                    dbCssVal.setUnitNameThird(cssVal.getUnitNameThird());
+                    dbCssVal.setUnitNameFourth(cssVal.getUnitNameFourth());
+                    dbCssVal.setUnitNameFifth(cssVal.getUnitNameFifth());
                 }
             }
 
 
         }
 
-        int sizeCssList = DbENtity.getCssStyleList().size();
+        int sizeCssValuesList = DbENtity.getCssValues().size();
 
-        for (int i = 0; i < sizeCssList; i++) {
-            CssStyle css = DbENtity.getCssStyleList().get(i);
+        for (int m = 0; m < sizeCssValuesList; m++) {
+            CssValue cssVAL = DbENtity.getCssValues().get(m);
+            if (cssVAL.getId() != null) {
 
-            int sizeCssValuesList = css.getCssValues().size();
+                if (!issetEntitiesIdsValues.contains(cssVAL.getId())) {
 
-            for (int m = 0; m < sizeCssValuesList; m++) {
-                CssValue cssVAL = css.getCssValues().get(m);
-                if (cssVAL.getId() != null) {
-
-                    if (!issetEntitiesIdsValues.contains(cssVAL.getId())) {
-
-                        css.removeCssValue(cssVAL);
-                        sizeCssValuesList--;
-                        m--;
-                    }
+                    DbENtity.removeCssValue(cssVAL);
+                    sizeCssValuesList--;
+                    m--;
                 }
             }
-
-            if (!issetEntitiesIds.contains(css.getId())) {
-//                cssStyleRepository.delete(css);
-                css.setPathFileManager(pathFileManager);
-                DbENtity.removeCssStyle(css);
-                sizeCssList--;
-                i--;
-            }
-
-
         }
 
-        for (CssStyle css : dto.getCssStyleList()) {
-            if(css.getId() != null && css.getId() > 0) {
-                CssStyle dbCss = cssStyleRepository.getOne(css.getId());
-                if (dbCss == null) {
+        for (CssValue cssVal : dto.getCssValues()) {
+            cssVal.setMediaQuery(DbENtity);
 
-                    dbCss = this.createCssStyle(css, DbENtity);
+            if (cssVal.getId() != null && cssVal.getId() > 0) {
+                CssValue dbCssVal = cssValueRepository.getOne(cssVal.getId());
+                if (dbCssVal == null) {
+                    DbENtity.addCssValue(cssVal);
 
-                    for (CssValue cssVal : css.getCssValues()) {
-                        cssVal.setCssStyle(dbCss);
-                        if (cssVal.getId() != null && cssVal.getId() > 0) {
-                            CssValue dbCssVal = cssValueRepository.getOne(cssVal.getId());
-                            if (dbCssVal == null) {
-                                dbCss.addCssValue(cssVal);
-
-                                cssValueRepository.save(cssVal);
-                            }
-                        } else {
-                            dbCss.addCssValue(cssVal);
-
-                            cssValueRepository.save(cssVal);
-                        }
-                    }
-                } else {
-                    for (CssValue cssVal : css.getCssValues()) {
-                        cssVal.setCssStyle(dbCss);
-
-                        if (cssVal.getId() != null && cssVal.getId() > 0) {
-                            CssValue dbCssVal = cssValueRepository.getOne(cssVal.getId());
-                            if (dbCssVal == null) {
-                                dbCss.addCssValue(cssVal);
-
-                                cssValueRepository.save(cssVal);
-                            }
-                        } else {
-                            dbCss.addCssValue(cssVal);
-
-                            cssValueRepository.save(cssVal);
-                        }
-                    }
+                    cssValueRepository.save(cssVal);
                 }
             } else {
-                DbENtity.addCssStyle(css);
-                css.setHtmlTag(DbENtity);
+                DbENtity.addCssValue(cssVal);
 
-                for (CssStyle child : css.getChildren()) {
-                    child.setParent(css);
-                    for (CssValue cssValChild : child.getCssValues()) {
-                        cssValChild.setCssStyle(child);
-                    }
-                }
-                for (CssValue cssVal : css.getCssValues()) {
-                    if (cssVal.getId() != null && cssVal.getId() > 0) {
-                        CssValue dbCssVal = cssValueRepository.getOne(cssVal.getId());
-                        if (dbCssVal == null) {
-                            cssVal.setCssStyle(css);
-                            cssValueRepository.save(cssVal);
-                        }
-                    } else {
-                        cssVal.setCssStyle(css);
-                        cssValueRepository.save(cssVal);
-                    }
-                }
-                cssStyleRepository.save(css);
-
+                cssValueRepository.save(cssVal);
             }
         }
         return DbENtity;

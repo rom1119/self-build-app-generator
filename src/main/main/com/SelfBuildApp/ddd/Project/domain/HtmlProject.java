@@ -7,12 +7,16 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
+import javax.validation.Valid;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -26,12 +30,21 @@ public class HtmlProject extends Project<HtmlNode> implements Serializable {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     protected Set<HtmlNode> items;
 
+    @Valid
+    @OneToMany(mappedBy = "htmlProject", cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
+    @JsonView(PropertyAccess.Details.class)
+    @Cascade(org.hibernate.annotations.CascadeType.ALL)
+    protected List<MediaQuery> mediaQueryList;
+
     @Transient
     @JsonIgnore
     private PathFileManager pathFileManager;
 
     public HtmlProject() {
         items = new HashSet<>();
+        mediaQueryList = new ArrayList<>();
     }
 
     public void setPathFileManager(PathFileManager pathFileManager) {
@@ -107,5 +120,25 @@ public class HtmlProject extends Project<HtmlNode> implements Serializable {
     @Override
     public boolean hasItem(HtmlNode item) {
         return items.contains(item);
+    }
+
+    public List<MediaQuery> getMediaQueryList() {
+        return mediaQueryList;
+    }
+
+    public void setMediaQueryList(List<MediaQuery> mediaQueryList) {
+        this.mediaQueryList = mediaQueryList;
+    }
+
+    public HtmlProject addMediaQuery(MediaQuery value) {
+        mediaQueryList.add(value);
+        value.setHtmlProject(this);
+        return this;
+    }
+
+    public HtmlProject removeCssValue(MediaQuery value) {
+        mediaQueryList.remove(value);
+
+        return this;
     }
 }
