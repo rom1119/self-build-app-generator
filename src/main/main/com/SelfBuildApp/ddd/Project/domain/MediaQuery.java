@@ -51,7 +51,7 @@ public class MediaQuery implements Serializable {
     protected List<CssValue> cssValues;
 
     @Valid
-    @OneToMany(mappedBy = "mediaQueries", cascade = CascadeType.ALL,
+    @OneToMany(mappedBy = "mediaQuery", cascade = CascadeType.ALL,
             fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     @JsonView(PropertyAccess.Details.class)

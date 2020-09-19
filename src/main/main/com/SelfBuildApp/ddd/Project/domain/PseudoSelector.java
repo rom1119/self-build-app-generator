@@ -53,6 +53,11 @@ public class PseudoSelector implements Serializable {
     @JsonIgnore()
     private HtmlTag owner;
 
+    @ManyToOne( fetch = FetchType.LAZY)
+    @JoinColumn(name = "kay_frame_id")
+    @JsonIgnore()
+    private KeyFrame keyFrame;
+
     @Transient
     @JsonIgnore
     private PathFileManager pathFileManager;
@@ -63,10 +68,28 @@ public class PseudoSelector implements Serializable {
     }
 
     public PathFileManager getPathFileManager() {
-        if (pathFileManager == null) {
-            return owner.getPathFileManager();
+        if (pathFileManager != null) {
+            return pathFileManager;
         }
-        return pathFileManager;
+
+        if (owner != null) {
+            if (owner.getPathFileManager() != null) {
+                return owner.getPathFileManager();
+
+            }
+
+        }
+
+        if (keyFrame != null) {
+            if (keyFrame.getPathFileManager() != null) {
+                return owner.getPathFileManager();
+
+            }
+
+        }
+
+        return null;
+
     }
 
     public PseudoSelector() {
@@ -133,5 +156,13 @@ public class PseudoSelector implements Serializable {
 
     public void setDelimiter(String delimiter) {
         this.delimiter = delimiter;
+    }
+
+    public KeyFrame getKeyFrame() {
+        return keyFrame;
+    }
+
+    public void setKeyFrame(KeyFrame keyFrame) {
+        this.keyFrame = keyFrame;
     }
 }

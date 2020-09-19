@@ -1,5 +1,6 @@
 package com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Css;
 
+import com.SelfBuildApp.Storage.PathFileManager;
 import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.CodeGeneratedItem;
 import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.CodeGenerator;
 import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Css.item.CssProjectCodeItem;
@@ -19,6 +20,7 @@ import com.SelfBuildApp.ddd.Support.infrastructure.repository.PseudoSelectorRepo
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -36,6 +38,9 @@ public class AdvanceCssStyleCodeGenerator implements CodeGenerator<HtmlProject> 
     @Autowired
     private PseudoSelectorRepository pseudoSelectorRepository;
 
+    @Autowired
+    private PathFileManager pathFileManager;
+
     protected List<HtmlNodeCodeItem> tagsCodeItem;
 
     public void setTagsCodeItem(List<HtmlNodeCodeItem> tagsCodeItem) {
@@ -43,6 +48,7 @@ public class AdvanceCssStyleCodeGenerator implements CodeGenerator<HtmlProject> 
     }
 
     @Override
+    @Transactional
     public CodeGeneratedItem generate(HtmlProject arg) {
 
         CssProjectCodeItem projectCodeItem = new CssProjectCodeItem(arg);
@@ -52,6 +58,7 @@ public class AdvanceCssStyleCodeGenerator implements CodeGenerator<HtmlProject> 
         for (Map.Entry<String, List<HtmlTag>> el : uniqueStyles.entrySet()) {
 
             CssStyle css = cssStyleRepository.findOneByCssIdentity(el.getKey());
+            css.setPathFileManager(pathFileManager);
             if (el.getValue().size() == 1) {
 
                 HtmlTag tag = el.getValue().iterator().next();
@@ -138,7 +145,7 @@ public class AdvanceCssStyleCodeGenerator implements CodeGenerator<HtmlProject> 
 
         for (PseudoSelector pseudoSelector : allPseudoSelectors) {
             CssSelectorCodeItem sel = new CssSelectorCodeItem();
-
+            pseudoSelector.setPathFileManager(pathFileManager);
 
             for (CssStyle el : pseudoSelector.getCssStyleList()) {
                 CssPropertyCodeItem propertyMany = createProperty(el);

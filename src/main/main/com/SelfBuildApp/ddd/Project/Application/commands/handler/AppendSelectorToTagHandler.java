@@ -35,12 +35,7 @@ public class AppendSelectorToTagHandler implements CommandHandler<AppendSelector
     public PseudoSelector handle(AppendSelectorToTagCommand command) {
         HtmlTag parentTag = tagRepository.load(command.getParentTagId().getId());
         parentTag.addPseudoSelector(command.getPseudoSelector());
-//        String generate = shortUUID.generateUnique(command.getTag().getProject().getId());
-//        command.getTag().setShortUuid(generate);
-//        command.getTag().getChildren().forEach((HtmlTag e) -> {
-//            tagRepository.save(e);
-//            e.setParent(command.getTag());
-//        });
+
         pseudoSelectorRepository.save(command.getPseudoSelector());
         command.getPseudoSelector().getCssStyleList().forEach((CssStyle e) -> {
             e.setPseudoSelector(command.getPseudoSelector());

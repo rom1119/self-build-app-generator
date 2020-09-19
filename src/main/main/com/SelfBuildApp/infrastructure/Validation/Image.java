@@ -31,7 +31,7 @@ public @interface Image
     /**
      * @return The first field
      */
-    MimeType[] mimeTypes() default {MimeType.IMAGE_JPEG, MimeType.IMAGE_JPG, MimeType.IMAGE_PNG};
+    MimeType[] mimeTypes() default {MimeType.IMAGE_JPEG, MimeType.IMAGE_JPG, MimeType.IMAGE_PNG, MimeType.IMAGE_SVG};
 
     /**
      * @return The minimal width field in pixels

@@ -1,5 +1,6 @@
 package com.SelfBuildApp.ddd.Project.domain;
 
+import com.SelfBuildApp.Storage.PathFileManager;
 import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Css.ValueGenerator;
 import com.SelfBuildApp.ddd.Project.domain.Unit.BaseUnit;
 import com.SelfBuildApp.ddd.Support.infrastructure.PropertyAccess;
@@ -37,24 +38,31 @@ public class KeyFrame implements Serializable {
     private HtmlProject htmlProject;
 
     @Valid
-    @OneToMany(mappedBy = "cssStyle", cascade = CascadeType.ALL,
-            fetch = FetchType.EAGER, orphanRemoval = true)
-    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
-    @JsonView(PropertyAccess.Details.class)
-    @Cascade(org.hibernate.annotations.CascadeType.ALL)
-    protected List<CssValue> cssValues;
-
-    @Valid
-    @OneToMany(mappedBy = "mediaQueries", cascade = CascadeType.ALL,
+    @OneToMany(mappedBy = "keyFrame", cascade = CascadeType.ALL,
             fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     @JsonView(PropertyAccess.Details.class)
     @Cascade(org.hibernate.annotations.CascadeType.ALL)
-    protected List<CssStyle> cssStyleList;
+    protected List<PseudoSelector> selectorList;
+
+    @Transient
+    @JsonIgnore
+    private PathFileManager pathFileManager;
+
+
+    public void setPathFileManager(PathFileManager pathFileManager) {
+        this.pathFileManager = pathFileManager;
+    }
+
+    public PathFileManager getPathFileManager() {
+        if (pathFileManager == null) {
+            return htmlProject.getPathFileManager();
+        }
+        return pathFileManager;
+    }
 
     public KeyFrame() {
-        cssValues = new ArrayList<>();
-        cssStyleList = new ArrayList<>();
+        selectorList = new ArrayList<>();
     }
 
     public Long getId() {
@@ -86,54 +94,6 @@ public class KeyFrame implements Serializable {
 
     }
 
-    protected String buildFromMultipleValue() throws Exception {
-        StringBuilder stringBuilder = new StringBuilder();
-        int i = 0;
-        int length = cssValues.size();
-        for (CssValue cssValue : cssValues) {
-            if (cssValue.isInset()) {
-                stringBuilder.append("inset ");
-
-            }
-            BaseUnit firstUnit = getUnitFromNameAndValue(cssValue.getUnitName(), cssValue.getValue());
-            stringBuilder.append(firstUnit.getValue());
-
-            if (cssValue.getUnitNameSecond() != null && !cssValue.getUnitNameThird().isEmpty()) {
-                BaseUnit unit = getUnitFromNameAndValue(cssValue.getUnitNameSecond(), cssValue.getValueSecond());
-                stringBuilder.append(" ");
-                stringBuilder.append(unit.getValue());
-            }
-
-            if (cssValue.getUnitNameThird() != null && !cssValue.getUnitNameThird().isEmpty()) {
-                BaseUnit unit = getUnitFromNameAndValue(cssValue.getUnitNameThird(), cssValue.getValueThird());
-                stringBuilder.append(" ");
-                stringBuilder.append(unit.getValue());
-            }
-
-            if (cssValue.getUnitNameFourth() != null && !cssValue.getUnitNameFourth().isEmpty()) {
-                BaseUnit unit = getUnitFromNameAndValue(cssValue.getUnitNameFourth(), cssValue.getValueFourth());
-                stringBuilder.append(" ");
-                stringBuilder.append(unit.getValue());
-            }
-
-            if (cssValue.getUnitNameFifth() != null && !cssValue.getUnitNameFifth().isEmpty()) {
-                BaseUnit unit = getUnitFromNameAndValue(cssValue.getUnitNameFifth(), cssValue.getValueFifth());
-                stringBuilder.append(" ");
-                stringBuilder.append(unit.getValue());
-            }
-
-
-            i++;
-
-            if (i < length) {
-                stringBuilder.append(", ");
-            }
-        }
-
-
-        return stringBuilder.toString();
-
-    }
 
     private String getUnitNameFromName(String name)
     {
@@ -144,50 +104,24 @@ public class KeyFrame implements Serializable {
         return ValueGenerator.getUnitFromNameAndValue(name, value);
     }
 
-    public List<CssStyle> getCssStyleList() {
-        return cssStyleList;
+
+
+    public boolean hasSelector(PseudoSelector cssStyle) {
+
+        return selectorList.contains(cssStyle);
     }
 
-    public KeyFrame addCssStyle(CssStyle cssStyle) {
-        cssStyleList.add(cssStyle);
-        cssStyle.setMediaQuery(this);
+
+    public KeyFrame addSelector(PseudoSelector value) {
+        selectorList.add(value);
+        value.setKeyFrame(this);
         return this;
     }
 
-    public boolean hasCssStyle(CssStyle cssStyle) {
-
-        return cssStyleList.contains(cssStyle);
-    }
-
-    public KeyFrame removeCssStyle(CssStyle cssStyle) {
-        cssStyleList.remove(cssStyle);
+    public KeyFrame removeSelector(PseudoSelector value) {
+        selectorList.remove(value);
 
         return this;
-    }
-
-    public void setCssStyleList(List<CssStyle> cssStyleList) {
-        this.cssStyleList = cssStyleList;
-    }
-
-
-    public KeyFrame addCssValue(CssValue value) {
-        cssValues.add(value);
-        value.setMediaQuery(this);
-        return this;
-    }
-
-    public KeyFrame removeCssValue(CssValue value) {
-        cssValues.remove(value);
-
-        return this;
-    }
-
-    public List<CssValue> getCssValues() {
-        return cssValues;
-    }
-
-    public void setCssValues(List<CssValue> cssValues) {
-        this.cssValues = cssValues;
     }
 
     public String getName() {
@@ -204,5 +138,13 @@ public class KeyFrame implements Serializable {
 
     public void setHtmlProject(HtmlProject htmlProject) {
         this.htmlProject = htmlProject;
+    }
+
+    public List<PseudoSelector> getSelectorList() {
+        return selectorList;
+    }
+
+    public void setSelectorList(List<PseudoSelector> selectorList) {
+        this.selectorList = selectorList;
     }
 }

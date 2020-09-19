@@ -38,6 +38,15 @@ public class HtmlProject extends Project<HtmlNode> implements Serializable {
     @Cascade(org.hibernate.annotations.CascadeType.ALL)
     protected List<MediaQuery> mediaQueryList;
 
+
+    @Valid
+    @OneToMany(mappedBy = "htmlProject", cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
+    @JsonView(PropertyAccess.Details.class)
+    @Cascade(org.hibernate.annotations.CascadeType.ALL)
+    protected List<KeyFrame> keyFrameList;
+
     @Transient
     @JsonIgnore
     private PathFileManager pathFileManager;
@@ -45,6 +54,7 @@ public class HtmlProject extends Project<HtmlNode> implements Serializable {
     public HtmlProject() {
         items = new HashSet<>();
         mediaQueryList = new ArrayList<>();
+        keyFrameList = new ArrayList<>();
     }
 
     public void setPathFileManager(PathFileManager pathFileManager) {
@@ -136,9 +146,22 @@ public class HtmlProject extends Project<HtmlNode> implements Serializable {
         return this;
     }
 
+    public HtmlProject addKeyFrame(KeyFrame value) {
+        keyFrameList.add(value);
+        value.setHtmlProject(this);
+        return this;
+    }
+
+    public HtmlProject removeKeyFrame(KeyFrame value) {
+        keyFrameList.remove(value);
+        return this;
+    }
+
     public HtmlProject removeCssValue(MediaQuery value) {
         mediaQueryList.remove(value);
 
         return this;
     }
+
+
 }

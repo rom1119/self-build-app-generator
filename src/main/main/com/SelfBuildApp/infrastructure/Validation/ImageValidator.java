@@ -107,22 +107,31 @@ public class ImageValidator implements ConstraintValidator<Image, Object>
     }
 
     private boolean minWidthCorrect(BufferedImage image) {
-
+        if (image == null) {
+            return true;
+        }
         return minWidth <= image.getWidth();
     }
 
     private boolean maxWidthCorrect(BufferedImage image) {
-
+        if (image == null) {
+            return true;
+        }
         return maxWidth >= image.getWidth();
     }
 
     private boolean minHeightCorrect(BufferedImage image) {
-
+        if (image == null) {
+            return true;
+        }
         return minHeight <= image.getHeight();
     }
 
     private boolean maxHeightCorrect(BufferedImage image) {
 
+        if (image == null) {
+            return true;
+        }
         return maxHeight >= image.getHeight();
     }
 }

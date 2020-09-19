@@ -12,11 +12,17 @@ import java.util.List;
 @Repository
 public interface CssStyleRepository extends JpaRepository<CssStyle, Long> {
 
-    @Query(value = "SELECT * FROM css_style JOIN html_node ON css_style.html_tag_id=html_node.id WHERE html_node.project_id = ?;",
+    @Query(value = "SELECT * FROM css_style " +
+            " JOIN html_node as node ON css_style.html_tag_id=node.id" +
+            " JOIN html_project ON node.project_id=html_project.id" +
+            " WHERE node.project_id = ?;",
             nativeQuery = true)
     public List<CssStyle> findAllForProjectId(String projectId);
 
-    @Query(value = "SELECT * FROM css_style   WHERE css_identity = ? limit 1;",
+    @Query(value = "SELECT * FROM css_style  " +
+            " JOIN html_node as node ON css_style.html_tag_id=node.id" +
+            " JOIN html_project as project ON node.project_id=project.id" +
+            " WHERE css_identity = ? limit 1;",
             nativeQuery = true)
     public CssStyle findOneByCssIdentity(String cssID);
 

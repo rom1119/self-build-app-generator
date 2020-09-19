@@ -50,6 +50,12 @@ public abstract class HtmlNode extends ProjectItem<HtmlProject> implements Seria
 
     public PathFileManager getPathFileManager() {
         if (pathFileManager == null) {
+            if (parent != null) {
+                if (parent.getPathFileManager() != null) {
+                    return parent.getPathFileManager();
+                }
+            }
+
             return project.getPathFileManager();
         }
         return pathFileManager;
