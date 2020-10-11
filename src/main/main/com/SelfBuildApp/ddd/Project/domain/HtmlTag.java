@@ -5,6 +5,7 @@ import com.SelfBuildApp.ddd.Project.infrastructure.repo.HtmlAttrConverter;
 import com.SelfBuildApp.ddd.Support.infrastructure.PropertyAccess;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Type;
@@ -52,6 +53,7 @@ public class HtmlTag extends HtmlNode {
             fetch = FetchType.EAGER, orphanRemoval = true)
     @OrderBy("orderNumber")
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
+    @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "className")
     @JsonView(PropertyAccess.Details.class)
     @Cascade(org.hibernate.annotations.CascadeType.ALL)
     protected List<HtmlNode> children;
@@ -130,6 +132,17 @@ public class HtmlTag extends HtmlNode {
         item.setOrderNumber(orderNumber);
         return this;
     }
+
+    public void updateOrderChildren()
+    {
+        int i = 0;
+        for (HtmlNode item:
+             children) {
+            i++;
+            item.setOrderNumber(i);
+        }
+    }
+
 
     public HtmlTag addChild(HtmlNode child) {
         children.add(child);

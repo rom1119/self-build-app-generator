@@ -37,14 +37,9 @@ public class AppendTextToTagHandler implements CommandHandler<AppendTextToTagCom
         parentTag.appendChild(command.getTextNode());
         String generate = shortUUID.generateUnique(command.getTextNode().getProject().getId());
         command.getTextNode().setShortUuid(generate);
-//        command.getTag().getChildren().forEach((HtmlTag e) -> {
-//            tagRepository.save(e);
-//            e.setParent(command.getTag());
-//        });
+
         textRepository.save(command.getTextNode());
-//        command.getTag().getCssStyleList().forEach((CssStyle e) -> {
-//            e.setHtmlTag(command.getTag());
-//        });
+
         return command.getTextNode();
     }
 }
