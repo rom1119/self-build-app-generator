@@ -40,6 +40,10 @@ public class CssSelectorCodeItem implements CodeGeneratedItem {
 
     }
 
+    public Map<String, CssPropertyCodeItem> getCssProperties() {
+        return cssProperties;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -1,6 +1,7 @@
 package com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Css.item;
 
 import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.CodeGeneratedItem;
+import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Css.specialAction.CssAddImportantWhereNeedOverride;
 import com.SelfBuildApp.ddd.Project.domain.CssStyle;
 
 import java.util.Map;
@@ -10,6 +11,7 @@ public class CssPropertyCodeItem implements CodeGeneratedItem {
     private String key;
     private String value;
     private CssStyle css;
+    private boolean important;
 
     public CssPropertyCodeItem(CssStyle css) throws Exception {
         this.css = css;
@@ -27,7 +29,13 @@ public class CssPropertyCodeItem implements CodeGeneratedItem {
     public String getContent() {
 //        System.out.println(key);
 //        System.out.println(hashCode());
-        return key + ": " + value + ";";
+        if (isImportant() || hasDirectionInName()) {
+            return key + ": " + value + " !important" + ";";
+
+        } else {
+            return key + ": " + value + ";";
+
+        }
     }
 
     public String getKey() {
@@ -43,6 +51,12 @@ public class CssPropertyCodeItem implements CodeGeneratedItem {
         return css.getCssIdentity();
     }
 
+    public boolean isImportant() {
+        return important;
+    }
 
-
+    public boolean hasDirectionInName() {
+        CssAddImportantWhereNeedOverride cssAddImportantWhereNeedOverride = new CssAddImportantWhereNeedOverride(this.key);
+        return cssAddImportantWhereNeedOverride.canRun();
+    }
 }

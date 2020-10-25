@@ -46,6 +46,10 @@ public class HtmlTagCodeItem extends HtmlNodeCodeItem {
 //        }
     }
 
+    public Map<String, CssSelectorCodeItem> getSelectors() {
+        return selectorsClass;
+    }
+
     public void removeClass(String classArg) throws DuplicateHtmlClass {
         classArg = classArg.toLowerCase();
         if (!classList.contains(classArg)) {
