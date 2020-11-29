@@ -43,6 +43,7 @@ public class UpdateHtmlTagHandler implements CommandHandler<UpdateHtmlTagCommand
         HtmlTag dto = command.getTag();
         HtmlTag DbENtity = tagRepository.load(command.getTagId().getId());
         DbENtity.setPathFileManager(pathFileManager);
+        DbENtity.setAttrs(dto.getAttrs());
 
         List<Long> issetEntitiesIds = new ArrayList<>();
         List<Long> issetEntitiesIdsValues = new ArrayList<>();
