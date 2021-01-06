@@ -32,6 +32,9 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
@@ -56,6 +59,9 @@ public class MediaQueryController {
 //
     @Autowired
     private StandardGate gate;
+
+    @PersistenceContext
+    protected EntityManager entityManager;
 //
 //    @Autowired
 //    private StorageService storageService;
@@ -122,6 +128,17 @@ public class MediaQueryController {
     }
 
 
+    @DeleteMapping("/{id}")
+    @Transactional
+    public ResponseEntity delete(@PathVariable String id)
+    {
+        MediaQuery entity = Optional.ofNullable(this.entityManager.find(MediaQuery.class, id))
+                .orElseThrow(() -> new ResourceNotFoundException("Not found"));
+
+        this.entityManager.remove(entity);
+
+        return ResponseEntity.ok(entity);
+    }
 
 }
 

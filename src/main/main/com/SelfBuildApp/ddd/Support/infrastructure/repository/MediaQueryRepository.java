@@ -11,7 +11,7 @@ import java.util.List;
 @Repository
 public interface MediaQueryRepository extends JpaRepository<MediaQuery, Long> {
 
-    @Query(value = "SELECT m.*  FROM media_query m WHERE m.project_id = ?;",
+    @Query(value = "SELECT * FROM media_query m WHERE m.html_project_id = ?;",
             nativeQuery = true)
     public List<MediaQuery> findAllForProjectId(String projectId);
 

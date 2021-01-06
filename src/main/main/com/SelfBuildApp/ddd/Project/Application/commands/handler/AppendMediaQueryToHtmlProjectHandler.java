@@ -5,6 +5,7 @@ import com.SelfBuildApp.cqrs.command.handler.CommandHandler;
 import com.SelfBuildApp.ddd.Project.Application.commands.AppendMediaQueryToHtmlProjectCommand;
 import com.SelfBuildApp.ddd.Project.Application.commands.AppendTagToHtmlProjectCommand;
 import com.SelfBuildApp.ddd.Project.domain.CssStyle;
+import com.SelfBuildApp.ddd.Project.domain.CssValue;
 import com.SelfBuildApp.ddd.Project.domain.HtmlNode;
 import com.SelfBuildApp.ddd.Project.domain.HtmlProject;
 import com.SelfBuildApp.ddd.Support.infrastructure.Generator.impl.HtmlNodeShortUUID;
@@ -36,11 +37,11 @@ public class AppendMediaQueryToHtmlProjectHandler implements CommandHandler<Appe
     public HtmlProject handle(AppendMediaQueryToHtmlProjectCommand command) {
         HtmlProject htmlProject = projectRepository.load(command.getProjectId().getId());
         htmlProject.addMediaQuery(command.getMediaQuery());
+        command.getMediaQuery().getCssValues().forEach((CssValue e) -> {
+            e.setMediaQuery(command.getMediaQuery());
+        });
 
         mediaQueryRepository.save(command.getMediaQuery());
-//        command.getTag().getCssStyleList().forEach((CssStyle e) -> {
-//            e.setHtmlTag(command.getTag());
-//        });
         return htmlProject;
     }
 }

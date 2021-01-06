@@ -29,13 +29,23 @@ public class MediaQuery implements Serializable {
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     @Column(name = "id", unique = true)
-    @JsonView(PropertyAccess.Details.class)
+    @JsonView({PropertyAccess.List.class, PropertyAccess.Details.class})
     private Long id;
 
     @NotEmpty()
-    @JsonView(PropertyAccess.Details.class)
+    @JsonView({PropertyAccess.List.class, PropertyAccess.Details.class})
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     private String name;
+
+    @NotEmpty()
+    @JsonView({PropertyAccess.List.class, PropertyAccess.Details.class})
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
+    private String color;
+
+    @NotEmpty()
+    @JsonView({PropertyAccess.List.class, PropertyAccess.Details.class})
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
+    private String colorUnitName;
 
     @ManyToOne( fetch = FetchType.LAZY)
     @JoinColumn(name = "html_project_id")
@@ -43,10 +53,10 @@ public class MediaQuery implements Serializable {
     private HtmlProject htmlProject;
 
     @Valid
-    @OneToMany(mappedBy = "cssStyle", cascade = CascadeType.ALL,
+    @OneToMany(mappedBy = "mediaQuery", cascade = CascadeType.ALL,
             fetch = FetchType.EAGER, orphanRemoval = true)
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
-    @JsonView(PropertyAccess.Details.class)
+    @JsonView({PropertyAccess.List.class, PropertyAccess.Details.class})
     @Cascade(org.hibernate.annotations.CascadeType.ALL)
     protected List<CssValue> cssValues;
 
@@ -210,5 +220,21 @@ public class MediaQuery implements Serializable {
 
     public void setHtmlProject(HtmlProject htmlProject) {
         this.htmlProject = htmlProject;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
+
+    public String getColorUnitName() {
+        return colorUnitName;
+    }
+
+    public void setColorUnitName(String colorUnitName) {
+        this.colorUnitName = colorUnitName;
     }
 }

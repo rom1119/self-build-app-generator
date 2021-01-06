@@ -39,7 +39,9 @@ public class UpdateMediaQueryHandler implements CommandHandler<UpdateMediaQueryC
 //        tagRepository.save(command.getTag());
         MediaQuery dto = command.getMediaQuery();
         MediaQuery DbENtity = mediaQueryRepository.findById(Long.valueOf(command.getAggregateId().getId())).get();
-
+        DbENtity.setName(dto.getName());
+        DbENtity.setColor(dto.getColor());
+        DbENtity.setColorUnitName(dto.getColorUnitName());
 //        List<Long> issetEntitiesIds = new ArrayList<>();
         List<Long> issetEntitiesIdsValues = new ArrayList<>();
         for (CssValue cssVal : dto.getCssValues()) {

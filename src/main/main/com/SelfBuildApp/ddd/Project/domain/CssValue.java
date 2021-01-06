@@ -40,47 +40,47 @@ public class CssValue implements Serializable {
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     @Column(name = "id", unique = true)
-    @JsonView(PropertyAccess.Details.class)
+    @JsonView({PropertyAccess.List.class, PropertyAccess.Details.class})
     private Long id;
 
     @NotEmpty()
-    @JsonView(PropertyAccess.Details.class)
+    @JsonView({PropertyAccess.List.class, PropertyAccess.Details.class})
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     private String unitName;
 
-    @JsonView(PropertyAccess.Details.class)
+    @JsonView({PropertyAccess.List.class, PropertyAccess.Details.class})
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     private String unitNameSecond;
 
-    @JsonView(PropertyAccess.Details.class)
+    @JsonView({PropertyAccess.List.class, PropertyAccess.Details.class})
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     private String unitNameThird;
 
-    @JsonView(PropertyAccess.Details.class)
+    @JsonView({PropertyAccess.List.class, PropertyAccess.Details.class})
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     private String unitNameFourth;
 
-    @JsonView(PropertyAccess.Details.class)
+    @JsonView({PropertyAccess.List.class, PropertyAccess.Details.class})
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     private String unitNameFifth;
 
-    @JsonView(PropertyAccess.Details.class)
+    @JsonView({PropertyAccess.List.class, PropertyAccess.Details.class})
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     private String value;
 
-    @JsonView(PropertyAccess.Details.class)
+    @JsonView({PropertyAccess.List.class, PropertyAccess.Details.class})
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     private String valueSecond;
 
-    @JsonView(PropertyAccess.Details.class)
+    @JsonView({PropertyAccess.List.class, PropertyAccess.Details.class})
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     private String valueThird;
 
-    @JsonView(PropertyAccess.Details.class)
+    @JsonView({PropertyAccess.List.class, PropertyAccess.Details.class})
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     private String valueFourth;
 
-    @JsonView(PropertyAccess.Details.class)
+    @JsonView({PropertyAccess.List.class, PropertyAccess.Details.class})
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     private String valueFifth;
 
