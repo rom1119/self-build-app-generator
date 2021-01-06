@@ -132,7 +132,7 @@ public class MediaQueryController {
     @Transactional
     public ResponseEntity delete(@PathVariable String id)
     {
-        MediaQuery entity = Optional.ofNullable(this.entityManager.find(MediaQuery.class, id))
+        MediaQuery entity = Optional.ofNullable(this.entityManager.find(MediaQuery.class, Long.valueOf(id)))
                 .orElseThrow(() -> new ResourceNotFoundException("Not found"));
 
         this.entityManager.remove(entity);
