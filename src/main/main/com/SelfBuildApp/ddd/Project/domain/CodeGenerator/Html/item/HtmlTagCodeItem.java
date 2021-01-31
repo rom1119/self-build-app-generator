@@ -1,7 +1,9 @@
 package com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Html.item;
 
 import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Css.item.CssSelectorCodeItem;
+import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Css.item.MediaQueryCodeItem;
 import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Exception.DuplicateHtmlClass;
+import com.SelfBuildApp.ddd.Project.domain.CssStyle;
 import com.SelfBuildApp.ddd.Project.domain.HtmlTag;
 import com.SelfBuildApp.ddd.Project.domain.HtmlTagAttr;
 
@@ -13,7 +15,9 @@ public class HtmlTagCodeItem extends HtmlNodeCodeItem {
     private List<HtmlNodeCodeItem> children;
     protected List<String> classList;
     protected Map<String, CssSelectorCodeItem> selectorsClass;
+    protected Map<Long, Map<String, CssSelectorCodeItem>> selectorsClassForMediaQueries;
 
+    protected boolean inlineStyle = false;
 
 
     public HtmlTagCodeItem(HtmlTag tag) {
@@ -21,6 +25,11 @@ public class HtmlTagCodeItem extends HtmlNodeCodeItem {
         classList = new ArrayList<>();
         children = new ArrayList<>();
         selectorsClass = new HashMap<>();
+        selectorsClassForMediaQueries = new HashMap<>();
+    }
+
+    public void setInlineStyle(boolean inlineStyle) {
+        this.inlineStyle = inlineStyle;
     }
 
     public boolean hasUUID(String uuid)
@@ -40,6 +49,29 @@ public class HtmlTagCodeItem extends HtmlNodeCodeItem {
     public void addSelector(CssSelectorCodeItem selectorCodeItem) {
 //        System.out.println(this.selectorsClass.size());
         this.selectorsClass.put(selectorCodeItem.getSelector(), selectorCodeItem);
+//        System.out.println(this.selectorsClass.size());
+//        if (!classList.contains(classArg)) {
+////            throw new DuplicateHtmlClass("Html class \"" + classArg + "\" exist in tag with id " + tag.getId());
+//        }
+    }
+
+    public void addSelectorToMediaQuery(MediaQueryCodeItem codeItem, CssSelectorCodeItem selectorCodeItem) {
+//        System.out.println(this.selectorsClass.size());
+        if (this.selectorsClassForMediaQueries.get(codeItem.getMediaQueryId()) != null) {
+            this.selectorsClassForMediaQueries.get(codeItem.getMediaQueryId()).put(selectorCodeItem.getSelector(), selectorCodeItem);
+
+        }
+//        System.out.println(this.selectorsClass.size());
+//        if (!classList.contains(classArg)) {
+////            throw new DuplicateHtmlClass("Html class \"" + classArg + "\" exist in tag with id " + tag.getId());
+//        }
+    }
+    public void addMediaQuery(MediaQueryCodeItem codeItem) {
+//        System.out.println(this.selectorsClass.size());
+        if (this.selectorsClassForMediaQueries.get(codeItem.getMediaQueryId()) == null) {
+            this.selectorsClassForMediaQueries.put(codeItem.getMediaQueryId(), new HashMap<String, CssSelectorCodeItem>());
+
+        }
 //        System.out.println(this.selectorsClass.size());
 //        if (!classList.contains(classArg)) {
 ////            throw new DuplicateHtmlClass("Html class \"" + classArg + "\" exist in tag with id " + tag.getId());
@@ -77,6 +109,10 @@ public class HtmlTagCodeItem extends HtmlNodeCodeItem {
         this.openTagWithName(res);
         this.appendAttrsToContent(res);
         this.appendClassToContent(res);
+        if (inlineStyle == true) {
+            this.appendStylesToContent(res);
+
+        }
 
         if (this.tag.isClosingTag()){
 
@@ -117,14 +153,42 @@ public class HtmlTagCodeItem extends HtmlNodeCodeItem {
     {
         res.append("/>\n");
     }
+    private void appendStylesToContent(StringBuilder res)
+    {
+        if (tag.getCssStyleList().size() > 0) {
+            res.append(" style=\"");
+
+            for (CssStyle css : tag.getCssStyleList()) {
+                try {
+                    res
+                        .append(css.getName() + ": " + css.getFullValue())
+                        .append("; ");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+
+            }
+
+            res.append("\"");
+        }
+    }
+
     private void appendClassToContent(StringBuilder res)
     {
-        if (selectorsClass.size() > 0) {
+        if (selectorsClass.size() > 0 || this.selectorsClassForMediaQueries.size() > 0) {
             res.append(" class=\"");
 
             for (Map.Entry<String, CssSelectorCodeItem> node : this.selectorsClass.entrySet()) {
                 CssSelectorCodeItem selector = node.getValue();
-                res.append(selector.getSelectorClass()).append(" ");
+                res.append(selector.getSelectorForHtmlClass()).append(" ");
+            }
+            for (Map.Entry<Long, Map<String, CssSelectorCodeItem>> mediaQ : this.selectorsClassForMediaQueries.entrySet()) {
+                for (Map.Entry<String, CssSelectorCodeItem> selEl : mediaQ.getValue().entrySet()) {
+
+                    CssSelectorCodeItem selectorMedia = selEl.getValue();
+                    res.append(selectorMedia.getSelectorForHtmlClass()).append(" ");
+                }
             }
 
             res.append("\"");
@@ -163,6 +227,25 @@ public class HtmlTagCodeItem extends HtmlNodeCodeItem {
                 return selectorCodeItem;
             }
         }
+        return null;
+    }
+
+    public CssSelectorCodeItem getOwnerSelectorForMediaQuery(MediaQueryCodeItem projectCodeItem) {
+        Map<String, CssSelectorCodeItem> listSelectors = selectorsClassForMediaQueries.get(projectCodeItem.getMediaQueryId());
+
+        if (listSelectors == null){
+            return null;
+
+        }
+
+        for (Map.Entry<String, CssSelectorCodeItem> el: listSelectors.entrySet()){
+            CssSelectorCodeItem selectorCodeItem = el.getValue();
+
+            if (selectorCodeItem.isOwnerTag()) {
+                return selectorCodeItem;
+            }
+        }
+
         return null;
     }
 }

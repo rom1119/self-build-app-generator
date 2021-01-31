@@ -29,7 +29,7 @@ public class MediaQuery implements Serializable {
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     @Column(name = "id", unique = true)
-    @JsonView({PropertyAccess.List.class, PropertyAccess.Details.class})
+    @JsonView({PropertyAccess.List.class, PropertyAccess.Details.class, PropertyAccess.HtmlTagDetails.class})
     private Long id;
 
     @NotEmpty()
@@ -63,8 +63,7 @@ public class MediaQuery implements Serializable {
     @Valid
     @OneToMany(mappedBy = "mediaQuery", cascade = CascadeType.ALL,
             fetch = FetchType.LAZY, orphanRemoval = true)
-    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
-    @JsonView(PropertyAccess.Details.class)
+    @JsonIgnore()
     @Cascade(org.hibernate.annotations.CascadeType.ALL)
     protected List<CssStyle> cssStyleList;
 
@@ -94,11 +93,7 @@ public class MediaQuery implements Serializable {
     private String generateBaseValue() throws Exception {
         StringBuilder stringBuilder = new StringBuilder();
 
-
-
-
-
-        return stringBuilder.toString();
+        return buildFromMultipleValue();
 
     }
 
@@ -111,8 +106,16 @@ public class MediaQuery implements Serializable {
                 stringBuilder.append("inset ");
 
             }
+
+            if (cssValue.getUnitNameSixth() != null && !cssValue.getUnitNameSixth().isEmpty()) {
+                BaseUnit unit = getUnitFromNameAndValue(cssValue.getUnitNameSixth(), cssValue.getValueSixth());
+                stringBuilder.append(unit.getValue());
+                stringBuilder.append(" ");
+            }
+
             BaseUnit firstUnit = getUnitFromNameAndValue(cssValue.getUnitName(), cssValue.getValue());
             stringBuilder.append(firstUnit.getValue());
+
 
             if (cssValue.getUnitNameSecond() != null && !cssValue.getUnitNameThird().isEmpty()) {
                 BaseUnit unit = getUnitFromNameAndValue(cssValue.getUnitNameSecond(), cssValue.getValueSecond());
@@ -124,19 +127,24 @@ public class MediaQuery implements Serializable {
                 BaseUnit unit = getUnitFromNameAndValue(cssValue.getUnitNameThird(), cssValue.getValueThird());
                 stringBuilder.append(" ");
                 stringBuilder.append(unit.getValue());
+
             }
 
             if (cssValue.getUnitNameFourth() != null && !cssValue.getUnitNameFourth().isEmpty()) {
                 BaseUnit unit = getUnitFromNameAndValue(cssValue.getUnitNameFourth(), cssValue.getValueFourth());
-                stringBuilder.append(" ");
+                stringBuilder.append(" (");
                 stringBuilder.append(unit.getValue());
             }
 
             if (cssValue.getUnitNameFifth() != null && !cssValue.getUnitNameFifth().isEmpty()) {
                 BaseUnit unit = getUnitFromNameAndValue(cssValue.getUnitNameFifth(), cssValue.getValueFifth());
+                stringBuilder.append(": ");
                 stringBuilder.append(" ");
                 stringBuilder.append(unit.getValue());
+                stringBuilder.append(" )");
             }
+
+
 
 
             i++;

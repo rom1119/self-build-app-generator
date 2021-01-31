@@ -22,12 +22,12 @@ import java.util.Map;
 @NamedNativeQuery(name = "HtmlTag.findMainHtmlTagsForProject", query = "SELECT * FROM html_node WHERE parent_id is null and project_id = ?;", resultClass = HtmlNode.class)
 public class HtmlTag extends HtmlNode {
 
-    @JsonView(PropertyAccess.Details.class)
+    @JsonView(PropertyAccess.HtmlTagDetails.class)
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     @NotNull
     protected String tagName;
 
-    @JsonView(PropertyAccess.Details.class)
+    @JsonView(PropertyAccess.HtmlTagDetails.class)
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     @Convert(converter = HtmlAttrConverter.class)
     protected Map<String, HtmlTagAttr> attrs;
@@ -36,7 +36,7 @@ public class HtmlTag extends HtmlNode {
     @OneToMany(mappedBy = "htmlTag", cascade = CascadeType.ALL,
             fetch = FetchType.EAGER, orphanRemoval = true)
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
-    @JsonView(PropertyAccess.Details.class)
+    @JsonView(PropertyAccess.HtmlTagDetails.class)
     @Cascade(org.hibernate.annotations.CascadeType.ALL)
     protected List<CssStyle> cssStyleList;
 
@@ -44,7 +44,7 @@ public class HtmlTag extends HtmlNode {
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL,
             fetch = FetchType.EAGER, orphanRemoval = true)
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
-    @JsonView(PropertyAccess.Details.class)
+    @JsonView(PropertyAccess.HtmlTagDetails.class)
     @Cascade(org.hibernate.annotations.CascadeType.ALL)
     protected List<PseudoSelector> pseudoSelectors;
 
@@ -54,7 +54,7 @@ public class HtmlTag extends HtmlNode {
     @OrderBy("orderNumber")
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "className")
-    @JsonView(PropertyAccess.Details.class)
+    @JsonView(PropertyAccess.HtmlTagDetails.class)
     @Cascade(org.hibernate.annotations.CascadeType.ALL)
     protected List<HtmlNode> children;
 

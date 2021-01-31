@@ -108,6 +108,11 @@ public class CssSelectorCodeItem implements CodeGeneratedItem {
         return selector;
     }
 
+    public String getSelectorForHtmlClass() {
+//        return CssSelectorCodeItem.SELECTOR_PREFIX + Integer.toHexString(hashCode());
+        return CssSelectorCodeItem.SELECTOR_PREFIX + selector;
+    }
+
     public String getPseudoClass() {
         return pseudoClass;
     }

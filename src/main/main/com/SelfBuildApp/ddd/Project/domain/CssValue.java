@@ -66,6 +66,10 @@ public class CssValue implements Serializable {
 
     @JsonView({PropertyAccess.List.class, PropertyAccess.Details.class})
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
+    private String unitNameSixth;
+
+    @JsonView({PropertyAccess.List.class, PropertyAccess.Details.class})
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     private String value;
 
     @JsonView({PropertyAccess.List.class, PropertyAccess.Details.class})
@@ -83,6 +87,10 @@ public class CssValue implements Serializable {
     @JsonView({PropertyAccess.List.class, PropertyAccess.Details.class})
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     private String valueFifth;
+
+    @JsonView({PropertyAccess.List.class, PropertyAccess.Details.class})
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
+    private String valueSixth;
 
 //    @JsonIgnore()
 //    private String resourceFilename;
@@ -174,6 +182,7 @@ public class CssValue implements Serializable {
         result = 7 * result + (getValueThird() != null ? getValueThird().trim().hashCode() : 0);
         result = 9 * result + (getValueFourth() != null ? getValueFourth().trim().hashCode() : 0);
         result = 10 * result + (getValueFifth() != null ? getValueFifth().trim().hashCode() : 0);
+        result = 15 * result + (getValueSixth() != null ? getValueSixth().trim().hashCode() : 0);
         return result;
     }
     @PreUpdate
@@ -389,4 +398,19 @@ public class CssValue implements Serializable {
         return ValueGenerator.getUnitFromNameAndValue(name, value);
     }
 
+    public String getUnitNameSixth() {
+        return unitNameSixth;
+    }
+
+    public void setUnitNameSixth(String unitNameSixth) {
+        this.unitNameSixth = unitNameSixth;
+    }
+
+    public String getValueSixth() {
+        return valueSixth;
+    }
+
+    public void setValueSixth(String valueSixth) {
+        this.valueSixth = valueSixth;
+    }
 }

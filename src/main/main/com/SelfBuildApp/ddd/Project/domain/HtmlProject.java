@@ -28,6 +28,7 @@ public class HtmlProject extends Project<HtmlNode> implements Serializable {
     @Fetch(FetchMode.SELECT)
     @OrderBy("orderNumber")
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @JsonView({PropertyAccess.HtmlTagDetails.class})
     protected Set<HtmlNode> items;
 
     @Valid

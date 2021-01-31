@@ -96,7 +96,7 @@ public class CssStyle implements Serializable, FileInterface {
     @OneToMany(mappedBy = "cssStyle", cascade = CascadeType.ALL,
             fetch = FetchType.EAGER, orphanRemoval = true)
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
-    @JsonView(PropertyAccess.Details.class)
+    @JsonView({PropertyAccess.HtmlTagDetails.class, PropertyAccess.Details.class})
     @Cascade(org.hibernate.annotations.CascadeType.ALL)
     protected List<CssValue> cssValues;
 
@@ -104,7 +104,7 @@ public class CssStyle implements Serializable, FileInterface {
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL,
             fetch = FetchType.EAGER, orphanRemoval = true)
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
-    @JsonView(PropertyAccess.Details.class)
+    @JsonView({PropertyAccess.HtmlTagDetails.class, PropertyAccess.Details.class})
     @Cascade(org.hibernate.annotations.CascadeType.ALL)
     protected List<CssStyle> children;
 
@@ -130,9 +130,10 @@ public class CssStyle implements Serializable, FileInterface {
     @JsonIgnore()
     private PseudoSelector pseudoSelector;
 
-    @ManyToOne( fetch = FetchType.LAZY)
+    @ManyToOne()
     @JoinColumn(name = "media_query_id")
-    @JsonIgnore()
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
+    @JsonView({PropertyAccess.HtmlTagDetails.class, PropertyAccess.Details.class})
     private MediaQuery mediaQuery;
 
     public CssStyle() {
@@ -446,6 +447,8 @@ public class CssStyle implements Serializable, FileInterface {
 
         if (isMultipleValue()) {
             stringBuilder.append(buildFromMultipleValue()) ;
+            return stringBuilder.toString();
+
         }
 
         if (getUnitName() != null && !getUnitName().isEmpty()) {

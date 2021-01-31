@@ -13,7 +13,8 @@ public interface PseudoSelectorRepository extends JpaRepository<PseudoSelector, 
 
     @Query(value = "SELECT * FROM pseudo_selector p" +
             " JOIN html_node ON p.html_tag_id=html_node.id" +
-            " WHERE html_node.project_id = ?;",
+            " JOIN css_style css ON p.id=css.pseudo_selector_id" +
+            " WHERE html_node.project_id = ? AND css.media_query_id IS NULL;",
             nativeQuery = true)
     public List<PseudoSelector> findAllForProjectId(String projectId);
 //

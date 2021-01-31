@@ -11,6 +11,7 @@ public class HtmlProjectCodeItem extends HtmlNodeCodeItem implements CodeGenerat
 
     protected HtmlProject htmlProject;
     private List<HtmlNodeCodeItem> children;
+    protected String headStyles;
 //    protected List<String> classList;
 
 
@@ -18,6 +19,10 @@ public class HtmlProjectCodeItem extends HtmlNodeCodeItem implements CodeGenerat
         this.htmlProject = tag;
 //        classList = new ArrayList<>();
         children = new ArrayList<>();
+    }
+
+    public void setHeadStyles(String headStyles) {
+        this.headStyles = headStyles;
     }
 
     public void addChild(HtmlNodeCodeItem item)
@@ -70,8 +75,19 @@ public class HtmlProjectCodeItem extends HtmlNodeCodeItem implements CodeGenerat
         res.append("<head>")
                 .append("<title>")
                     .append(this.htmlProject.getName())
-                .append("</title>")
-            .append("</head>");
+                .append("</title>");
+
+        if (headStyles != null) {
+            appendSectionStyle(res);
+        }
+        res.append("</head>");
+    }
+
+    private void appendSectionStyle(StringBuilder res)
+    {
+        res.append("<style>")
+                .append(this.headStyles)
+            .append("</style>");
     }
 
 }

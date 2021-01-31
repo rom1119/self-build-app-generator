@@ -58,7 +58,7 @@ public class HtmlProjectController {
 
 //    @PreAuthorize("hasRole('SUPER_ADMIN')")
     @GetMapping("/{id}")
-    @JsonView(PropertyAccess.Details.class)
+    @JsonView( PropertyAccess.HtmlTagDetails.class)
     public HtmlProject getOne(@PathVariable String id, Authentication auth) {
         Optional<HtmlProject> load = Optional.ofNullable(repository.load(id));
         load.orElseThrow(() -> new ResourceNotFoundException("Not found"));
@@ -89,6 +89,7 @@ public class HtmlProjectController {
     }
 
     @PostMapping("/{id}/append-tag")
+    @JsonView(PropertyAccess.HtmlTagDetails.class)
     public ResponseEntity addTag(@PathVariable String id,
                                  @RequestBody @Validated() HtmlTag htmlTag,
                                  BindingResult bindingResult

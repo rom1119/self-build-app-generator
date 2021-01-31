@@ -15,14 +15,14 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-public class HtmlProjectCodeGenerator implements CodeGenerator<HtmlProject> {
+public class InlineStyleHtmlProjectCodeGenerator implements CodeGenerator<HtmlProject> {
 
     @Autowired
-    private HtmlTagCodeGenerator tagGenerator;
+    private HtmlTagInlineStyleCodeGenerator tagGenerator;
 
 
     @Autowired
-    private TextNodeCodeGenerator textGenerator;
+    private CodeGenerator<TextNode> textGenerator;
 
     @Autowired
     private HtmlTagRepository htmlTagRepository;
@@ -31,6 +31,7 @@ public class HtmlProjectCodeGenerator implements CodeGenerator<HtmlProject> {
     public CodeGeneratedItem generate(HtmlProject arg) {
 
         HtmlProjectCodeItem htmlProjectCodeItem = new HtmlProjectCodeItem(arg);
+
         List<HtmlTag> mainHtmlTagsForProject = htmlTagRepository.findMainHtmlTagsForProject(arg.getId());
 
 

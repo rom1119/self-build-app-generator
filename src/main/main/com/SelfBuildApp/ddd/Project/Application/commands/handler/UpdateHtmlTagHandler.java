@@ -4,14 +4,8 @@ import com.SelfBuildApp.Storage.PathFileManager;
 import com.SelfBuildApp.cqrs.annotation.CommandHandlerAnnotation;
 import com.SelfBuildApp.cqrs.command.handler.CommandHandler;
 import com.SelfBuildApp.ddd.Project.Application.commands.UpdateHtmlTagCommand;
-import com.SelfBuildApp.ddd.Project.domain.CssStyle;
-import com.SelfBuildApp.ddd.Project.domain.CssValue;
-import com.SelfBuildApp.ddd.Project.domain.HtmlTag;
-import com.SelfBuildApp.ddd.Project.domain.PseudoSelector;
-import com.SelfBuildApp.ddd.Support.infrastructure.repository.CssStyleRepository;
-import com.SelfBuildApp.ddd.Support.infrastructure.repository.CssValueRepository;
-import com.SelfBuildApp.ddd.Support.infrastructure.repository.HtmlProjectRepository;
-import com.SelfBuildApp.ddd.Support.infrastructure.repository.HtmlTagRepository;
+import com.SelfBuildApp.ddd.Project.domain.*;
+import com.SelfBuildApp.ddd.Support.infrastructure.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.transaction.Transactional;
@@ -29,6 +23,9 @@ public class UpdateHtmlTagHandler implements CommandHandler<UpdateHtmlTagCommand
 
     @Autowired
     private CssStyleRepository cssStyleRepository;
+
+    @Autowired
+    private MediaQueryRepository mediaQueryRepository;
 
     @Autowired
     private CssValueRepository cssValueRepository;
@@ -165,6 +162,11 @@ public class UpdateHtmlTagHandler implements CommandHandler<UpdateHtmlTagCommand
                 DbENtity.addCssStyle(css);
                 css.setHtmlTag(DbENtity);
 
+                if (css.getMediaQuery() != null) {
+                    MediaQuery med = mediaQueryRepository.getOne(css.getMediaQuery().getId());
+                    css.setMediaQuery(med);
+                }
+
                 for (CssStyle child : css.getChildren()) {
                     child.setParent(css);
                     for (CssValue cssValChild : child.getCssValues()) {
@@ -193,6 +195,11 @@ public class UpdateHtmlTagHandler implements CommandHandler<UpdateHtmlTagCommand
     @Transactional
     private CssStyle createCssStyle(CssStyle css, HtmlTag DbENtity)
     {
+
+        if (css.getMediaQuery() != null) {
+            MediaQuery med = mediaQueryRepository.getOne(css.getMediaQuery().getId());
+            css.setMediaQuery(med);
+        }
         css.setHtmlTag(DbENtity);
         DbENtity.addCssStyle(css);
         cssStyleRepository.save(css);
@@ -203,6 +210,11 @@ public class UpdateHtmlTagHandler implements CommandHandler<UpdateHtmlTagCommand
     @Transactional
     private CssStyle createCssStyleForChildren(CssStyle css, CssStyle DbENtity)
     {
+
+        if (css.getMediaQuery() != null) {
+            MediaQuery med = mediaQueryRepository.getOne(css.getMediaQuery().getId());
+            css.setMediaQuery(med);
+        }
         css.setParent(DbENtity);
         DbENtity.addChild(css);
         cssStyleRepository.save(css);
@@ -330,6 +342,12 @@ public class UpdateHtmlTagHandler implements CommandHandler<UpdateHtmlTagCommand
             } else {
                 DbENtity.addChild(css);
                 css.setParent(DbENtity);
+
+                if (css.getMediaQuery() != null) {
+                    MediaQuery med = mediaQueryRepository.getOne(css.getMediaQuery().getId());
+                    css.setMediaQuery(med);
+                }
+
                 for (CssValue cssVal : css.getCssValues()) {
 
                     if (cssVal.getId() != null && cssVal.getId() > 0) {

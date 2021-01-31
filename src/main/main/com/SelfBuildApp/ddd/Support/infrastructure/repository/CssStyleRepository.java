@@ -15,9 +15,18 @@ public interface CssStyleRepository extends JpaRepository<CssStyle, Long> {
     @Query(value = "SELECT * FROM css_style " +
             " JOIN html_node as node ON css_style.html_tag_id=node.id" +
             " JOIN html_project ON node.project_id=html_project.id" +
-            " WHERE node.project_id = ?;",
+            " WHERE node.project_id = ? AND css_style.media_query_id IS NULL;",
             nativeQuery = true)
     public List<CssStyle> findAllForProjectId(String projectId);
+
+    @Query(value = "SELECT * FROM css_style " +
+            " LEFT JOIN html_node as node ON css_style.html_tag_id=node.id" +
+            " LEFT JOIN pseudo_selector as selector ON css_style.pseudo_selector_id=selector.id" +
+            " LEFT JOIN html_node as selectorNode ON selector.html_tag_id=selectorNode.id" +
+            " WHERE (node.project_id = ?1 OR selectorNode.project_id = ?1)" +
+            " AND css_style.media_query_id IS NOT NULL;",
+            nativeQuery = true)
+    public List<CssStyle> findAllForProjectIdWhereHasMediaQuery(String projectId);
 
     @Query(value = "SELECT * FROM css_style  " +
             " JOIN html_node as node ON css_style.html_tag_id=node.id" +

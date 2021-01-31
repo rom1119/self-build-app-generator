@@ -75,7 +75,7 @@ public class SimpleCssStyleCodeGenerator implements CodeGenerator<HtmlProject> {
                 duplicateCssPropertyInSelector.printStackTrace();
             }
 
-            projectCodeItem.addChild(cssSelectorCodeItem);
+            projectCodeItem.addSelector(cssSelectorCodeItem);
 
         }
 

@@ -4,10 +4,7 @@ import com.SelfBuildApp.Storage.PathFileManager;
 import com.SelfBuildApp.cqrs.annotation.CommandHandlerAnnotation;
 import com.SelfBuildApp.cqrs.command.handler.CommandHandler;
 import com.SelfBuildApp.ddd.Project.Application.commands.UpdatePseudoSelectorCommand;
-import com.SelfBuildApp.ddd.Project.domain.CssStyle;
-import com.SelfBuildApp.ddd.Project.domain.CssValue;
-import com.SelfBuildApp.ddd.Project.domain.HtmlTag;
-import com.SelfBuildApp.ddd.Project.domain.PseudoSelector;
+import com.SelfBuildApp.ddd.Project.domain.*;
 import com.SelfBuildApp.ddd.Support.infrastructure.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -32,6 +29,9 @@ public class UpdatePseudoSelectorHandler implements CommandHandler<UpdatePseudoS
 
     @Autowired
     private PathFileManager pathFileManager;
+
+    @Autowired
+    private MediaQueryRepository mediaQueryRepository;
 
     @Override
     @Transactional
@@ -159,6 +159,11 @@ public class UpdatePseudoSelectorHandler implements CommandHandler<UpdatePseudoS
                 DbENtity.addCssStyle(css);
                 css.setPseudoSelector(DbENtity);
 
+                if (css.getMediaQuery() != null) {
+                    MediaQuery med = mediaQueryRepository.getOne(css.getMediaQuery().getId());
+                    css.setMediaQuery(med);
+                }
+
                 for (CssStyle child : css.getChildren()) {
                     child.setParent(css);
                     for (CssValue cssValChild : child.getCssValues()) {
@@ -188,6 +193,10 @@ public class UpdatePseudoSelectorHandler implements CommandHandler<UpdatePseudoS
     @Transactional
     private CssStyle createCssStyle(CssStyle css, PseudoSelector DbENtity)
     {
+        if (css.getMediaQuery() != null) {
+            MediaQuery med = mediaQueryRepository.getOne(css.getMediaQuery().getId());
+            css.setMediaQuery(med);
+        }
         css.setPseudoSelector(DbENtity);
         DbENtity.addCssStyle(css);
         cssStyleRepository.save(css);
@@ -198,6 +207,10 @@ public class UpdatePseudoSelectorHandler implements CommandHandler<UpdatePseudoS
     @Transactional
     private CssStyle createCssStyleForChildren(CssStyle css, CssStyle DbENtity)
     {
+        if (css.getMediaQuery() != null) {
+            MediaQuery med = mediaQueryRepository.getOne(css.getMediaQuery().getId());
+            css.setMediaQuery(med);
+        }
         css.setParent(DbENtity);
         DbENtity.addChild(css);
         cssStyleRepository.save(css);
@@ -325,6 +338,12 @@ public class UpdatePseudoSelectorHandler implements CommandHandler<UpdatePseudoS
             } else {
                 DbENtity.addChild(css);
                 css.setParent(DbENtity);
+
+                if (css.getMediaQuery() != null) {
+                    MediaQuery med = mediaQueryRepository.getOne(css.getMediaQuery().getId());
+                    css.setMediaQuery(med);
+                }
+
                 for (CssValue cssVal : css.getCssValues()) {
                     if (cssVal.getId() != null && cssVal.getId() > 0) {
                         CssValue dbCssVal = cssValueRepository.getOne(cssVal.getId());

@@ -1,29 +1,49 @@
 package com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Css.item;
 
 import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.CodeGeneratedItem;
-import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Exception.DuplicateCssPropertyInSelector;
-import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Html.item.HtmlNodeCodeItem;
 import com.SelfBuildApp.ddd.Project.domain.HtmlProject;
-import org.apache.commons.codec.binary.Hex;
 
 import java.util.*;
 
 public class CssProjectCodeItem implements CodeGeneratedItem {
 
     protected HtmlProject htmlProject;
-    private Map<String, CssSelectorCodeItem> children;
+    private Map<String, CssSelectorCodeItem> cssSelectors;
+    private Map<Long, MediaQueryCodeItem> mediaQueries;
 
     public CssProjectCodeItem(HtmlProject htmlProject) {
         this.htmlProject = htmlProject;
-        this.children = new HashMap<>();
+        this.cssSelectors = new HashMap<>();
+        this.mediaQueries = new HashMap<>();
     }
 
-    public void addChild(CssSelectorCodeItem item)
+    public String getProjectId()
+    {
+        return htmlProject.getId();
+    }
+
+    public void addMediaQuery(MediaQueryCodeItem item)
+    {
+        mediaQueries.put(item.mediaQuery.getId(), item);
+    }
+
+    public MediaQueryCodeItem getMediaQuery(Long key)
+    {
+        return mediaQueries.get(key);
+    }
+
+    public Map<Long, MediaQueryCodeItem> getMediaQueries()
+    {
+        return mediaQueries;
+    }
+
+
+    public void addSelector(CssSelectorCodeItem item)
     {
         System.out.println("add-chi");
-        System.out.println(children.size());
-        children.put(item.getSelectorClass(), item);
-        System.out.println(children.size());
+        System.out.println(cssSelectors.size());
+        cssSelectors.put(item.getSelectorClass(), item);
+        System.out.println(cssSelectors.size());
         System.out.println("end-add-chi");
     }
 
@@ -36,11 +56,16 @@ public class CssProjectCodeItem implements CodeGeneratedItem {
 //        this.appendSectionHead(res);
 //        this.openBody(res);
 
-        for (Map.Entry<String, CssSelectorCodeItem> node : this.children.entrySet()) {
+        for (Map.Entry<String, CssSelectorCodeItem> node : this.cssSelectors.entrySet()) {
             CssSelectorCodeItem value = node.getValue();
             res
                 .append(value.getContent());
-//                .append("\n");
+        }
+
+        for (Map.Entry<Long, MediaQueryCodeItem> node : this.mediaQueries.entrySet()) {
+            MediaQueryCodeItem value = node.getValue();
+            res
+                .append(value.getContent());
         }
 
 //        this.closeBodyWithHtml(res);
@@ -51,7 +76,7 @@ public class CssProjectCodeItem implements CodeGeneratedItem {
     public CssSelectorCodeItem getSelectorByHexString(String key) throws Exception {
         long s = Long.parseLong(key, 16);
 
-        for (Map.Entry<String, CssSelectorCodeItem> node : this.children.entrySet()) {
+        for (Map.Entry<String, CssSelectorCodeItem> node : this.cssSelectors.entrySet()) {
             CssSelectorCodeItem selector = node.getValue();
             System.out.println(selector.hashCode());
             System.out.println(key);
@@ -68,7 +93,7 @@ public class CssProjectCodeItem implements CodeGeneratedItem {
     public void removeSelector(CssSelectorCodeItem selectorCodeItem)
     {
 //        if (children.containsKey(selectorCodeItem.getSelectorClass())) {
-            children.remove(selectorCodeItem.getSelectorClass());
+            cssSelectors.remove(selectorCodeItem.getSelectorClass());
             System.out.println("remove selector");
 //        }
 
@@ -76,25 +101,22 @@ public class CssProjectCodeItem implements CodeGeneratedItem {
 
     public boolean hasOneSelector() {
 
-        return children.size() == 1;
+        return cssSelectors.size() == 1;
     }
     public CssSelectorCodeItem getFirstSelector() {
-        if (children.entrySet().iterator().hasNext()) {
-            return children.entrySet().iterator().next().getValue();
+        if (cssSelectors.entrySet().iterator().hasNext()) {
+            return cssSelectors.entrySet().iterator().next().getValue();
         }
         return null;
     }
 
     public void updateSelectorWithKey(String oldSelectorKey, CssSelectorCodeItem selector2) {
-        System.out.println("remove");
-        System.out.println(oldSelectorKey);
-        System.out.println(selector2.getSelector());
-        System.out.println(children.size());
-        children.remove(oldSelectorKey);
-        System.out.println(children.size());
-        addChild(selector2);
-        System.out.println(children.size());
-        System.out.println("end-remove");
+
+        cssSelectors.remove(oldSelectorKey);
+//        System.out.println(children.size());
+        addSelector(selector2);
+//        System.out.println(children.size());
+//        System.out.println("end-remove");
     }
 
 //    public boolean hasSelector(CssSelectorCodeItem selector) {

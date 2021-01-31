@@ -58,11 +58,13 @@ public class UpdateMediaQueryHandler implements CommandHandler<UpdateMediaQueryC
                     dbCssVal.setValueThird(cssVal.getValueThird());
                     dbCssVal.setValueFourth(cssVal.getValueFourth());
                     dbCssVal.setValueFifth(cssVal.getValueFifth());
+                    dbCssVal.setValueSixth(cssVal.getValueSixth());
                     dbCssVal.setUnitName(cssVal.getUnitName());
                     dbCssVal.setUnitNameSecond(cssVal.getUnitNameSecond());
                     dbCssVal.setUnitNameThird(cssVal.getUnitNameThird());
                     dbCssVal.setUnitNameFourth(cssVal.getUnitNameFourth());
                     dbCssVal.setUnitNameFifth(cssVal.getUnitNameFifth());
+                    dbCssVal.setUnitNameSixth(cssVal.getUnitNameSixth());
                 }
             }
 

@@ -8,10 +8,12 @@ import com.SelfBuildApp.ddd.Project.domain.HtmlNode;
 import com.SelfBuildApp.ddd.Project.domain.HtmlTag;
 import com.SelfBuildApp.ddd.Project.domain.PseudoSelector;
 import com.SelfBuildApp.ddd.Project.domain.TextNode;
+import com.SelfBuildApp.ddd.Support.infrastructure.PropertyAccess;
 import com.SelfBuildApp.ddd.Support.infrastructure.repository.HtmlTagRepository;
 import com.SelfBuildApp.ddd.Support.infrastructure.repository.TextNodeRepository;
 import com.SelfBuildApp.infrastructure.User.exception.ApiError;
 import com.SelfBuildApp.infrastructure.User.exception.ResourceNotFoundException;
+import com.fasterxml.jackson.annotation.JsonView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -50,6 +52,7 @@ public class HtmlTagController {
 
 //    @PreAuthorize("hasRole('SUPER_ADMIN')")
     @GetMapping("/{id}")
+    @JsonView(PropertyAccess.HtmlTagDetails.class)
     public HtmlTag getOne(@PathVariable String id, Authentication auth) {
         Optional<HtmlTag> load = Optional.ofNullable(repository.load(id));
         load.orElseThrow(() -> new ResourceNotFoundException("Not found"));
@@ -61,6 +64,7 @@ public class HtmlTagController {
     }
 
     @PutMapping("/text/{id}")
+    @JsonView(PropertyAccess.HtmlTagDetails.class)
     public ResponseEntity updateTextNode(@PathVariable String id,
                                          @RequestBody @Validated() TextNode textNode,
                                          BindingResult bindingResult
@@ -80,6 +84,7 @@ public class HtmlTagController {
     }
 
     @PutMapping("/{id}")
+    @JsonView(PropertyAccess.HtmlTagDetails.class)
     public ResponseEntity update(@PathVariable String id,
                                  @RequestBody @Validated() HtmlTag htmlTag,
                                  BindingResult bindingResult
@@ -99,6 +104,7 @@ public class HtmlTagController {
     }
 
     @PostMapping("/{id}/append-text")
+    @JsonView(PropertyAccess.HtmlTagDetails.class)
     public ResponseEntity addText(@PathVariable String id,
                                    @RequestBody @Validated() TextNode textNode,
                                    BindingResult bindingResult
@@ -119,6 +125,7 @@ public class HtmlTagController {
 
 
     @PostMapping("/{id}/append-tag")
+    @JsonView(PropertyAccess.HtmlTagDetails.class)
     public ResponseEntity addChild(@PathVariable String id,
                                  @RequestBody @Validated() HtmlTag htmlTag,
                                  BindingResult bindingResult
@@ -157,6 +164,7 @@ public class HtmlTagController {
     }
 
     @PostMapping("/{id}/resource")
+    @JsonView(PropertyAccess.HtmlTagDetails.class)
     public ResponseEntity updateResource(@PathVariable String id,
                              @RequestParam("file") MultipartFile file,
                              @RequestBody @Validated() HtmlTag htmlTag,
@@ -178,6 +186,7 @@ public class HtmlTagController {
 
     @DeleteMapping("/{id}")
     @Transactional
+    @JsonView(PropertyAccess.HtmlTagDetails.class)
     public ResponseEntity delete(@PathVariable String id)
     {
         HtmlNode entity = Optional.ofNullable(this.entityManager.find(HtmlNode.class, id))

@@ -4,7 +4,6 @@ import com.SelfBuildApp.Storage.PathFileManager;
 import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.CodeGeneratedItem;
 import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.CodeGenerator;
 import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Css.impl.MediaQueryGenerator;
-import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Css.item.MediaQueryCodeItem;
 import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Css.item.CssProjectCodeItem;
 import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Css.item.CssPropertyCodeItem;
 import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Css.item.CssSelectorCodeItem;
@@ -29,7 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 @Component
-public class AdvanceCssStyleCodeGenerator implements CodeGenerator<HtmlProject> {
+public class ForInlineCssStyleCodeGenerator implements CodeGenerator<HtmlProject> {
 
     @Autowired
     private HtmlTagRepository htmlTagRepository;
@@ -60,20 +59,20 @@ public class AdvanceCssStyleCodeGenerator implements CodeGenerator<HtmlProject> 
 
         CssProjectCodeItem projectCodeItem = new CssProjectCodeItem(arg);
 
-        List<CssStyle> allForProjectId = cssStyleRepository.findAllForProjectId(arg.getId());
-
-        Map<String, List<HtmlTag>> uniqueStyles = uniqueStyles(allForProjectId);
-        this.addStylesToProject(projectCodeItem, uniqueStyles);
-
-
-        List<PseudoSelector> allPseudoSelectors = pseudoSelectorRepository.findAllForProjectId(projectCodeItem.getProjectId());
-
-        for (PseudoSelector pseudoSelector : allPseudoSelectors) {
-
-            CssSelectorCodeItem selectorCodeItem = addPseudoSelectorToProject(pseudoSelector);
-            projectCodeItem.addSelector(selectorCodeItem);
-
-        }
+//        List<CssStyle> allForProjectId = cssStyleRepository.findAllForProjectId(arg.getId());
+//
+//        Map<String, List<HtmlTag>> uniqueStyles = uniqueStyles(allForProjectId);
+//        this.addStylesToProject(projectCodeItem, uniqueStyles);
+//
+//
+//        List<PseudoSelector> allPseudoSelectors = pseudoSelectorRepository.findAllForProjectId(projectCodeItem.getProjectId());
+//
+//        for (PseudoSelector pseudoSelector : allPseudoSelectors) {
+//
+//            CssSelectorCodeItem selectorCodeItem = addPseudoSelectorToProject(pseudoSelector);
+//            projectCodeItem.addSelector(selectorCodeItem);
+//
+//        }
 
         mediaQueryGenerator.setTagsCodeItem(tagsCodeItem);
 
