@@ -8,7 +8,6 @@ import com.SelfBuildApp.ddd.Project.domain.Unit.Size.Percent;
 import com.SelfBuildApp.ddd.Project.domain.Unit.Size.Pixel;
 import com.SelfBuildApp.ddd.Project.domain.Unit.Size.REM;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.Map;
 
@@ -93,6 +92,6 @@ public abstract class ValueGenerator {
             case TurnUnit.NAME:
                 return TurnUnit.NAME;
         }
-        throw new NotImplementedException();
+            return null;
     }
 }

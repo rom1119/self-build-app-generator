@@ -38,6 +38,13 @@ public class HtmlProjectData {
     @Autowired
     private HtmlNodeShortUUID shortUUID;
 
+    protected HtmlProject htmlProject;
+
+    protected HtmlTag div;
+
+    protected HtmlTag divChild;
+
+    protected HtmlNode text;
 
 //    @Autowired
 //    private PasswordEncoder passwordEncoder;
@@ -47,7 +54,6 @@ public class HtmlProjectData {
     }
 
 
-//    @Transactional
 //    @PostConstruct
     public void init() {
 
@@ -61,15 +67,41 @@ public class HtmlProjectData {
 ////            });
 //        }
 
-        HtmlProject htmlProject = new HtmlProject();
-        HtmlTag div = new HtmlTag();
-        HtmlNode text = new TextNode("example text asd");
+
+
+//        entityManager.flush();
+
+        firstStep();
+        secondStep();
+
+        alreadySetup = true;
+    }
+
+    @Transactional
+    protected void secondStep()
+    {
+        String generate = shortUUID.generateUnique(htmlProject.getId());
+        String generatetwo = shortUUID.generateUnique(htmlProject.getId());
+        String generatethree = shortUUID.generateUnique(htmlProject.getId());
+
+        div.setShortUuid(generate);
+        divChild.setShortUuid(generatetwo);
+        text.setShortUuid(generatethree);
+//        entityManager.flush();
+    }
+
+    @Transactional
+    protected void firstStep()
+    {
+        htmlProject = new HtmlProject();
+        div = new HtmlTag();
+        text = new TextNode("example text asd");
 
         text.setProject(htmlProject);
         htmlProject.appendChild(div);
         div.setProject(htmlProject);
         div.setTagName("div");
-        HtmlTag divChild = new HtmlTag();
+        divChild = new HtmlTag();
         divChild.setTagName("div");
         divChild.setProject(htmlProject);
         div.appendChild(divChild);
@@ -120,19 +152,6 @@ public class HtmlProjectData {
 //        cssStyleRepository.save(backgroundColor);
         projectRepository.save(htmlProject);
         tagRepository.save(div);
-
-        entityManager.flush();
-
-        String generate = shortUUID.generateUnique(htmlProject.getId());
-        String generatetwo = shortUUID.generateUnique(htmlProject.getId());
-        String generatethree = shortUUID.generateUnique(htmlProject.getId());
-
-        div.setShortUuid(generate);
-        divChild.setShortUuid(generatetwo);
-        text.setShortUuid(generatethree);
-        entityManager.flush();
-
-        alreadySetup = true;
     }
 
 
