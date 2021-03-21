@@ -19,23 +19,6 @@ import javax.validation.constraints.NotEmpty;
 import java.io.*;
 import java.util.Map;
 
-public class CssImage {
+public class CssImage extends DtoImage {
 
-    @Image(maxWidth = 10000, maxHeight = 10000, size = 30000)
-    private MultipartFile file;
-
-    public CssImage(MultipartFile file) {
-        this.file = file;
-    }
-
-    public CssImage() {
-    }
-
-    public MultipartFile getFile() {
-        return file;
-    }
-
-    public void setFile(MultipartFile file) {
-        this.file = file;
-    }
 }

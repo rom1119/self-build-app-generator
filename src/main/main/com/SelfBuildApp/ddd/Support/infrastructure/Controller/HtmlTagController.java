@@ -4,10 +4,7 @@ import com.SelfBuildApp.Storage.PathFileManager;
 import com.SelfBuildApp.cqrs.command.impl.StandardGate;
 import com.SelfBuildApp.ddd.CanonicalModel.AggregateId;
 import com.SelfBuildApp.ddd.Project.Application.commands.*;
-import com.SelfBuildApp.ddd.Project.domain.HtmlNode;
-import com.SelfBuildApp.ddd.Project.domain.HtmlTag;
-import com.SelfBuildApp.ddd.Project.domain.PseudoSelector;
-import com.SelfBuildApp.ddd.Project.domain.TextNode;
+import com.SelfBuildApp.ddd.Project.domain.*;
 import com.SelfBuildApp.ddd.Support.infrastructure.PropertyAccess;
 import com.SelfBuildApp.ddd.Support.infrastructure.repository.HtmlTagRepository;
 import com.SelfBuildApp.ddd.Support.infrastructure.repository.TextNodeRepository;
@@ -163,26 +160,7 @@ public class HtmlTagController {
         return ResponseEntity.ok(pseudoSelector);
     }
 
-    @PostMapping("/{id}/resource")
-    @JsonView(PropertyAccess.HtmlTagDetails.class)
-    public ResponseEntity updateResource(@PathVariable String id,
-                             @RequestParam("file") MultipartFile file,
-                             @RequestBody @Validated() HtmlTag htmlTag,
-                             BindingResult bindingResult
-    )
-    {
 
-        if (bindingResult.hasErrors()) {
-            return new ResponseEntity(new ApiError(HttpStatus.BAD_REQUEST, "Invalid data", bindingResult.getFieldErrors()), HttpStatus.BAD_REQUEST);
-        }
-        HtmlTag entity = Optional.ofNullable(repository.load(id))
-                .orElseThrow(() -> new ResourceNotFoundException("Not found"));
-
-        AppendChildToTagCommand command = new AppendChildToTagCommand(new AggregateId(id), htmlTag);
-        gate.dispatch(command);
-
-        return ResponseEntity.ok(htmlTag);
-    }
 
     @DeleteMapping("/{id}")
     @Transactional
@@ -197,6 +175,40 @@ public class HtmlTagController {
         this.entityManager.remove(entity);
 
         return ResponseEntity.ok(entity);
+    }
+
+    @PostMapping("/{id}/resource")
+    @Transactional
+    public ResponseEntity updateResource(@PathVariable String id,
+                                         @ModelAttribute @Validated() TagImage image,
+                                         BindingResult bindingResult
+    )
+    {
+
+        if (bindingResult.hasErrors()) {
+            return new ResponseEntity(new ApiError(HttpStatus.BAD_REQUEST, "Invalid data", bindingResult.getFieldErrors()), HttpStatus.BAD_REQUEST);
+        }
+        MultipartFile file = image.getFile();
+        HtmlTag entity = Optional.ofNullable(this.entityManager.find(HtmlTag.class, id))
+                .orElseThrow(() -> new ResourceNotFoundException("Not found"));
+
+        entity.setPathFileManager(pathFileManager);
+        entity.saveResource(file);
+
+        return ResponseEntity.ok(entity);
+    }
+
+    @DeleteMapping("/{id}/resource")
+    @Transactional
+    public ResponseEntity deleteResource(@PathVariable String id)
+    {
+        HtmlTag entity = Optional.ofNullable(this.entityManager.find(HtmlTag.class, id))
+                .orElseThrow(() -> new ResourceNotFoundException("Not found"));
+
+        entity.setPathFileManager(pathFileManager);
+        entity.deleteResource();
+
+        return ResponseEntity.ok("ok");
     }
 //
 //    @PutMapping( path = "/{id}")

@@ -7,12 +7,17 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonView;
+import org.apache.commons.io.FileUtils;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Type;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -61,6 +66,16 @@ public class HtmlTag extends HtmlNode {
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     @JsonView(PropertyAccess.Details.class)
     private boolean closingTag = true;
+
+    @JsonIgnore()
+    private String resourceFilename;
+
+    @JsonIgnore()
+    private String resourceFileExtension;
+
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
+    @JsonView(PropertyAccess.Details.class)
+    private String resourceUrl;
 
     public HtmlTag() {
         cssStyleList = new ArrayList<>();
@@ -167,6 +182,109 @@ public class HtmlTag extends HtmlNode {
         }
     }
 
+    public String UPLOAD_DIR() throws Exception {
+        StringBuilder dir = new StringBuilder();
+        if (getPathFileManager() == null) {
+            throw new Exception("pathFileManager is null");
+        }
+        dir.append(getPathFileManager().getBaseUploadDir());
+        dir.append("project/");
+        dir.append(getProjectId());
+
+        dir.append("/html_tag/");
+        dir.append(getId());
+        dir.append("/");
+
+        return dir.toString();
+    }
+
+    public String RESOURCE_DIR() throws Exception {
+        StringBuilder dir = new StringBuilder();
+        if (getPathFileManager() == null) {
+            throw new Exception("pathFileManager is null");
+        }
+        dir.append(getPathFileManager().getResourceUploadDir());
+        dir.append("project/");
+        dir.append(getProjectId());
+
+        dir.append("/html_tag/");
+        dir.append(getId());
+        dir.append("/");
+
+        return dir.toString();
+    }
+
+    public void deleteResource()
+    {
+        if (resourceFilename == null) {
+            return;
+        }
+        if (resourceFilename.isEmpty()) {
+            return;
+        }
+
+        String DIR = null;
+        try {
+            DIR = UPLOAD_DIR();
+            DIR = DIR.substring(0, DIR.length() - 1);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        System.out.println(DIR);
+        File targetFile = new File(DIR);
+        try {
+            FileUtils.deleteDirectory(targetFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        setResourceFileExtension(null);
+        setResourceFilename(null);
+    }
+
+    public void saveResource(MultipartFile file) {
+        String filename = Integer.toHexString(hashCode());;
+        String extension = file.getOriginalFilename().split("[.]")[1];
+
+        String DIR = null;
+        try {
+            DIR = UPLOAD_DIR();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        File directory = new File(DIR);
+        if (! directory.exists()){
+            directory.mkdirs();
+            // If you require it to make the entire directory path including parents,
+            // use directory.mkdirs(); here instead.
+        }
+
+        File targetFile = new File(DIR + filename  + "."  + extension);
+        try {
+            file.transferTo(targetFile);
+            setResourceFileExtension(extension);
+            setResourceFilename(filename);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @JsonView(PropertyAccess.Details.class)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    public String getResourcePath() throws Exception {
+        if (getResourceFilename() ==  null) {
+            return null;
+        }
+        if (getResourceFilename().isEmpty()) {
+            return null;
+        }
+//        System.out.println(RESOURCE_DIR());
+//        System.out.println(UPLOAD_DIR());
+        return RESOURCE_DIR() + getResourceFilename() + "." + getResourceFileExtension();
+    }
+
     public List<HtmlNode> getChildren() {
         return children;
     }
@@ -199,5 +317,29 @@ public class HtmlTag extends HtmlNode {
 
     public void setClosingTag(boolean closingTag) {
         this.closingTag = closingTag;
+    }
+
+    public String getResourceFilename() {
+        return resourceFilename;
+    }
+
+    public void setResourceFilename(String resourceFilename) {
+        this.resourceFilename = resourceFilename;
+    }
+
+    public String getResourceFileExtension() {
+        return resourceFileExtension;
+    }
+
+    public void setResourceFileExtension(String resourceFileExtension) {
+        this.resourceFileExtension = resourceFileExtension;
+    }
+
+    public String getResourceUrl() {
+        return resourceUrl;
+    }
+
+    public void setResourceUrl(String resourceUrl) {
+        this.resourceUrl = resourceUrl;
     }
 }
