@@ -67,6 +67,12 @@ public class HtmlTag extends HtmlNode {
     @JsonView(PropertyAccess.Details.class)
     private boolean closingTag = true;
 
+    @Lob
+    @Column(name="svg_content", length=512)
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
+    @JsonView(PropertyAccess.Details.class)
+    private String svgContent;
+
     @JsonIgnore()
     private String resourceFilename;
 
@@ -341,5 +347,13 @@ public class HtmlTag extends HtmlNode {
 
     public void setResourceUrl(String resourceUrl) {
         this.resourceUrl = resourceUrl;
+    }
+
+    public String getSvgContent() {
+        return svgContent;
+    }
+
+    public void setSvgContent(String svgContent) {
+        this.svgContent = svgContent;
     }
 }
