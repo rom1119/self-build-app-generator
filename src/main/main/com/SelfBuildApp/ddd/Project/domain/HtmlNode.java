@@ -104,4 +104,12 @@ public abstract class HtmlNode extends ProjectItem<HtmlProject> implements Seria
     public void setShortUuid(String shortUuid) {
         this.shortUuid = shortUuid;
     }
+
+    public Long getVersion() {
+        return version;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
+    }
 }

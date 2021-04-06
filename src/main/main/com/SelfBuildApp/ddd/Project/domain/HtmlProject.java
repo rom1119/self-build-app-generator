@@ -39,6 +39,21 @@ public class HtmlProject extends Project<HtmlNode> implements Serializable {
     @Cascade(org.hibernate.annotations.CascadeType.ALL)
     protected List<MediaQuery> mediaQueryList;
 
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
+    @JsonView(PropertyAccess.Details.class)
+    @Cascade(org.hibernate.annotations.CascadeType.ALL)
+    protected List<AssetProject> assets;
+
+
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
+    @JsonView(PropertyAccess.Details.class)
+    @Cascade(org.hibernate.annotations.CascadeType.ALL)
+    protected List<FontFace> fontFaceList;
+
 
     @Valid
     @OneToMany(mappedBy = "htmlProject", cascade = CascadeType.ALL,
@@ -56,6 +71,8 @@ public class HtmlProject extends Project<HtmlNode> implements Serializable {
         items = new HashSet<>();
         mediaQueryList = new ArrayList<>();
         keyFrameList = new ArrayList<>();
+        assets = new ArrayList<>();
+        fontFaceList = new ArrayList<>();
     }
 
     public void setPathFileManager(PathFileManager pathFileManager) {
@@ -164,5 +181,19 @@ public class HtmlProject extends Project<HtmlNode> implements Serializable {
         return this;
     }
 
+    public List<FontFace> getFontFaceList() {
+        return fontFaceList;
+    }
 
+    public void setFontFaceList(List<FontFace> fontFaceList) {
+        this.fontFaceList = fontFaceList;
+    }
+
+    public List<AssetProject> getAssets() {
+        return assets;
+    }
+
+    public void setAssets(List<AssetProject> assets) {
+        this.assets = assets;
+    }
 }

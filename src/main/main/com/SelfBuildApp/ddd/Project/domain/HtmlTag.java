@@ -248,7 +248,7 @@ public class HtmlTag extends HtmlNode {
     }
 
     public void saveResource(MultipartFile file) {
-        String filename = Integer.toHexString(hashCode());;
+        String filename = Integer.toHexString(hashCode());
         String extension = file.getOriginalFilename().split("[.]")[1];
 
         String DIR = null;
