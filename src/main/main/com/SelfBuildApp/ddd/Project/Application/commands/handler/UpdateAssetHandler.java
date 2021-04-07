@@ -30,6 +30,7 @@ public class UpdateAssetHandler implements CommandHandler<UpdateAssetCommand, As
 
         dbEntity.setPathFileManager(pathFileManager);
         dbEntity.setType(dto.getType());
+        dbEntity.setFormat(dto.getFormat());
         dbEntity.setResourceUrl(dto.getResourceUrl());
         if (dto.getFile() != null) {
             dbEntity.deleteResource();

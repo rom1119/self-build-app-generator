@@ -140,13 +140,13 @@ public class FontFaceController {
         entityAsset.setPathFileManager(pathFileManager);
         entityAsset.saveResource(file);
 
-        return ResponseEntity.ok(entity);
+        return ResponseEntity.ok(entityAsset);
     }
 
     @DeleteMapping("/{id}/resource/{assetId}")
     @Transactional
     public ResponseEntity deleteResource(@PathVariable String id, @PathVariable String assetId) throws Exception {
-        FontFace entity = Optional.ofNullable(this.entityManager.find(FontFace.class, Long.valueOf(assetId)))
+        FontFace entity = Optional.ofNullable(this.entityManager.find(FontFace.class, Long.valueOf(id)))
                 .orElseThrow(() -> new ResourceNotFoundException("Not found"));
 
         AssetProject entityAsset = Optional.ofNullable(this.entityManager.find(AssetProject.class, Long.valueOf(assetId)))

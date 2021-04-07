@@ -8,7 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 public class DtoFontFile {
 
-    @FileConstrain( size = 1000, extensions = {FileExtension.FONT_TTF, FileExtension.FONT_OTF, FileExtension.FONT_WOFF, FileExtension.FONT_WOFF2})
+    @FileConstrain( size = 10000, extensions = {FileExtension.FONT_TTF, FileExtension.FONT_OTF, FileExtension.FONT_WOFF, FileExtension.FONT_WOFF2})
     protected MultipartFile file;
 
     public DtoFontFile(MultipartFile file) {

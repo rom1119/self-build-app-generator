@@ -106,10 +106,10 @@ public class AssetProjectController {
     @JsonView(PropertyAccess.HtmlTagDetails.class)
     public ResponseEntity delete(@PathVariable String id)
     {
-        Optional<AssetProject> entity = Optional.ofNullable(repository.findById(Long.valueOf(id)))
+        Optional<AssetProject> opt = Optional.ofNullable(repository.findById(Long.valueOf(id)))
                 .orElseThrow(() -> new ResourceNotFoundException("Not found"));
-
-        entity.get().setPathFileManager(pathFileManager);
+        AssetProject entity = opt.get();
+        entity.setPathFileManager(pathFileManager);
 
         this.entityManager.remove(entity);
 

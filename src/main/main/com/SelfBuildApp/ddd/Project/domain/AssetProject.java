@@ -48,7 +48,8 @@ public class AssetProject extends DtoFontFile implements Serializable, FileInter
     @JsonIgnore()
     private String resourceFileExtension;
 
-    @JsonIgnore()
+    @JsonView(PropertyAccess.Details.class)
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     private String format;
 
     @Transient
@@ -80,12 +81,24 @@ public class AssetProject extends DtoFontFile implements Serializable, FileInter
         typesMap.put(4, "js");
     }
 
+    @PostRemove
+    public void postRemove() {
+        deleteResource();
+    }
 
     @JsonIgnore
     public PathFileManager getPathFileManager() {
         if (pathFileManager == null) {
             if (project != null) {
-                return project.getPathFileManager();
+                if (project.getPathFileManager() != null) {
+                    return project.getPathFileManager();
+
+                }
+
+            }
+
+            if (fontFace != null) {
+                return fontFace.getPathFileManager();
 
             }
         }
@@ -260,7 +273,7 @@ public class AssetProject extends DtoFontFile implements Serializable, FileInter
         if (project != null) {
             dir.append(project.getId());
         }
-        dir.append("/assets/");
+        dir.append("/assets/fonts/");
         dir.append(getNamedType());
         dir.append(getId());
         dir.append("/");
@@ -278,7 +291,7 @@ public class AssetProject extends DtoFontFile implements Serializable, FileInter
         if (project != null) {
             dir.append(project.getId());
         }
-        dir.append("/assets/");
+        dir.append("/assets/fonts/");
         dir.append(getNamedType());
         dir.append(getId());
         dir.append("/");

@@ -20,7 +20,7 @@ public class CreateFontFaceHandler implements CommandHandler<CreateFontFaceComma
     @Transactional
     public FontFace handle(CreateFontFaceCommand command) {
 
-        repository.save(command.getFontFace());
-        return command.getFontFace();
+        FontFace fontFace = repository.save(command.getFontFace());
+        return fontFace;
     }
 }
