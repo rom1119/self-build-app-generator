@@ -56,13 +56,13 @@ public class AssetProject extends DtoFontFile implements Serializable, FileInter
     @JsonIgnore
     private PathFileManager pathFileManager;
 
-    @ManyToOne( fetch = FetchType.LAZY)
+    @ManyToOne( fetch = FetchType.EAGER)
     @JoinColumn(name = "project_id")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @JsonIgnore()
     private HtmlProject project;
 
-    @ManyToOne( fetch = FetchType.LAZY)
+    @ManyToOne( fetch = FetchType.EAGER)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @JoinColumn(name = "font_face_id")
     @JsonIgnore()

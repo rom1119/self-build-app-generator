@@ -10,11 +10,13 @@ public class CssProjectCodeItem implements CodeGeneratedItem {
     protected HtmlProject htmlProject;
     private Map<String, CssSelectorCodeItem> cssSelectors;
     private Map<Long, MediaQueryCodeItem> mediaQueries;
+    private Map<Long, FontFaceCodeItem> fontFaces;
 
     public CssProjectCodeItem(HtmlProject htmlProject) {
         this.htmlProject = htmlProject;
         this.cssSelectors = new HashMap<>();
         this.mediaQueries = new HashMap<>();
+        this.fontFaces = new HashMap<>();
     }
 
     public String getProjectId()
@@ -25,6 +27,11 @@ public class CssProjectCodeItem implements CodeGeneratedItem {
     public void addMediaQuery(MediaQueryCodeItem item)
     {
         mediaQueries.put(item.mediaQuery.getId(), item);
+    }
+
+    public void addFontFace(FontFaceCodeItem item)
+    {
+        fontFaces.put(item.fontFace.getId(), item);
     }
 
     public MediaQueryCodeItem getMediaQuery(Long key)
@@ -64,6 +71,12 @@ public class CssProjectCodeItem implements CodeGeneratedItem {
 
         for (Map.Entry<Long, MediaQueryCodeItem> node : this.mediaQueries.entrySet()) {
             MediaQueryCodeItem value = node.getValue();
+            res
+                .append(value.getContent());
+        }
+
+        for (Map.Entry<Long, FontFaceCodeItem> node : this.fontFaces.entrySet()) {
+            FontFaceCodeItem value = node.getValue();
             res
                 .append(value.getContent());
         }
@@ -119,15 +132,4 @@ public class CssProjectCodeItem implements CodeGeneratedItem {
 //        System.out.println("end-remove");
     }
 
-//    public boolean hasSelector(CssSelectorCodeItem selector) {
-//        System.out.println("contains");
-//        System.out.println(selector);
-//        System.out.println(selector.hashCode());
-//        System.out.println(children.(selector));
-////        for (CssSelectorCodeItem selector :
-////                children) {
-////
-////        }
-//        return children.contains(selector);
-//    }
 }

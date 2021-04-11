@@ -1,54 +1,41 @@
-package com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Css;
+package com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Css.impl;
 
 import com.SelfBuildApp.Storage.PathFileManager;
 import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.CodeGeneratedItem;
 import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.CodeGenerator;
-import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Css.impl.FontFaceGenerator;
-import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Css.impl.MediaQueryGenerator;
-import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Css.item.MediaQueryCodeItem;
-import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Css.item.CssProjectCodeItem;
-import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Css.item.CssPropertyCodeItem;
-import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Css.item.CssSelectorCodeItem;
+import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Css.item.*;
 import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Exception.DuplicateCssPropertyInSelector;
 import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Html.item.HtmlNodeCodeItem;
 import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Html.item.HtmlTagCodeItem;
 import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Html.item.TextNodeCodeItem;
 import com.SelfBuildApp.ddd.Project.domain.CssStyle;
-import com.SelfBuildApp.ddd.Project.domain.HtmlProject;
+import com.SelfBuildApp.ddd.Project.domain.FontFace;
 import com.SelfBuildApp.ddd.Project.domain.HtmlTag;
 import com.SelfBuildApp.ddd.Project.domain.PseudoSelector;
 import com.SelfBuildApp.ddd.Support.infrastructure.repository.CssStyleRepository;
-import com.SelfBuildApp.ddd.Support.infrastructure.repository.HtmlTagRepository;
+import com.SelfBuildApp.ddd.Support.infrastructure.repository.FontFaceRepository;
 import com.SelfBuildApp.ddd.Support.infrastructure.repository.PseudoSelectorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Component
-public class AdvanceCssStyleCodeGenerator implements CodeGenerator<HtmlProject> {
+public class FontFaceGenerator implements CodeGenerator<CssProjectCodeItem> {
 
     @Autowired
-    private HtmlTagRepository htmlTagRepository;
-
-    @Autowired
-    private CssStyleRepository cssStyleRepository;
+    private FontFaceRepository repository;
 
     @Autowired
     private PseudoSelectorRepository pseudoSelectorRepository;
 
+//    private CssProjectCodeItem projectCodeItem;
+
     @Autowired
     private PathFileManager pathFileManager;
-
-    @Autowired
-    private MediaQueryGenerator mediaQueryGenerator;
-
-    @Autowired
-    private FontFaceGenerator fontFaceGenerator;
 
     protected List<HtmlNodeCodeItem> tagsCodeItem;
 
@@ -57,60 +44,74 @@ public class AdvanceCssStyleCodeGenerator implements CodeGenerator<HtmlProject> 
     }
 
 
+//    public void setProjectCodeItem(CssProjectCodeItem projectCodeItem) {
+//        this.projectCodeItem = projectCodeItem;
+//    }
 
     @Override
-    @Transactional
-    public CodeGeneratedItem generate(HtmlProject arg) {
-
-        CssProjectCodeItem projectCodeItem = new CssProjectCodeItem(arg);
-
-        List<CssStyle> allForProjectId = cssStyleRepository.findAllForProjectId(arg.getId());
-
-        Map<String, List<HtmlTag>> uniqueStyles = uniqueStyles(allForProjectId);
-        this.addStylesToProject(projectCodeItem, uniqueStyles);
+    public CodeGeneratedItem generate(CssProjectCodeItem arg) {
 
 
-        List<PseudoSelector> allPseudoSelectors = pseudoSelectorRepository.findAllForProjectId(projectCodeItem.getProjectId());
 
-        for (PseudoSelector pseudoSelector : allPseudoSelectors) {
 
-            CssSelectorCodeItem selectorCodeItem = addPseudoSelectorToProject(pseudoSelector);
-            projectCodeItem.addSelector(selectorCodeItem);
+        List<FontFace> allFontFaceList = repository.findAllForProjectId(arg.getProjectId());
+
+        for (FontFace fontFace : allFontFaceList) {
+            fontFace.setPathFileManager(pathFileManager);
+//            MediaQueryCodeItem mediaQueryCodeItem = arg.getMediaQuery(fontFace.getMediaQuery().getId());
+//
+//            if (mediaQueryCodeItem == null) {
+            FontFaceCodeItem mediaQueryCodeItem = new FontFaceCodeItem(fontFace);
+            arg.addFontFace(mediaQueryCodeItem);
+//            }
+
+//            if (fontFace.getPseudoSelector() != null) {
+//
+//                CssSelectorCodeItem selectorCodeItem = addPseudoSelectorToProject(mediaQueryCodeItem, fontFace.getPseudoSelector());
+//                try {
+//                    mediaQueryCodeItem.addSelector(selectorCodeItem);
+//                } catch (DuplicateCssPropertyInSelector duplicateCssPropertyInSelector) {
+//                    duplicateCssPropertyInSelector.printStackTrace();
+//                }
+//            }
 
         }
 
-        mediaQueryGenerator.setTagsCodeItem(tagsCodeItem);
-
-        mediaQueryGenerator.generate(projectCodeItem);
-
-
-        fontFaceGenerator.generate(projectCodeItem);
-
-
-
-
-
-            int a  = 0;
-
-        return projectCodeItem;
+        return null;
     }
 
-    protected CssSelectorCodeItem addPseudoSelectorToProject( PseudoSelector pseudoSelector)
+    protected CssSelectorCodeItem addPseudoSelectorToProject(MediaQueryCodeItem projectCodeItem, PseudoSelector pseudoSelector)
     {
-        CssSelectorCodeItem sel = new CssSelectorCodeItem();
-        pseudoSelector.setPathFileManager(pathFileManager);
 
-        for (CssStyle el : pseudoSelector.getCssStyleList()) {
-            CssPropertyCodeItem propertyMany = createProperty(el);
-            addPropertyToSelector(propertyMany, sel);
-        }
-
+        CssSelectorCodeItem sel = null;
 
         try {
             HtmlTagCodeItem tagCodeItem = getTagCodeItemByUUID(pseudoSelector.getOwner().getId());
-            sel.setSelector(tagCodeItem.getSelector().getSelector());
+
+            sel = tagCodeItem.getOwnerSelectorForMediaQuery(projectCodeItem);;
+
+            if (sel == null) {
+                sel = new CssSelectorCodeItem();
+                sel.setSelector(pseudoSelector.getOwner().getShortUuid());
+            } else {
+                sel.setSelector(sel.getSelector());
+
+            }
+            tagCodeItem.addMediaQuery(projectCodeItem);
+            tagCodeItem.addSelectorToMediaQuery(projectCodeItem, sel);
+
+            pseudoSelector.setPathFileManager(pathFileManager);
+
         } catch (Exception e) {
             e.printStackTrace();
+        }
+
+        for (CssStyle el : pseudoSelector.getCssStyleList()) {
+            String oldSelectorKey = sel.getSelector();
+            CssPropertyCodeItem propertyMany = createProperty(el);
+            addPropertyToSelector(propertyMany, sel);
+//            projectCodeItem.updateSelectorWithKey(oldSelectorKey, sel);
+
         }
 
 
@@ -119,9 +120,7 @@ public class AdvanceCssStyleCodeGenerator implements CodeGenerator<HtmlProject> 
         return sel;
     }
 
-
-
-    protected CssSelectorCodeItem addStyleCssToProject(CssProjectCodeItem projectCodeItem, CssStyle css, List<HtmlTag> el)
+    protected CssSelectorCodeItem addStyleCssToMediaQuery(MediaQueryCodeItem projectCodeItem, CssStyle css, List<HtmlTag> el)
     {
         CssSelectorCodeItem selector = null;
         if (el.size() == 1) {
@@ -130,6 +129,8 @@ public class AdvanceCssStyleCodeGenerator implements CodeGenerator<HtmlProject> 
             HtmlTagCodeItem tagCodeItem = null;
             try {
                 tagCodeItem = getTagCodeItemByUUID(tag.getId());
+                tagCodeItem.addMediaQuery(projectCodeItem);
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -140,19 +141,19 @@ public class AdvanceCssStyleCodeGenerator implements CodeGenerator<HtmlProject> 
 //
 //                System.out.println(tagCodeItem);
 //                System.out.println(selector);
-            selector = tagCodeItem.getOwnerSelector();
+            selector = tagCodeItem.getOwnerSelectorForMediaQuery(projectCodeItem);
             CssPropertyCodeItem property = createProperty(css);
             String oldSelectorKey = null;
 
             if (selector == null) {
                 selector = new CssSelectorCodeItem(true);
-                tagCodeItem.addSelector(selector);
             } else {
                 oldSelectorKey = selector.getSelectorClass();
             }
 
             CssSelectorCodeItem selector2 = selector;
             this.addPropertyToSelector(property, selector);
+
 //                System.out.println("START");
 //                System.out.println("====================================================");
 //                System.out.println(property.hashCode());
@@ -164,7 +165,13 @@ public class AdvanceCssStyleCodeGenerator implements CodeGenerator<HtmlProject> 
                 projectCodeItem.updateSelectorWithKey(oldSelectorKey, selector2);
             } else {
 //                    System.out.println("XXXXX");
-                projectCodeItem.addSelector(selector2);
+                tagCodeItem.addSelectorToMediaQuery(projectCodeItem, selector);
+
+                try {
+                    projectCodeItem.addSelector(selector2);
+                } catch (DuplicateCssPropertyInSelector duplicateCssPropertyInSelector) {
+                    duplicateCssPropertyInSelector.printStackTrace();
+                }
             }
 
 
@@ -179,54 +186,27 @@ public class AdvanceCssStyleCodeGenerator implements CodeGenerator<HtmlProject> 
 //                CssPropertyCodeItem property = createProperty(css);
 //                selector = this.addPropertyToSelector(property, selector);
 //
-            projectCodeItem.addSelector(selector);
+            try {
+                projectCodeItem.addSelector(selector);
+            } catch (DuplicateCssPropertyInSelector duplicateCssPropertyInSelector) {
+                duplicateCssPropertyInSelector.printStackTrace();
+            }
             for (HtmlTag tag : el) {
                 try {
                     HtmlTagCodeItem tagCodeItem = getTagCodeItemByUUID(tag.getId());
-                    tagCodeItem.addSelector(selector);
+                    tagCodeItem.addMediaQuery(projectCodeItem);
+
+                    try {
+                        projectCodeItem.addSelector(selector);
+                    } catch (DuplicateCssPropertyInSelector duplicateCssPropertyInSelector) {
+                        duplicateCssPropertyInSelector.printStackTrace();
+                    }
                     System.out.println(css.getName());
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
 
-        }
-
-        return selector;
-    }
-    protected void addStylesToProject(CssProjectCodeItem projectCodeItem, Map<String, List<HtmlTag>> uniqueStyles)
-    {
-        for (Map.Entry<String, List<HtmlTag>> el : uniqueStyles.entrySet()) {
-
-            CssStyle css = cssStyleRepository.findOneByCssIdentity(el.getKey());
-            css.setPathFileManager(pathFileManager);
-
-            this.addStyleCssToProject(projectCodeItem, css, el.getValue());
-
-        }
-    }
-
-    private CssSelectorCodeItem findSelector(CssProjectCodeItem projectCodeItem, String identity)
-    {
-        CssSelectorCodeItem selector = null;
-
-        try {
-            selector = projectCodeItem.getSelectorByHexString(identity);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return selector;
-    }
-
-    private CssSelectorCodeItem findSelectorByTagCodeItem(CssProjectCodeItem projectCodeItem, String identity)
-    {
-        CssSelectorCodeItem selector = null;
-
-        try {
-            selector = projectCodeItem.getSelectorByHexString(identity);
-        } catch (Exception e) {
-            e.printStackTrace();
         }
 
         return selector;
@@ -243,6 +223,7 @@ public class AdvanceCssStyleCodeGenerator implements CodeGenerator<HtmlProject> 
 
         return selectorCodeItem;
     }
+
     private CssPropertyCodeItem createProperty(CssStyle css)
     {
         CssPropertyCodeItem cssPropertyCodeItem = null;
@@ -290,7 +271,6 @@ public class AdvanceCssStyleCodeGenerator implements CodeGenerator<HtmlProject> 
         return null;
     }
 
-
     private Map<String, List<HtmlTag>> uniqueStyles(List<CssStyle> styleList)
     {
         Map<String, List<HtmlTag>> res = new HashMap<>();
@@ -316,6 +296,4 @@ public class AdvanceCssStyleCodeGenerator implements CodeGenerator<HtmlProject> 
         return res;
 
     }
-
-
 }
