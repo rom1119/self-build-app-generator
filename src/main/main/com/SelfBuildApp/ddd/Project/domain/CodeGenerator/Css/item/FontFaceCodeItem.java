@@ -69,11 +69,11 @@ public class FontFaceCodeItem implements CodeGeneratedItem {
                 e.printStackTrace();
             }
 
-            result += "url(" + url + ")";
+            result += "url(\"" + url + "\")";
 
             if (srcItem.getFileName() != null) {
                 result += " ";
-                result += "format(" + srcItem.getFormat() + ")";
+                result += "format(\"" + srcItem.getFormat() + "\")";
             }
 
             if (i == fontFace.getSrc().size() - 1) {

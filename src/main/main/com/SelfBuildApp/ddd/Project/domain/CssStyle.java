@@ -4,6 +4,7 @@ import com.SelfBuildApp.Storage.FileInterface;
 import com.SelfBuildApp.Storage.PathFileManager;
 import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Css.ValueGenerator;
 import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Css.propertyValueImpl.BaseGradientValue;
+import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Css.propertyValueImpl.FontFamilyValue;
 import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Css.propertyValueImpl.LinearGradientValue;
 import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Css.propertyValueImpl.RadialGradientValue;
 import com.SelfBuildApp.ddd.Project.domain.Unit.*;
@@ -24,6 +25,7 @@ import org.hibernate.annotations.Cascade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.*;
@@ -379,6 +381,14 @@ public class CssStyle implements Serializable, FileInterface {
         this.resourceFileExtension = resourceFileExtension;
     }
 
+    public boolean isFontFamily()
+    {
+        if (name == null) {
+            return false;
+        }
+        return name.contains("font-family");
+    }
+
     public boolean isGradient()
     {
         if (name == null) {
@@ -444,6 +454,12 @@ public class CssStyle implements Serializable, FileInterface {
     private String generateBaseValue() throws Exception {
         StringBuilder stringBuilder = new StringBuilder();
 
+        if (isFontFamily())  {
+            FontFamilyValue fontFamilyValue = new FontFamilyValue();
+            stringBuilder.append(fontFamilyValue.generateValue(this));
+
+            return stringBuilder.toString();
+        }
         if (isMultipleValue()) {
             stringBuilder.append(buildFromMultipleValue()) ;
             return stringBuilder.toString();
@@ -487,37 +503,7 @@ public class CssStyle implements Serializable, FileInterface {
         int i = 0;
         int length = cssValues.size();
         for (CssValue cssValue : cssValues) {
-            if (cssValue.isInset()) {
-                stringBuilder.append("inset ");
-
-            }
-            BaseUnit firstUnit = getUnitFromNameAndValue(cssValue.getUnitName(), cssValue.getValue());
-            stringBuilder.append(firstUnit.getValue());
-
-            if (cssValue.getUnitNameSecond() != null && !cssValue.getUnitNameThird().isEmpty()) {
-                BaseUnit unit = getUnitFromNameAndValue(cssValue.getUnitNameSecond(), cssValue.getValueSecond());
-                stringBuilder.append(" ");
-                stringBuilder.append(unit.getValue());
-            }
-
-            if (cssValue.getUnitNameThird() != null && !cssValue.getUnitNameThird().isEmpty()) {
-                BaseUnit unit = getUnitFromNameAndValue(cssValue.getUnitNameThird(), cssValue.getValueThird());
-                stringBuilder.append(" ");
-                stringBuilder.append(unit.getValue());
-            }
-
-            if (cssValue.getUnitNameFourth() != null && !cssValue.getUnitNameFourth().isEmpty()) {
-                BaseUnit unit = getUnitFromNameAndValue(cssValue.getUnitNameFourth(), cssValue.getValueFourth());
-                stringBuilder.append(" ");
-                stringBuilder.append(unit.getValue());
-            }
-
-            if (cssValue.getUnitNameFifth() != null && !cssValue.getUnitNameFifth().isEmpty()) {
-                BaseUnit unit = getUnitFromNameAndValue(cssValue.getUnitNameFifth(), cssValue.getValueFifth());
-                stringBuilder.append(" ");
-                stringBuilder.append(unit.getValue());
-            }
-
+            stringBuilder.append(cssValue.generateBaseValue());
 
             i++;
 

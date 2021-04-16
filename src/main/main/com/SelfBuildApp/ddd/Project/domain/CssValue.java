@@ -3,6 +3,10 @@ package com.SelfBuildApp.ddd.Project.domain;
 import com.SelfBuildApp.Storage.FileInterface;
 import com.SelfBuildApp.Storage.PathFileManager;
 import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Css.ValueGenerator;
+import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Css.propertyValueImpl.BaseGradientValue;
+import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Css.propertyValueImpl.FontFamilyValue;
+import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Css.propertyValueImpl.LinearGradientValue;
+import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Css.propertyValueImpl.RadialGradientValue;
 import com.SelfBuildApp.ddd.Project.domain.Unit.*;
 import com.SelfBuildApp.ddd.Project.domain.Unit.Color.RGB;
 import com.SelfBuildApp.ddd.Project.domain.Unit.Color.RGBA;
@@ -162,7 +166,9 @@ public class CssValue implements Serializable {
             return false;
         if (getUnitNameThird() != null ? !getUnitNameThird().equals(cssStyle.getUnitNameThird()) : cssStyle.getUnitNameThird() != null)
             return false;
-        if (!getValue().equals(cssStyle.getValue())) return false;
+
+        if (getValue() != null ? !getValue().equals(cssStyle.getValue()) : cssStyle.getValue() != null)
+            return false;
         if (getValueSecond() != null ? !getValueSecond().equals(cssStyle.getValueSecond()) : cssStyle.getValueSecond() != null)
             return false;
         return getValueThird() != null ? getValueThird().equals(cssStyle.getValueThird()) : cssStyle.getValueThird() == null;
@@ -365,6 +371,56 @@ public class CssValue implements Serializable {
 //    public void setResourceFileExtension(String resourceFileExtension) {
 //        this.resourceFileExtension = resourceFileExtension;
 //    }
+
+//    @JsonIgnore
+//    public String generateValueForFontFamily() throws Exception {
+//
+//        FontFamilyValue gradientValue = new FontFamilyValue();
+//        if (isLinearGradient()) {
+//            gradientValue = new LinearGradientValue();
+//
+//
+//        return  gradientValue.generateValue(this);
+//    }
+
+    @JsonIgnore
+    public String generateBaseValue() throws Exception {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        if (isInset()) {
+            stringBuilder.append("inset ");
+
+        }
+        BaseUnit firstUnit = getUnitFromNameAndValue(getUnitName(), getValue());
+        stringBuilder.append(firstUnit.getValue());
+
+        if (getUnitNameSecond() != null && !getUnitNameThird().isEmpty()) {
+            BaseUnit unit = getUnitFromNameAndValue(getUnitNameSecond(), getValueSecond());
+            stringBuilder.append(" ");
+            stringBuilder.append(unit.getValue());
+        }
+
+        if (getUnitNameThird() != null && !getUnitNameThird().isEmpty()) {
+            BaseUnit unit = getUnitFromNameAndValue(getUnitNameThird(), getValueThird());
+            stringBuilder.append(" ");
+            stringBuilder.append(unit.getValue());
+        }
+
+        if (getUnitNameFourth() != null && !getUnitNameFourth().isEmpty()) {
+            BaseUnit unit = getUnitFromNameAndValue(getUnitNameFourth(), getValueFourth());
+            stringBuilder.append(" ");
+            stringBuilder.append(unit.getValue());
+        }
+
+        if (getUnitNameFifth() != null && !getUnitNameFifth().isEmpty()) {
+            BaseUnit unit = getUnitFromNameAndValue(getUnitNameFifth(), getValueFifth());
+            stringBuilder.append(" ");
+            stringBuilder.append(unit.getValue());
+        }
+
+        return stringBuilder.toString();
+
+    }
 
     @JsonIgnore
     public String getFullValue() throws Exception {
