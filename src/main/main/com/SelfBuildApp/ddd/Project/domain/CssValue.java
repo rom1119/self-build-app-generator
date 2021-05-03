@@ -81,6 +81,10 @@ public class CssValue implements Serializable {
 
     @JsonView({PropertyAccess.List.class, PropertyAccess.Details.class})
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
+    private String unitNameNinth;
+
+    @JsonView({PropertyAccess.List.class, PropertyAccess.Details.class})
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     private String value;
 
     @JsonView({PropertyAccess.List.class, PropertyAccess.Details.class})
@@ -110,6 +114,10 @@ public class CssValue implements Serializable {
     @JsonView({PropertyAccess.List.class, PropertyAccess.Details.class})
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     private String valueEighth;
+
+    @JsonView({PropertyAccess.List.class, PropertyAccess.Details.class})
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
+    private String valueNinth;
 
 //    @JsonIgnore()
 //    private String resourceFilename;
@@ -517,5 +525,21 @@ public class CssValue implements Serializable {
 
     public void setValueEighth(String valueEighth) {
         this.valueEighth = valueEighth;
+    }
+
+    public String getUnitNameNinth() {
+        return unitNameNinth;
+    }
+
+    public void setUnitNameNinth(String unitNameNinth) {
+        this.unitNameNinth = unitNameNinth;
+    }
+
+    public String getValueNinth() {
+        return valueNinth;
+    }
+
+    public void setValueNinth(String valueNinth) {
+        this.valueNinth = valueNinth;
     }
 }

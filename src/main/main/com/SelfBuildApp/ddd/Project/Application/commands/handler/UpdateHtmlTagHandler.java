@@ -75,11 +75,19 @@ public class UpdateHtmlTagHandler implements CommandHandler<UpdateHtmlTagCommand
                                 dbCssVal.setValueThird(cssVal.getValueThird());
                                 dbCssVal.setValueFourth(cssVal.getValueFourth());
                                 dbCssVal.setValueFifth(cssVal.getValueFifth());
+                                dbCssVal.setValueSixth(cssVal.getValueSixth());
+                                dbCssVal.setValueSeventh(cssVal.getValueSeventh());
+                                dbCssVal.setValueEighth(cssVal.getValueEighth());
+                                dbCssVal.setValueNinth(cssVal.getValueNinth());
                                 dbCssVal.setUnitName(cssVal.getUnitName());
                                 dbCssVal.setUnitNameSecond(cssVal.getUnitNameSecond());
                                 dbCssVal.setUnitNameThird(cssVal.getUnitNameThird());
                                 dbCssVal.setUnitNameFourth(cssVal.getUnitNameFourth());
                                 dbCssVal.setUnitNameFifth(cssVal.getUnitNameFifth());
+                                dbCssVal.setUnitNameSixth(cssVal.getUnitNameSixth());
+                                dbCssVal.setUnitNameSeventh(cssVal.getUnitNameSeventh());
+                                dbCssVal.setUnitNameEighth(cssVal.getUnitNameEighth());
+                                dbCssVal.setUnitNameNinth(cssVal.getUnitNameNinth());
                             }
                         }
                     }
@@ -258,11 +266,19 @@ public class UpdateHtmlTagHandler implements CommandHandler<UpdateHtmlTagCommand
                                 dbCssVal.setValueThird(cssVal.getValueThird());
                                 dbCssVal.setValueFourth(cssVal.getValueFourth());
                                 dbCssVal.setValueFifth(cssVal.getValueFifth());
+                                dbCssVal.setValueSixth(cssVal.getValueSixth());
+                                dbCssVal.setValueSeventh(cssVal.getValueSeventh());
+                                dbCssVal.setValueEighth(cssVal.getValueEighth());
+                                dbCssVal.setValueNinth(cssVal.getValueNinth());
                                 dbCssVal.setUnitName(cssVal.getUnitName());
                                 dbCssVal.setUnitNameSecond(cssVal.getUnitNameSecond());
                                 dbCssVal.setUnitNameThird(cssVal.getUnitNameThird());
                                 dbCssVal.setUnitNameFourth(cssVal.getUnitNameFourth());
                                 dbCssVal.setUnitNameFifth(cssVal.getUnitNameFifth());
+                                dbCssVal.setUnitNameSixth(cssVal.getUnitNameSixth());
+                                dbCssVal.setUnitNameSeventh(cssVal.getUnitNameSeventh());
+                                dbCssVal.setUnitNameEighth(cssVal.getUnitNameEighth());
+                                dbCssVal.setUnitNameNinth(cssVal.getUnitNameNinth());
                             }
                         }
                     }
