@@ -73,6 +73,14 @@ public class CssValue implements Serializable {
 
     @JsonView({PropertyAccess.List.class, PropertyAccess.Details.class})
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
+    private String unitNameSeventh;
+
+    @JsonView({PropertyAccess.List.class, PropertyAccess.Details.class})
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
+    private String unitNameEighth;
+
+    @JsonView({PropertyAccess.List.class, PropertyAccess.Details.class})
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     private String value;
 
     @JsonView({PropertyAccess.List.class, PropertyAccess.Details.class})
@@ -94,6 +102,14 @@ public class CssValue implements Serializable {
     @JsonView({PropertyAccess.List.class, PropertyAccess.Details.class})
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     private String valueSixth;
+
+    @JsonView({PropertyAccess.List.class, PropertyAccess.Details.class})
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
+    private String valueSeventh;
+
+    @JsonView({PropertyAccess.List.class, PropertyAccess.Details.class})
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
+    private String valueEighth;
 
 //    @JsonIgnore()
 //    private String resourceFilename;
@@ -159,19 +175,19 @@ public class CssValue implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        CssValue cssStyle = (CssValue) o;
+        CssValue cssValue = (CssValue) o;
 
-        if (!getUnitName().equals(cssStyle.getUnitName())) return false;
-        if (getUnitNameSecond() != null ? !getUnitNameSecond().equals(cssStyle.getUnitNameSecond()) : cssStyle.getUnitNameSecond() != null)
+        if (!getUnitName().equals(cssValue.getUnitName())) return false;
+        if (getUnitNameSecond() != null ? !getUnitNameSecond().equals(cssValue.getUnitNameSecond()) : cssValue.getUnitNameSecond() != null)
             return false;
-        if (getUnitNameThird() != null ? !getUnitNameThird().equals(cssStyle.getUnitNameThird()) : cssStyle.getUnitNameThird() != null)
+        if (getUnitNameThird() != null ? !getUnitNameThird().equals(cssValue.getUnitNameThird()) : cssValue.getUnitNameThird() != null)
             return false;
 
-        if (getValue() != null ? !getValue().equals(cssStyle.getValue()) : cssStyle.getValue() != null)
+        if (getValue() != null ? !getValue().equals(cssValue.getValue()) : cssValue.getValue() != null)
             return false;
-        if (getValueSecond() != null ? !getValueSecond().equals(cssStyle.getValueSecond()) : cssStyle.getValueSecond() != null)
+        if (getValueSecond() != null ? !getValueSecond().equals(cssValue.getValueSecond()) : cssValue.getValueSecond() != null)
             return false;
-        return getValueThird() != null ? getValueThird().equals(cssStyle.getValueThird()) : cssStyle.getValueThird() == null;
+        return getValueThird() != null ? getValueThird().equals(cssValue.getValueThird()) : cssValue.getValueThird() == null;
     }
 
     @Override
@@ -188,6 +204,8 @@ public class CssValue implements Serializable {
         result = 9 * result + (getValueFourth() != null ? getValueFourth().trim().hashCode() : 0);
         result = 10 * result + (getValueFifth() != null ? getValueFifth().trim().hashCode() : 0);
         result = 15 * result + (getValueSixth() != null ? getValueSixth().trim().hashCode() : 0);
+        result = 18 * result + (getValueSeventh() != null ? getValueSeventh().trim().hashCode() : 0);
+        result = 19 * result + (getValueEighth() != null ? getValueEighth().trim().hashCode() : 0);
         return result;
     }
     @PreUpdate
@@ -467,5 +485,37 @@ public class CssValue implements Serializable {
 
     public void setValueSixth(String valueSixth) {
         this.valueSixth = valueSixth;
+    }
+
+    public String getUnitNameSeventh() {
+        return unitNameSeventh;
+    }
+
+    public void setUnitNameSeventh(String unitNameSeventh) {
+        this.unitNameSeventh = unitNameSeventh;
+    }
+
+    public String getUnitNameEighth() {
+        return unitNameEighth;
+    }
+
+    public void setUnitNameEighth(String unitNameEighth) {
+        this.unitNameEighth = unitNameEighth;
+    }
+
+    public String getValueSeventh() {
+        return valueSeventh;
+    }
+
+    public void setValueSeventh(String valueSeventh) {
+        this.valueSeventh = valueSeventh;
+    }
+
+    public String getValueEighth() {
+        return valueEighth;
+    }
+
+    public void setValueEighth(String valueEighth) {
+        this.valueEighth = valueEighth;
     }
 }

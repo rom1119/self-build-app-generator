@@ -40,7 +40,7 @@ public class UpdateKeyFrameHandler implements CommandHandler<UpdateKeyFrameComma
     public KeyFrame handle(UpdateKeyFrameCommand command) {
 //        tagRepository.save(command.getTag());
         KeyFrame dto = command.getKeyFrame();
-        KeyFrame DbENtity = keyFrameRepository.findById(Long.valueOf(command.getKeyFrameId().getId())).get();
+        KeyFrame DbENtity = keyFrameRepository.load(command.getKeyFrameId().getId());
         DbENtity.setPathFileManager(pathFileManager);
 
 

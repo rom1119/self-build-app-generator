@@ -32,6 +32,14 @@ public class PseudoSelector implements Serializable {
 
     @JsonView(PropertyAccess.Details.class)
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
+    private String value;
+
+    @JsonView({PropertyAccess.List.class, PropertyAccess.Details.class})
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
+    private String unitName;
+
+    @JsonView(PropertyAccess.Details.class)
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     private String delimiter;
 
 //    @NotEmpty()
@@ -164,5 +172,21 @@ public class PseudoSelector implements Serializable {
 
     public void setKeyFrame(KeyFrame keyFrame) {
         this.keyFrame = keyFrame;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
+
+    public String getUnitName() {
+        return unitName;
+    }
+
+    public void setUnitName(String unitName) {
+        this.unitName = unitName;
     }
 }

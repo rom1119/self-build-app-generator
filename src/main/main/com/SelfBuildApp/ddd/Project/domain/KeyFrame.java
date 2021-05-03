@@ -4,6 +4,7 @@ import com.SelfBuildApp.Storage.PathFileManager;
 import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Css.ValueGenerator;
 import com.SelfBuildApp.ddd.Project.domain.Unit.BaseUnit;
 import com.SelfBuildApp.ddd.Support.infrastructure.PropertyAccess;
+import com.SelfBuildApp.ddd.Support.infrastructure.repository.BaseAggregateRoot;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -18,14 +19,7 @@ import java.util.List;
 
 @Entity
 @Table( name = "key_frame" )
-public class KeyFrame implements Serializable {
-
-    @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
-    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
-    @Column(name = "id", unique = true)
-    @JsonView(PropertyAccess.Details.class)
-    private Long id;
+public class KeyFrame extends BaseAggregateRoot implements Serializable {
 
     @NotEmpty()
     @JsonView(PropertyAccess.Details.class)
@@ -63,14 +57,6 @@ public class KeyFrame implements Serializable {
 
     public KeyFrame() {
         selectorList = new ArrayList<>();
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     @JsonIgnore

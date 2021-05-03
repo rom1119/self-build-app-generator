@@ -40,6 +40,8 @@ public class UpdatePseudoSelectorHandler implements CommandHandler<UpdatePseudoS
         PseudoSelector dto = command.getPseudoSelector();
         PseudoSelector DbENtity = selectorRepository.findById(command.getId()).get();
         DbENtity.setPathFileManager(pathFileManager);
+        DbENtity.setValue(dto.getValue());
+        DbENtity.setUnitName(dto.getUnitName());
 
         List<Long> issetEntitiesIds = new ArrayList<>();
         List<Long> issetEntitiesIdsValues = new ArrayList<>();
@@ -70,11 +72,17 @@ public class UpdatePseudoSelectorHandler implements CommandHandler<UpdatePseudoS
                                 dbCssVal.setValueThird(cssVal.getValueThird());
                                 dbCssVal.setValueFourth(cssVal.getValueFourth());
                                 dbCssVal.setValueFifth(cssVal.getValueFifth());
+                                dbCssVal.setValueSixth(cssVal.getValueSixth());
+                                dbCssVal.setValueSeventh(cssVal.getValueSeventh());
+                                dbCssVal.setValueEighth(cssVal.getValueEighth());
                                 dbCssVal.setUnitName(cssVal.getUnitName());
                                 dbCssVal.setUnitNameSecond(cssVal.getUnitNameSecond());
                                 dbCssVal.setUnitNameThird(cssVal.getUnitNameThird());
                                 dbCssVal.setUnitNameFourth(cssVal.getUnitNameFourth());
                                 dbCssVal.setUnitNameFifth(cssVal.getUnitNameFifth());
+                                dbCssVal.setUnitNameSixth(cssVal.getUnitNameSixth());
+                                dbCssVal.setUnitNameSeventh(cssVal.getUnitNameSeventh());
+                                dbCssVal.setUnitNameEighth(cssVal.getUnitNameEighth());
                             }
                         }
                     }
@@ -251,11 +259,17 @@ public class UpdatePseudoSelectorHandler implements CommandHandler<UpdatePseudoS
                                 dbCssVal.setValueThird(cssVal.getValueThird());
                                 dbCssVal.setValueFourth(cssVal.getValueFourth());
                                 dbCssVal.setValueFifth(cssVal.getValueFifth());
+                                dbCssVal.setValueSixth(cssVal.getValueSixth());
+                                dbCssVal.setValueSeventh(cssVal.getValueSeventh());
+                                dbCssVal.setValueEighth(cssVal.getValueEighth());
                                 dbCssVal.setUnitName(cssVal.getUnitName());
                                 dbCssVal.setUnitNameSecond(cssVal.getUnitNameSecond());
                                 dbCssVal.setUnitNameThird(cssVal.getUnitNameThird());
                                 dbCssVal.setUnitNameFourth(cssVal.getUnitNameFourth());
                                 dbCssVal.setUnitNameFifth(cssVal.getUnitNameFifth());
+                                dbCssVal.setUnitNameSixth(cssVal.getUnitNameSixth());
+                                dbCssVal.setUnitNameSeventh(cssVal.getUnitNameSeventh());
+                                dbCssVal.setUnitNameEighth(cssVal.getUnitNameEighth());
                             }
                         }
                     }
