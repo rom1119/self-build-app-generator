@@ -31,6 +31,8 @@ public abstract class ValueGenerator {
                 return new UrlUnit(value);
             case SecondUnit.NAME:
                 return new SecondUnit(value);
+            case MiliSecondUnit.NAME:
+                return new MiliSecondUnit(value);
             case DegUnit.NAME:
                 return new DegUnit(value);
             case TurnUnit.NAME:
@@ -87,6 +89,8 @@ public abstract class ValueGenerator {
                 return UrlUnit.NAME;
             case SecondUnit.NAME:
                 return SecondUnit.NAME;
+            case MiliSecondUnit.NAME:
+                return MiliSecondUnit.NAME;
             case DegUnit.NAME:
                 return DegUnit.NAME;
             case TurnUnit.NAME:
