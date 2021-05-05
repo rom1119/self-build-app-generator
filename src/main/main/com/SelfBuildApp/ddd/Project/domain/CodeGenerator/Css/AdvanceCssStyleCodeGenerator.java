@@ -4,6 +4,7 @@ import com.SelfBuildApp.Storage.PathFileManager;
 import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.CodeGeneratedItem;
 import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.CodeGenerator;
 import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Css.impl.FontFaceGenerator;
+import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Css.impl.KeyFrameGenerator;
 import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Css.impl.MediaQueryGenerator;
 import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Css.item.MediaQueryCodeItem;
 import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Css.item.CssProjectCodeItem;
@@ -50,6 +51,9 @@ public class AdvanceCssStyleCodeGenerator implements CodeGenerator<HtmlProject> 
     @Autowired
     private FontFaceGenerator fontFaceGenerator;
 
+    @Autowired
+    private KeyFrameGenerator keyFrameGenerator;
+
     protected List<HtmlNodeCodeItem> tagsCodeItem;
 
     public void setTagsCodeItem(List<HtmlNodeCodeItem> tagsCodeItem) {
@@ -85,6 +89,9 @@ public class AdvanceCssStyleCodeGenerator implements CodeGenerator<HtmlProject> 
 
 
         fontFaceGenerator.generate(projectCodeItem);
+
+
+        keyFrameGenerator.generate(projectCodeItem);
 
 
 

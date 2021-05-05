@@ -15,7 +15,7 @@ public class KeyFrameRepository extends GenericJpaRepository<KeyFrame> {
     public List<KeyFrame> findAllForProjectId( String projectId)
     {
 
-        Query namedQuery = this.entityManager.createNativeQuery("SELECT * FROM key_frame where html_project_id=?");
+        Query namedQuery = this.entityManager.createNamedQuery("KeyFrame.findAllForProjectId");
         namedQuery.setParameter(1, projectId);
 
         return namedQuery.getResultList();

@@ -1,6 +1,7 @@
 package com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Css.impl;
 
 import com.SelfBuildApp.Storage.PathFileManager;
+import com.SelfBuildApp.ddd.Project.domain.*;
 import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.CodeGeneratedItem;
 import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.CodeGenerator;
 import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Css.item.*;
@@ -8,12 +9,8 @@ import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Exception.DuplicateCssP
 import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Html.item.HtmlNodeCodeItem;
 import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Html.item.HtmlTagCodeItem;
 import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Html.item.TextNodeCodeItem;
-import com.SelfBuildApp.ddd.Project.domain.CssStyle;
-import com.SelfBuildApp.ddd.Project.domain.FontFace;
-import com.SelfBuildApp.ddd.Project.domain.HtmlTag;
-import com.SelfBuildApp.ddd.Project.domain.PseudoSelector;
-import com.SelfBuildApp.ddd.Support.infrastructure.repository.CssStyleRepository;
 import com.SelfBuildApp.ddd.Support.infrastructure.repository.FontFaceRepository;
+import com.SelfBuildApp.ddd.Support.infrastructure.repository.KeyFrameRepository;
 import com.SelfBuildApp.ddd.Support.infrastructure.repository.PseudoSelectorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -24,10 +21,10 @@ import java.util.List;
 import java.util.Map;
 
 @Component
-public class FontFaceGenerator implements CodeGenerator<CssProjectCodeItem> {
+public class KeyFrameGenerator implements CodeGenerator<CssProjectCodeItem> {
 
     @Autowired
-    private FontFaceRepository repository;
+    private KeyFrameRepository repository;
 
     @Autowired
     private PseudoSelectorRepository pseudoSelectorRepository;
@@ -54,15 +51,15 @@ public class FontFaceGenerator implements CodeGenerator<CssProjectCodeItem> {
 
 
 
-        List<FontFace> allFontFaceList = repository.findAllForProjectId(arg.getProjectId());
+        List<KeyFrame> keyFrames = repository.findAllForProjectId(arg.getProjectId());
 
-        for (FontFace fontFace : allFontFaceList) {
+        for (KeyFrame fontFace : keyFrames) {
             fontFace.setPathFileManager(pathFileManager);
 //            MediaQueryCodeItem mediaQueryCodeItem = arg.getMediaQuery(fontFace.getMediaQuery().getId());
 //
 //            if (mediaQueryCodeItem == null) {
-            FontFaceCodeItem mediaQueryCodeItem = new FontFaceCodeItem(fontFace);
-            arg.addFontFace(mediaQueryCodeItem);
+            KeyFrameCodeItem mediaQueryCodeItem = new KeyFrameCodeItem(fontFace);
+            arg.addKeyFrame(mediaQueryCodeItem);
 //            }
 
 //            if (fontFace.getPseudoSelector() != null) {
@@ -79,6 +76,5 @@ public class FontFaceGenerator implements CodeGenerator<CssProjectCodeItem> {
 
         return null;
     }
-
 
 }

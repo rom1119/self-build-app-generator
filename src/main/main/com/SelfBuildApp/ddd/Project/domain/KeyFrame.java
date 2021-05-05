@@ -19,6 +19,7 @@ import java.util.List;
 
 @Entity
 @Table( name = "key_frame" )
+@NamedNativeQuery(name = "KeyFrame.findAllForProjectId", query = "SELECT * FROM key_frame where html_project_id=?;", resultClass = KeyFrame.class)
 public class KeyFrame extends BaseAggregateRoot implements Serializable {
 
     @NotEmpty()
@@ -33,7 +34,7 @@ public class KeyFrame extends BaseAggregateRoot implements Serializable {
 
     @Valid
     @OneToMany(mappedBy = "keyFrame", cascade = CascadeType.ALL,
-            fetch = FetchType.LAZY, orphanRemoval = true)
+            fetch = FetchType.EAGER, orphanRemoval = true)
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     @JsonView(PropertyAccess.Details.class)
     @Cascade(org.hibernate.annotations.CascadeType.ALL)

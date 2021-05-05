@@ -11,12 +11,14 @@ public class CssProjectCodeItem implements CodeGeneratedItem {
     private Map<String, CssSelectorCodeItem> cssSelectors;
     private Map<Long, MediaQueryCodeItem> mediaQueries;
     private Map<Long, FontFaceCodeItem> fontFaces;
+    private Map<String, KeyFrameCodeItem> keyFrames;
 
     public CssProjectCodeItem(HtmlProject htmlProject) {
         this.htmlProject = htmlProject;
         this.cssSelectors = new HashMap<>();
         this.mediaQueries = new HashMap<>();
         this.fontFaces = new HashMap<>();
+        this.keyFrames = new HashMap<>();
     }
 
     public String getProjectId()
@@ -32,6 +34,11 @@ public class CssProjectCodeItem implements CodeGeneratedItem {
     public void addFontFace(FontFaceCodeItem item)
     {
         fontFaces.put(item.fontFace.getId(), item);
+    }
+
+    public void addKeyFrame(KeyFrameCodeItem item)
+    {
+        keyFrames.put(item.keyFrame.getId(), item);
     }
 
     public MediaQueryCodeItem getMediaQuery(Long key)
@@ -77,6 +84,12 @@ public class CssProjectCodeItem implements CodeGeneratedItem {
 
         for (Map.Entry<Long, FontFaceCodeItem> node : this.fontFaces.entrySet()) {
             FontFaceCodeItem value = node.getValue();
+            res
+                .append(value.getContent());
+        }
+
+        for (Map.Entry<String, KeyFrameCodeItem> node : this.keyFrames.entrySet()) {
+            KeyFrameCodeItem value = node.getValue();
             res
                 .append(value.getContent());
         }
