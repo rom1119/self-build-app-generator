@@ -8,11 +8,11 @@ import java.io.Serializable;
 
 @SuppressWarnings("serial")
 @Command
-public class CreateHtmlProjectCommand implements Serializable {
+public class UpdateHtmlProjectCommand implements Serializable {
 
     private HtmlProject Project;
 
-    public CreateHtmlProjectCommand(HtmlProject project) {
+    public UpdateHtmlProjectCommand(HtmlProject project) {
         Project = project;
     }
 

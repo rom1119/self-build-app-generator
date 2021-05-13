@@ -4,7 +4,8 @@ import com.SelfBuildApp.Storage.PathFileManager;
 import com.SelfBuildApp.cqrs.command.impl.StandardGate;
 import com.SelfBuildApp.cqrs.query.PaginatedResult;
 import com.SelfBuildApp.ddd.CanonicalModel.AggregateId;
-import com.SelfBuildApp.ddd.Project.Application.commands.AppendTagToHtmlProjectCommand;
+import com.SelfBuildApp.ddd.Project.Application.commands.*;
+import com.SelfBuildApp.ddd.Project.domain.AssetProject;
 import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Css.AdvanceCssStyleCodeGenerator;
 import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Css.SimpleCssStyleCodeGenerator;
 import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Css.item.CssProjectCodeItem;
@@ -28,7 +29,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.transaction.Transactional;
 import java.util.Optional;
 
 @RestController
@@ -49,6 +54,9 @@ public class HtmlProjectController {
 //
     @Autowired
     private StandardGate gate;
+
+    @PersistenceContext
+    protected EntityManager entityManager;
 //
 //    @Autowired
 //    private StorageService storageService;
@@ -108,37 +116,62 @@ public class HtmlProjectController {
         return ResponseEntity.ok(htmlTag);
     }
 
+    @PostMapping("")
+    @Transactional
+    public ResponseEntity create(
+            @RequestBody @Validated() HtmlProject htmlProject,
+            BindingResult bindingResult
+    )
+    {
 
-//    @RequestMapping(method = RequestMethod.GET)
-//    public ResponseEntity<List<User>> getAll()
-//    {
-//        List<User> all = userRepository.findAllOrderByScoreDesc();
-//
-//        return ResponseEntity.ok(all);
-//    }
-//
-//    @PutMapping( path = "/{id}")
-//    public ResponseEntity update(
-//                            @PathVariable final Long id,
-//                             @RequestBody @Validated(Edited.class) UserDetails userDetails,
-////                                 @RequestPart( "imageFile") MultipartFil imageFile,
-//                            BindingResult bindingResult
-//                 ) throws Exception {
-//
-//        if (bindingResult.hasErrors()) {
-//             return new ResponseEntity(new ApiError(HttpStatus.BAD_REQUEST, "Invalid data", bindingResult.getFieldErrors()), HttpStatus.BAD_REQUEST);
-//
-//        }
-//
-//        User userDb = Optional.ofNullable(userService.findByIdToEdit(id))
-//                .orElseThrow(() -> new ResourceNotFoundException("Nie znaleziono strony"));
-//////
-//        UserDetails user = userService.updateUserDetails(userDb.getUserDetails(), userDetails);
-////
-//        return ResponseEntity.ok(userDb);
-//
-//    }
+        if (bindingResult.hasErrors()) {
+            return new ResponseEntity(new ApiError(HttpStatus.BAD_REQUEST, "Invalid data", bindingResult.getFieldErrors()), HttpStatus.BAD_REQUEST);
+        }
+//        MultipartFile file = assetProject.getFile();
+//        AssetProject entity = Optional.ofNullable(this.entityManager.find(AssetProject.class, id))
+//                .orElseThrow(() -> new ResourceNotFoundException("Not found"));
 
+        CreateHtmlProjectCommand command = new CreateHtmlProjectCommand( htmlProject);
+        HtmlProject res = (HtmlProject) gate.dispatch(command);
+
+        return ResponseEntity.ok(res);
+    }
+
+    @PutMapping("/{id}")
+    @Transactional
+    public ResponseEntity update(@PathVariable String id,
+                                 @RequestBody @Validated() HtmlProject htmlProject,
+                                 BindingResult bindingResult
+    )
+    {
+
+        if (bindingResult.hasErrors()) {
+            return new ResponseEntity(new ApiError(HttpStatus.BAD_REQUEST, "Invalid data", bindingResult.getFieldErrors()), HttpStatus.BAD_REQUEST);
+        }
+//        MultipartFile file = htmlProject.getFile();
+        HtmlProject entity = Optional.ofNullable(repository.load(id))
+                .orElseThrow(() -> new ResourceNotFoundException("Not found"));
+
+        UpdateHtmlProjectCommand command = new UpdateHtmlProjectCommand( htmlProject);
+        HtmlProject res = (HtmlProject) gate.dispatch(command);
+
+        return ResponseEntity.ok(entity);
+    }
+
+    @DeleteMapping("/{id}")
+    @Transactional
+    @JsonView(PropertyAccess.HtmlTagDetails.class)
+    public ResponseEntity delete(@PathVariable String id)
+    {
+        HtmlProject opt = Optional.ofNullable(repository.load(id))
+                .orElseThrow(() -> new ResourceNotFoundException("Not found"));
+        HtmlProject entity = opt;
+//        entity.setPathFileManager(pathFileManager);
+
+        this.entityManager.remove(entity);
+
+        return ResponseEntity.ok("ok");
+    }
 }
 
 

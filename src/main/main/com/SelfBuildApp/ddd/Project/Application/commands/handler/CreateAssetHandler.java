@@ -13,6 +13,8 @@ import com.SelfBuildApp.ddd.Support.infrastructure.repository.FontFaceRepository
 import com.SelfBuildApp.ddd.Support.infrastructure.repository.HtmlProjectRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 
 @CommandHandlerAnnotation
@@ -29,6 +31,8 @@ public class CreateAssetHandler implements CommandHandler<CreateAssetCommand, As
 
     @Autowired
     private PathFileManager pathFileManager;
+
+
 
     @Override
     @Transactional
