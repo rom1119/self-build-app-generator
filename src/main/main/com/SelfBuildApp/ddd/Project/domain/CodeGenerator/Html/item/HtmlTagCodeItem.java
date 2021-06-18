@@ -37,6 +37,11 @@ public class HtmlTagCodeItem extends HtmlNodeCodeItem {
         return tag.getId().equals(uuid);
     }
 
+    public boolean hasShortUUID(String shortUuid)
+    {
+        return tag.getShortUuid().equals(shortUuid);
+    }
+
 
     public void addClass(String classArg) throws DuplicateHtmlClass {
         classArg = classArg.toLowerCase();
@@ -78,17 +83,17 @@ public class HtmlTagCodeItem extends HtmlNodeCodeItem {
 //        }
     }
 
-    public Map<String, CssSelectorCodeItem> getSelectors() {
-        return selectorsClass;
-    }
+//    public Map<String, CssSelectorCodeItem> getSelectors() {
+//        return selectorsClass;
+//    }
 
-    public void removeClass(String classArg) throws DuplicateHtmlClass {
-        classArg = classArg.toLowerCase();
-        if (!classList.contains(classArg)) {
-            throw new DuplicateHtmlClass("Html class \"" + classArg + "\" not exist in tag with id " + tag.getId());
-        }
-        this.classList.remove(classArg);
-    }
+//    public void removeClass(String classArg) throws DuplicateHtmlClass {
+//        classArg = classArg.toLowerCase();
+//        if (!classList.contains(classArg)) {
+//            throw new DuplicateHtmlClass("Html class \"" + classArg + "\" not exist in tag with id " + tag.getId());
+//        }
+//        this.classList.remove(classArg);
+//    }
 
     public void addChild(HtmlNodeCodeItem item)
     {

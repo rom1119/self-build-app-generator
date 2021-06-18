@@ -67,9 +67,20 @@ public class MediaQuery implements Serializable {
     @Cascade(org.hibernate.annotations.CascadeType.ALL)
     protected List<CssStyle> cssStyleList;
 
+    @Valid
+    @OneToMany(mappedBy = "mediaQuery", cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
+    @JsonView(PropertyAccess.HtmlTagDetails.class)
+    @Cascade(org.hibernate.annotations.CascadeType.ALL)
+    @JsonIgnore()
+    protected List<PseudoSelector> pseudoSelectors;
+
     public MediaQuery() {
         cssValues = new ArrayList<>();
         cssStyleList = new ArrayList<>();
+        pseudoSelectors = new ArrayList<>();
+
     }
 
     public Long getId() {
@@ -245,4 +256,30 @@ public class MediaQuery implements Serializable {
     public void setColorUnitName(String colorUnitName) {
         this.colorUnitName = colorUnitName;
     }
+
+    public MediaQuery addPseudoSelector(PseudoSelector pseudoSelector) {
+        pseudoSelectors.add(pseudoSelector);
+        pseudoSelector.setMediaQuery(this);
+        return this;
+    }
+
+    public boolean hasPseudoSelector(PseudoSelector pseudoSelector) {
+
+        return pseudoSelectors.contains(pseudoSelector);
+    }
+
+    public MediaQuery removePseudoSelector(PseudoSelector pseudoSelector) {
+        pseudoSelectors.remove(pseudoSelector);
+
+        return this;
+    }
+
+    public List<PseudoSelector> getPseudoSelectors() {
+        return pseudoSelectors;
+    }
+
+    public void setPseudoSelectors(List<PseudoSelector> pseudoSelectors) {
+        this.pseudoSelectors = pseudoSelectors;
+    }
+
 }

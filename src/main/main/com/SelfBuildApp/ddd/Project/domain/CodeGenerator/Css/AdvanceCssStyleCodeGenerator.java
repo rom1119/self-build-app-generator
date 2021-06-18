@@ -107,19 +107,21 @@ public class AdvanceCssStyleCodeGenerator implements CodeGenerator<HtmlProject> 
         CssSelectorCodeItem sel = new CssSelectorCodeItem();
         pseudoSelector.setPathFileManager(pathFileManager);
 
-        for (CssStyle el : pseudoSelector.getCssStyleList()) {
-            CssPropertyCodeItem propertyMany = createProperty(el);
-            addPropertyToSelector(propertyMany, sel);
-        }
-
-
         try {
-            HtmlTagCodeItem tagCodeItem = getTagCodeItemByUUID(pseudoSelector.getOwner().getId());
-            sel.setSelector(tagCodeItem.getSelector().getSelector());
+            HtmlTagCodeItem tagCodeItem = getTagCodeItemByShortUUID(pseudoSelector.getOwner().getShortUuid());
+
+            sel.setSelector(pseudoSelector.getOwner().getShortUuid());
+            tagCodeItem.addSelector(sel);
         } catch (Exception e) {
             e.printStackTrace();
         }
 
+        sel.setRechangeSelectorOnAddCss(false);
+
+        for (CssStyle el : pseudoSelector.getCssStyleList()) {
+            CssPropertyCodeItem propertyMany = createProperty(el);
+            addPropertyToSelector(propertyMany, sel);
+        }
 
         sel.setPseudoClass(pseudoSelector.getName());
 
@@ -213,31 +215,31 @@ public class AdvanceCssStyleCodeGenerator implements CodeGenerator<HtmlProject> 
         }
     }
 
-    private CssSelectorCodeItem findSelector(CssProjectCodeItem projectCodeItem, String identity)
-    {
-        CssSelectorCodeItem selector = null;
-
-        try {
-            selector = projectCodeItem.getSelectorByHexString(identity);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return selector;
-    }
-
-    private CssSelectorCodeItem findSelectorByTagCodeItem(CssProjectCodeItem projectCodeItem, String identity)
-    {
-        CssSelectorCodeItem selector = null;
-
-        try {
-            selector = projectCodeItem.getSelectorByHexString(identity);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return selector;
-    }
+//    private CssSelectorCodeItem findSelector(CssProjectCodeItem projectCodeItem, String identity)
+//    {
+//        CssSelectorCodeItem selector = null;
+//
+//        try {
+//            selector = projectCodeItem.getSelectorByHexString(identity);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//
+//        return selector;
+//    }
+//
+//    private CssSelectorCodeItem findSelectorByTagCodeItem(CssProjectCodeItem projectCodeItem, String identity)
+//    {
+//        CssSelectorCodeItem selector = null;
+//
+//        try {
+//            selector = projectCodeItem.getSelectorByHexString(identity);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//
+//        return selector;
+//    }
 
     private CssSelectorCodeItem addPropertyToSelector(CssPropertyCodeItem cssProp, CssSelectorCodeItem selectorCodeItem)
     {
@@ -273,6 +275,17 @@ public class AdvanceCssStyleCodeGenerator implements CodeGenerator<HtmlProject> 
         return recursiveTagCodeItemByUUID;
     }
 
+    private HtmlTagCodeItem getTagCodeItemByShortUUID(String shortUuid) throws Exception {
+
+        HtmlTagCodeItem recursiveTagCodeItemByUUID = findRecursiveTagCodeItemByShortUUID(shortUuid, tagsCodeItem);
+        if (recursiveTagCodeItemByUUID == null) {
+            throw new Exception("Not found HtmlNodeCodeItem with UUID " + shortUuid);
+
+        }
+
+        return recursiveTagCodeItemByUUID;
+    }
+
 
     private HtmlTagCodeItem findRecursiveTagCodeItemByUUID(String uuid, List<HtmlNodeCodeItem> children)
     {
@@ -288,6 +301,29 @@ public class AdvanceCssStyleCodeGenerator implements CodeGenerator<HtmlProject> 
             }
 
             HtmlTagCodeItem res = findRecursiveTagCodeItemByUUID(uuid, tagCodeItem.getChildren());
+            if (res != null) {
+                return res;
+            }
+
+        }
+
+        return null;
+    }
+
+    private HtmlTagCodeItem findRecursiveTagCodeItemByShortUUID(String shortUuid, List<HtmlNodeCodeItem> children)
+    {
+        for (HtmlNodeCodeItem item : children) {
+
+            if (item instanceof TextNodeCodeItem) {
+                continue;
+            }
+            HtmlTagCodeItem tagCodeItem = (HtmlTagCodeItem)item;
+
+            if (tagCodeItem.hasShortUUID(shortUuid)) {
+                return tagCodeItem;
+            }
+
+            HtmlTagCodeItem res = findRecursiveTagCodeItemByShortUUID(shortUuid, tagCodeItem.getChildren());
             if (res != null) {
                 return res;
             }

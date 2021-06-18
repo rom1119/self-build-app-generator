@@ -8,11 +8,13 @@ import com.SelfBuildApp.ddd.Project.domain.HtmlNode;
 import com.SelfBuildApp.ddd.Project.domain.HtmlTag;
 import com.SelfBuildApp.ddd.Project.domain.PseudoSelector;
 import com.SelfBuildApp.ddd.Project.domain.TextNode;
+import com.SelfBuildApp.ddd.Support.infrastructure.PropertyAccess;
 import com.SelfBuildApp.ddd.Support.infrastructure.repository.HtmlTagRepository;
 import com.SelfBuildApp.ddd.Support.infrastructure.repository.PseudoSelectorRepository;
 import com.SelfBuildApp.ddd.Support.infrastructure.repository.TextNodeRepository;
 import com.SelfBuildApp.infrastructure.User.exception.ApiError;
 import com.SelfBuildApp.infrastructure.User.exception.ResourceNotFoundException;
+import com.fasterxml.jackson.annotation.JsonView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -60,6 +62,7 @@ public class PseudoSelectorController {
     }
 
     @PutMapping("/{id}")
+    @JsonView( PropertyAccess.HtmlTagDetails.class)
     public ResponseEntity update(@PathVariable String id,
                                  @RequestBody @Validated() PseudoSelector pseudoSelector,
                                  BindingResult bindingResult
@@ -79,6 +82,7 @@ public class PseudoSelectorController {
     }
 
     @PostMapping("/{id}/resource")
+    @JsonView( PropertyAccess.HtmlTagDetails.class)
     public ResponseEntity updateResource(@PathVariable String id,
                              @RequestParam("file") MultipartFile file,
                              @RequestBody @Validated() PseudoSelector pseudoSelector,
@@ -99,6 +103,7 @@ public class PseudoSelectorController {
     }
 
     @DeleteMapping("/{id}")
+    @JsonView( PropertyAccess.HtmlTagDetails.class)
     @Transactional
     public ResponseEntity delete(@PathVariable String id)
     {

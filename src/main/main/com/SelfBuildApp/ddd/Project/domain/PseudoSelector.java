@@ -62,7 +62,12 @@ public class PseudoSelector implements Serializable {
     private HtmlTag owner;
 
     @ManyToOne( fetch = FetchType.LAZY)
-    @JoinColumn(name = "kay_frame_id")
+    @JoinColumn(name = "media_query_id")
+    @JsonIgnore()
+    private MediaQuery mediaQuery;
+
+    @ManyToOne( fetch = FetchType.LAZY)
+    @JoinColumn(name = "key_frame_id")
     @JsonIgnore()
     private KeyFrame keyFrame;
 
@@ -143,6 +148,16 @@ public class PseudoSelector implements Serializable {
         return this;
     }
 
+    @JsonView(PropertyAccess.Details.class)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    public Long getMediaQueryId() throws Exception {
+        if (mediaQuery == null) {
+            return null;
+        }
+
+        return mediaQuery.getId();
+    }
+
     public boolean hasCssStyle(CssStyle cssStyle) {
 
         return cssStyleList.contains(cssStyle);
@@ -188,5 +203,13 @@ public class PseudoSelector implements Serializable {
 
     public void setUnitName(String unitName) {
         this.unitName = unitName;
+    }
+
+    public MediaQuery getMediaQuery() {
+        return mediaQuery;
+    }
+
+    public void setMediaQuery(MediaQuery mediaQuery) {
+        this.mediaQuery = mediaQuery;
     }
 }

@@ -13,6 +13,7 @@ public class CssSelectorCodeItem implements CodeGeneratedItem {
     protected String selector;
     protected String pseudoClass;
     protected boolean ownerTag = false;
+    protected boolean rechangeSelectorOnAddCss = true;
 
     public CssSelectorCodeItem() {
 //        this.selector = selector;
@@ -26,6 +27,10 @@ public class CssSelectorCodeItem implements CodeGeneratedItem {
         this.ownerTag = ownerTag;
     }
 
+    public void setRechangeSelectorOnAddCss(boolean rechangeSelectorOnAddCss) {
+        this.rechangeSelectorOnAddCss = rechangeSelectorOnAddCss;
+    }
+
     private void reChangeSelector() {
         selector = Integer.toHexString(hashCode());
     }
@@ -36,7 +41,10 @@ public class CssSelectorCodeItem implements CodeGeneratedItem {
         }
 
         cssProperties.put(propertyCodeItem.getKey(),  propertyCodeItem);
-        reChangeSelector();
+        if (rechangeSelectorOnAddCss) {
+            reChangeSelector();
+
+        }
 
     }
 

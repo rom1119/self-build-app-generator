@@ -4,9 +4,7 @@ import com.SelfBuildApp.Storage.PathFileManager;
 import com.SelfBuildApp.cqrs.command.impl.StandardGate;
 import com.SelfBuildApp.cqrs.query.PaginatedResult;
 import com.SelfBuildApp.ddd.CanonicalModel.AggregateId;
-import com.SelfBuildApp.ddd.Project.Application.commands.AppendMediaQueryToHtmlProjectCommand;
-import com.SelfBuildApp.ddd.Project.Application.commands.AppendTagToHtmlProjectCommand;
-import com.SelfBuildApp.ddd.Project.Application.commands.UpdateMediaQueryCommand;
+import com.SelfBuildApp.ddd.Project.Application.commands.*;
 import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Css.AdvanceCssStyleCodeGenerator;
 import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Css.item.CssProjectCodeItem;
 import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Html.item.HtmlProjectCodeItem;
@@ -15,9 +13,11 @@ import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.impl.DefaultHtmlCodeGen
 import com.SelfBuildApp.ddd.Project.domain.HtmlProject;
 import com.SelfBuildApp.ddd.Project.domain.HtmlTag;
 import com.SelfBuildApp.ddd.Project.domain.MediaQuery;
+import com.SelfBuildApp.ddd.Project.domain.PseudoSelector;
 import com.SelfBuildApp.ddd.Support.infrastructure.PropertyAccess;
 import com.SelfBuildApp.ddd.Support.infrastructure.repository.HtmlProjectPageableRepository;
 import com.SelfBuildApp.ddd.Support.infrastructure.repository.HtmlProjectRepository;
+import com.SelfBuildApp.ddd.Support.infrastructure.repository.HtmlTagRepository;
 import com.SelfBuildApp.ddd.Support.infrastructure.repository.MediaQueryRepository;
 import com.SelfBuildApp.infrastructure.User.exception.ApiError;
 import com.SelfBuildApp.infrastructure.User.exception.ResourceNotFoundException;
@@ -44,6 +44,9 @@ public class MediaQueryController {
 
     @Autowired
     private MediaQueryRepository repository;
+
+    @Autowired
+    private HtmlTagRepository tagRepository;
 
     @Autowired
     private HtmlProjectRepository projectRepository;
@@ -125,6 +128,28 @@ public class MediaQueryController {
         gate.dispatch(command);
 
         return ResponseEntity.ok(mediaQuery);
+    }
+
+    @PostMapping("/{id}/append-selector/for-tag/{htmlTagId}")
+    public ResponseEntity addSelector(@PathVariable String id,
+                                      @PathVariable String htmlTagId,
+                                      @RequestBody @Validated() PseudoSelector pseudoSelector,
+                                      BindingResult bindingResult
+    )
+    {
+
+        if (bindingResult.hasErrors()) {
+            return new ResponseEntity(new ApiError(HttpStatus.BAD_REQUEST, "Invalid data", bindingResult.getFieldErrors()), HttpStatus.BAD_REQUEST);
+        }
+        MediaQuery entity = repository.findById(Long.valueOf(id))
+                .orElseThrow(() -> new ResourceNotFoundException("Not found"));
+
+        HtmlTag parentTag = tagRepository.load(htmlTagId);
+
+        AppendSelectorToMediaQueryCommand command = new AppendSelectorToMediaQueryCommand(new AggregateId(htmlTagId), entity, pseudoSelector);
+        gate.dispatch(command);
+
+        return ResponseEntity.ok(pseudoSelector);
     }
 
 

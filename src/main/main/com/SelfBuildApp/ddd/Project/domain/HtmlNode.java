@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Date;
 
 @Entity
 @Table( name = "html_node" )
@@ -43,6 +44,20 @@ public abstract class HtmlNode extends ProjectItem<HtmlProject> implements Seria
     @JsonIgnore
     private PathFileManager pathFileManager;
 
+    protected Date createdAt;
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    @PrePersist
+    protected void onPrePersist(){
+        this.createdAt = new Date();
+    }
 
     public void setPathFileManager(PathFileManager pathFileManager) {
         this.pathFileManager = pathFileManager;

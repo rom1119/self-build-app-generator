@@ -24,7 +24,7 @@ import java.util.Set;
 @JsonDeserialize()
 public class HtmlProject extends Project<HtmlNode> implements Serializable {
 
-    @OneToMany(mappedBy = "project")
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL)
     @Fetch(FetchMode.SELECT)
     @OrderBy("orderNumber")
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)

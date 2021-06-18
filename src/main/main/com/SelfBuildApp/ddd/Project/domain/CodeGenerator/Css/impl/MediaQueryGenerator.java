@@ -102,7 +102,7 @@ public class MediaQueryGenerator implements CodeGenerator<CssProjectCodeItem> {
         CssSelectorCodeItem sel = null;
 
         try {
-            HtmlTagCodeItem tagCodeItem = getTagCodeItemByUUID(pseudoSelector.getOwner().getId());
+            HtmlTagCodeItem tagCodeItem = getTagCodeItemByShortUUID(pseudoSelector.getOwner().getShortUuid());
 
             sel = tagCodeItem.getOwnerSelectorForMediaQuery(projectCodeItem);;
 
@@ -110,7 +110,7 @@ public class MediaQueryGenerator implements CodeGenerator<CssProjectCodeItem> {
                 sel = new CssSelectorCodeItem();
                 sel.setSelector(pseudoSelector.getOwner().getShortUuid());
             } else {
-                sel.setSelector(sel.getSelector());
+//                sel.setSelector(sel.getSelector());
 
             }
             tagCodeItem.addMediaQuery(projectCodeItem);
@@ -121,6 +121,8 @@ public class MediaQueryGenerator implements CodeGenerator<CssProjectCodeItem> {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        sel.setRechangeSelectorOnAddCss(false);
 
         for (CssStyle el : pseudoSelector.getCssStyleList()) {
             String oldSelectorKey = sel.getSelector();
@@ -211,6 +213,7 @@ public class MediaQueryGenerator implements CodeGenerator<CssProjectCodeItem> {
                 try {
                     HtmlTagCodeItem tagCodeItem = getTagCodeItemByUUID(tag.getId());
                     tagCodeItem.addMediaQuery(projectCodeItem);
+                    tagCodeItem.addSelectorToMediaQuery(projectCodeItem, selector);
 
                     try {
                         projectCodeItem.addSelector(selector);
@@ -222,6 +225,8 @@ public class MediaQueryGenerator implements CodeGenerator<CssProjectCodeItem> {
                     e.printStackTrace();
                 }
             }
+
+
 
         }
 
@@ -263,6 +268,17 @@ public class MediaQueryGenerator implements CodeGenerator<CssProjectCodeItem> {
         return recursiveTagCodeItemByUUID;
     }
 
+    private HtmlTagCodeItem getTagCodeItemByShortUUID(String shortUuid) throws Exception {
+
+        HtmlTagCodeItem recursiveTagCodeItemByUUID = findRecursiveTagCodeItemByShortUUID(shortUuid, tagsCodeItem);
+        if (recursiveTagCodeItemByUUID == null) {
+            throw new Exception("Not found HtmlNodeCodeItem with UUID " + shortUuid);
+
+        }
+
+        return recursiveTagCodeItemByUUID;
+    }
+
 
     private HtmlTagCodeItem findRecursiveTagCodeItemByUUID(String uuid, List<HtmlNodeCodeItem> children)
     {
@@ -278,6 +294,29 @@ public class MediaQueryGenerator implements CodeGenerator<CssProjectCodeItem> {
             }
 
             HtmlTagCodeItem res = findRecursiveTagCodeItemByUUID(uuid, tagCodeItem.getChildren());
+            if (res != null) {
+                return res;
+            }
+
+        }
+
+        return null;
+    }
+
+    private HtmlTagCodeItem findRecursiveTagCodeItemByShortUUID(String shortUuid, List<HtmlNodeCodeItem> children)
+    {
+        for (HtmlNodeCodeItem item : children) {
+
+            if (item instanceof TextNodeCodeItem) {
+                continue;
+            }
+            HtmlTagCodeItem tagCodeItem = (HtmlTagCodeItem)item;
+
+            if (tagCodeItem.hasShortUUID(shortUuid)) {
+                return tagCodeItem;
+            }
+
+            HtmlTagCodeItem res = findRecursiveTagCodeItemByShortUUID(shortUuid, tagCodeItem.getChildren());
             if (res != null) {
                 return res;
             }
