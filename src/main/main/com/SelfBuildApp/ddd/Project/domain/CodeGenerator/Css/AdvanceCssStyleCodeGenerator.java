@@ -74,7 +74,7 @@ public class AdvanceCssStyleCodeGenerator implements CodeGenerator<HtmlProject> 
         this.addStylesToProject(projectCodeItem, uniqueStyles);
 
 
-        List<PseudoSelector> allPseudoSelectors = pseudoSelectorRepository.findAllForProjectId(projectCodeItem.getProjectId());
+        List<PseudoSelector> allPseudoSelectors = pseudoSelectorRepository.findAllForProjectIdWhereNotHaveMediaQuery(projectCodeItem.getProjectId());
 
         for (PseudoSelector pseudoSelector : allPseudoSelectors) {
 

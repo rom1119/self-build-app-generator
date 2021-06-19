@@ -56,15 +56,22 @@ public class MediaQueryGenerator implements CodeGenerator<CssProjectCodeItem> {
 
 
 
-        List<CssStyle> cssForMediaQueries = cssStyleRepository.findAllForProjectIdWhereHasMediaQuery(arg.getProjectId());
+        List<CssStyle> cssForMediaQueries = cssStyleRepository.findAllForProjectIdWhereHasMediaQueryOrPseudoSelector(arg.getProjectId());
         Map<String, List<HtmlTag>> uniqueStylesForMedia = uniqueStyles(cssForMediaQueries);
 
         for (CssStyle cssForMediaQuery : cssForMediaQueries) {
 
-            MediaQueryCodeItem mediaQueryCodeItem = arg.getMediaQuery(cssForMediaQuery.getMediaQuery().getId());
+            MediaQuery mediaQuery = null;
+            if (cssForMediaQuery.getMediaQuery() != null) {
+                mediaQuery = cssForMediaQuery.getMediaQuery();
+            } else {
+                mediaQuery = cssForMediaQuery.getPseudoSelector().getMediaQuery();
+
+            }
+            MediaQueryCodeItem mediaQueryCodeItem = arg.getMediaQuery(mediaQuery.getId());
 
             if (mediaQueryCodeItem == null) {
-                mediaQueryCodeItem = new MediaQueryCodeItem(cssForMediaQuery.getMediaQuery());
+                mediaQueryCodeItem = new MediaQueryCodeItem(mediaQuery);
                 arg.addMediaQuery(mediaQueryCodeItem);
             }
 
