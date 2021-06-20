@@ -41,12 +41,18 @@ public class MediaQueryGenerator implements CodeGenerator<CssProjectCodeItem> {
 
     protected List<HtmlNodeCodeItem> tagsCodeItem;
 
+    protected boolean inlineStyle = false;
+
+
     public void setTagsCodeItem(List<HtmlNodeCodeItem> tagsCodeItem) {
         this.tagsCodeItem = tagsCodeItem;
     }
 
+    public void setInlineStyle(boolean inlineStyle) {
+        this.inlineStyle = inlineStyle;
+    }
 
-//    public void setProjectCodeItem(CssProjectCodeItem projectCodeItem) {
+    //    public void setProjectCodeItem(CssProjectCodeItem projectCodeItem) {
 //        this.projectCodeItem = projectCodeItem;
 //    }
 
@@ -244,6 +250,9 @@ public class MediaQueryGenerator implements CodeGenerator<CssProjectCodeItem> {
     {
 
         try {
+            if (inlineStyle) {
+                cssProp.setImportant(true);
+            }
             selectorCodeItem.addProperty(cssProp);
         } catch (DuplicateCssPropertyInSelector duplicateCssPropertyInSelector) {
             duplicateCssPropertyInSelector.printStackTrace();

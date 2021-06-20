@@ -25,6 +25,10 @@ public class CssPropertyCodeItem implements CodeGeneratedItem {
         return css.hashCode();
     }
 
+    public void setImportant(boolean important) {
+        this.important = important;
+    }
+
     @Override
     public String getContent() {
 //        System.out.println(key);

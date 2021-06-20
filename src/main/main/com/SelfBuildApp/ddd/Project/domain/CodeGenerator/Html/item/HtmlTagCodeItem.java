@@ -164,6 +164,9 @@ public class HtmlTagCodeItem extends HtmlNodeCodeItem {
             res.append(" style=\"");
 
             for (CssStyle css : tag.getCssStyleList()) {
+                if (css.getMediaQuery() != null) {
+                    continue;
+                }
                 try {
                     res
                         .append(css.getName() + ": " + css.getFullValue())
