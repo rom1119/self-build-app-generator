@@ -503,7 +503,16 @@ public class CssStyle implements Serializable, FileInterface {
         int i = 0;
         int length = cssValues.size();
         for (CssValue cssValue : cssValues) {
-            stringBuilder.append(cssValue.generateBaseValue());
+            if (name.equals("transform")) {
+                stringBuilder.append(cssValue.getValueNinth());
+                stringBuilder.append("(");
+                stringBuilder.append(cssValue.generateBaseValue());
+                stringBuilder.append(")");
+
+            } else {
+                stringBuilder.append(cssValue.generateBaseValue());
+
+            }
 
             i++;
 

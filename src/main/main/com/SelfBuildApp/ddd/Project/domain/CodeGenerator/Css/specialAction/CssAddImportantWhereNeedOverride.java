@@ -17,11 +17,12 @@ public class CssAddImportantWhereNeedOverride implements CssAction {
 
     @Override
     public boolean canRun() {
-        return cssName.contains("left") ||
-                cssName.contains("right") ||
-                cssName.contains("top") ||
-                cssName.contains("bottom")
-                ;
+//        return cssName.contains("left") ||
+//                cssName.contains("right") ||
+//                cssName.contains("top") ||
+//                cssName.contains("bottom")
+//                ;
+        return false;
     }
 
     @Override
