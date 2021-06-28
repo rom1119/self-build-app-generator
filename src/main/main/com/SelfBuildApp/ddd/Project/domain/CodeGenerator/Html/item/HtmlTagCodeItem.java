@@ -111,6 +111,7 @@ public class HtmlTagCodeItem extends HtmlNodeCodeItem {
             res = new StringBuilder();
 
         }
+
         this.openTagWithName(res);
         this.appendAttrsToContent(res);
         this.appendClassToContent(res);
@@ -118,13 +119,17 @@ public class HtmlTagCodeItem extends HtmlNodeCodeItem {
             this.appendStylesToContent(res);
 
         }
-
         if (this.tag.isClosingTag()){
 
             this.closeOpenedTag(res);
 
-            for (HtmlNodeCodeItem item : children) {
-                res.append(item.getContent());
+            if (this.tag.getSvgContent() != null) {
+                res.append(this.tag.getSvgContent());
+            } else  {
+                for (HtmlNodeCodeItem item : children) {
+                    res.append(item.getContent());
+                }
+
             }
 
             this.closeTagWithName(res);
