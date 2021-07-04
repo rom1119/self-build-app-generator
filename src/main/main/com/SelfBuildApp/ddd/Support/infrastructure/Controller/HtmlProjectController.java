@@ -14,6 +14,7 @@ import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Struct.HtmlProjectCode;
 import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.impl.DefaultHtmlCodeGenerator;
 import com.SelfBuildApp.ddd.Project.domain.HtmlProject;
 import com.SelfBuildApp.ddd.Project.domain.HtmlTag;
+import com.SelfBuildApp.ddd.Project.domain.WebsiteCrawler.PageCrawler;
 import com.SelfBuildApp.ddd.Support.infrastructure.PropertyAccess;
 import com.SelfBuildApp.ddd.Support.infrastructure.repository.HtmlProjectPageableRepository;
 import com.SelfBuildApp.ddd.Support.infrastructure.repository.HtmlProjectRepository;
@@ -34,6 +35,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
+import java.io.IOException;
 import java.util.Optional;
 
 @RestController
@@ -77,16 +79,20 @@ public class HtmlProjectController {
         return htmlProject;
     }
 
-    @GetMapping("/test/{id}")
-    public HtmlProjectCode getTest(@PathVariable String id) {
-        HtmlProject entity = Optional.ofNullable(repository.load(id)).orElseThrow(() -> new ResourceNotFoundException("Not found"));
-        HtmlProjectCodeItem generateHtml = (HtmlProjectCodeItem)htmlCodeGenerator.generate(entity);
-        cssStyleCodeGenerator.setTagsCodeItem(generateHtml.getChildren());
-        CssProjectCodeItem generateCss = (CssProjectCodeItem)cssStyleCodeGenerator.generate(entity);
+    @GetMapping("/import-website")
+    public String loadWebsitePage(@RequestParam String url) {
+        PageCrawler pageCrawler = new PageCrawler();
 
+        try {
+            pageCrawler.run(url);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-        return new HtmlProjectCode(generateHtml.getContent(),
-                generateCss.getContent());
+        System.out.println("url");
+        System.out.println(url);
+
+        return "ok";
     }
 
     @GetMapping()
