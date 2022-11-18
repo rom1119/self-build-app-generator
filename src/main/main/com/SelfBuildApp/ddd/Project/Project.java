@@ -14,6 +14,10 @@ public abstract class Project<T extends ProjectItem> extends BaseAggregateRoot {
     @JsonView(PropertyAccess.Public.class)
     protected String name;
 
+    @Column
+    @JsonView(PropertyAccess.Public.class)
+    protected String pageUrl;
+
     public abstract Project<T>  addItem(T item);
     public abstract Project<T> removeItem(T item);
     public abstract boolean hasItem(T item);
@@ -24,5 +28,13 @@ public abstract class Project<T extends ProjectItem> extends BaseAggregateRoot {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getPageUrl() {
+        return pageUrl;
+    }
+
+    public void setPageUrl(String pageUrl) {
+        this.pageUrl = pageUrl;
     }
 }

@@ -25,7 +25,9 @@ public class CreateHtmlProjectHandler implements CommandHandler<CreateHtmlProjec
         HtmlProject htmlProject = new HtmlProject();
 
         htmlProject.setName(command.getProject().getName());
+        htmlProject.setPageUrl(command.getProject().getPageUrl());
         repository.save(htmlProject);
+
         return htmlProject;
     }
 }

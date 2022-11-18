@@ -7,6 +7,7 @@ import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Css.propertyValueImpl.B
 import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Css.propertyValueImpl.FontFamilyValue;
 import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Css.propertyValueImpl.LinearGradientValue;
 import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Css.propertyValueImpl.RadialGradientValue;
+import com.SelfBuildApp.ddd.Project.domain.CssModelFactory.CssFactory;
 import com.SelfBuildApp.ddd.Project.domain.Unit.*;
 import com.SelfBuildApp.ddd.Project.domain.Unit.Color.RGB;
 import com.SelfBuildApp.ddd.Project.domain.Unit.Color.RGBA;
@@ -473,6 +474,11 @@ public class CssValue implements Serializable {
     private String getUnitNameFromName(String name)
     {
         return ValueGenerator.getUnitNameFromName(name);
+    }
+
+    private String getUnitNameFromValue(String value)
+    {
+        return CssFactory.getUnitNameFromValue(value);
     }
 
     private BaseUnit getUnitFromNameAndValue(String name, String value) throws Exception {

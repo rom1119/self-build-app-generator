@@ -83,11 +83,11 @@ public class HtmlProjectController {
     public String loadWebsitePage(@RequestParam String url) {
         PageCrawler pageCrawler = new PageCrawler();
 
-        try {
-            pageCrawler.run(url);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            pageCrawler.run(url);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
 
         System.out.println("url");
         System.out.println(url);

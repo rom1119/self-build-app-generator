@@ -7,6 +7,7 @@ import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Css.propertyValueImpl.B
 import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Css.propertyValueImpl.FontFamilyValue;
 import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Css.propertyValueImpl.LinearGradientValue;
 import com.SelfBuildApp.ddd.Project.domain.CodeGenerator.Css.propertyValueImpl.RadialGradientValue;
+import com.SelfBuildApp.ddd.Project.domain.CssModelFactory.CssFactory;
 import com.SelfBuildApp.ddd.Project.domain.Unit.*;
 import com.SelfBuildApp.ddd.Project.domain.Unit.Color.RGB;
 import com.SelfBuildApp.ddd.Project.domain.Unit.Color.RGBA;
@@ -524,6 +525,13 @@ public class CssStyle implements Serializable, FileInterface {
 
         return stringBuilder.toString();
 
+    }
+
+
+
+    private String getUnitNameFromValue(String value)
+    {
+        return CssFactory.getUnitNameFromValue(value);
     }
 
     private String getUnitNameFromName(String name)

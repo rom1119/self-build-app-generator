@@ -1,5 +1,6 @@
 package com.SelfBuildApp.ddd.Project.domain;
 
+import com.SelfBuildApp.Storage.PathFileManager;
 import com.SelfBuildApp.ddd.Project.ProjectItem;
 import com.SelfBuildApp.ddd.Project.infrastructure.repo.HtmlAttrConverter;
 import com.SelfBuildApp.ddd.Support.infrastructure.PropertyAccess;
@@ -20,11 +21,13 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Entity
 @NamedNativeQuery(name = "HtmlTag.findMainHtmlTagsForProject", query = "SELECT * FROM html_node WHERE parent_id is null and project_id = ?;", resultClass = HtmlNode.class)
+@NamedNativeQuery(name = "HtmlTag.findAllHtmlTagsForProject", query = "SELECT * FROM html_node WHERE project_id = ?;", resultClass = HtmlNode.class)
 public class HtmlTag extends HtmlNode {
 
     @JsonView(PropertyAccess.HtmlTagDetails.class)
@@ -35,6 +38,7 @@ public class HtmlTag extends HtmlNode {
     @JsonView(PropertyAccess.HtmlTagDetails.class)
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     @Convert(converter = HtmlAttrConverter.class)
+    @Column(length = 5000)
     protected Map<String, HtmlTagAttr> attrs;
 
     @Valid
@@ -83,10 +87,21 @@ public class HtmlTag extends HtmlNode {
     @JsonView(PropertyAccess.Details.class)
     private String resourceUrl;
 
+
+    @Transient
+    @JsonIgnore
+    public Map<String, CssStyle> cssUniqueMap;
+
+    @Transient
+    @JsonIgnore
+    public Map<String, PseudoSelector> pseudoSelectorUniqueMap;
+
     public HtmlTag() {
         cssStyleList = new ArrayList<>();
         pseudoSelectors = new ArrayList<>();
         children = new ArrayList<>();
+        cssUniqueMap = new HashMap<>();
+        pseudoSelectorUniqueMap = new HashMap<>();
     }
 
     public List<CssStyle> getCssStyleList() {

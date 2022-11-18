@@ -18,6 +18,7 @@ public class TextNode extends HtmlNode {
     @JsonView(PropertyAccess.Details.class)
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     @NotNull
+    @Column(length = 5000)
     protected String text;
 
     public TextNode() {
