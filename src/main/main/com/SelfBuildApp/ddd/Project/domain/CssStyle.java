@@ -68,6 +68,14 @@ public class CssStyle implements Serializable, FileInterface {
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     private String unitNameThird;
 
+    @JsonView({PropertyAccess.List.class, PropertyAccess.Details.class})
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
+    private String unitNameFourth;
+
+    @JsonView({PropertyAccess.List.class, PropertyAccess.Details.class})
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
+    private String unitNameFifth;
+
     @JsonView(PropertyAccess.Details.class)
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     private String value;
@@ -79,6 +87,14 @@ public class CssStyle implements Serializable, FileInterface {
     @JsonView(PropertyAccess.Details.class)
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     private String valueThird;
+
+    @JsonView({PropertyAccess.List.class, PropertyAccess.Details.class})
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
+    private String valueFourth;
+
+    @JsonView({PropertyAccess.List.class, PropertyAccess.Details.class})
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
+    private String valueFifth;
 
     @JsonView(PropertyAccess.Details.class)
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
@@ -118,6 +134,11 @@ public class CssStyle implements Serializable, FileInterface {
     @Transient
     @JsonIgnore
     private PathFileManager pathFileManager;
+
+    @Transient
+    @JsonIgnore
+    private List<Long> issetEntitiesIdsValues = new ArrayList<>();
+
 
     @JsonIgnore
     private String cssIdentity;
@@ -169,6 +190,18 @@ public class CssStyle implements Serializable, FileInterface {
         this.pathFileManager = pathFileManager;
     }
 
+    public List<Long> getIssetEntitiesIdsValues() {
+        return issetEntitiesIdsValues;
+    }
+
+    public void setIssetEntitiesIdsValues(List<Long> issetEntitiesIdsValues) {
+        this.issetEntitiesIdsValues = issetEntitiesIdsValues;
+    }
+
+    public void setCssIdentity(String cssIdentity) {
+        this.cssIdentity = cssIdentity;
+    }
+
     public Long getId() {
         return id;
     }
@@ -193,6 +226,12 @@ public class CssStyle implements Serializable, FileInterface {
         if (getValue() != null ? !getValue().equals(cssStyle.getValue()) : cssStyle.getValue() != null) return false;
         if (getValueSecond() != null ? !getValueSecond().equals(cssStyle.getValueSecond()) : cssStyle.getValueSecond() != null)
             return false;
+
+        if (getValueFourth() != null ? !getValueFourth().equals(cssStyle.getValueFourth()) : cssStyle.getValueFourth() != null)
+            return false;
+
+        if (getValueFifth() != null ? !getValueFifth().equals(cssStyle.getValueFifth()) : cssStyle.getValueFifth() != null)
+            return false;
         return getValueThird() != null ? getValueThird().equals(cssStyle.getValueThird()) : cssStyle.getValueThird() == null;
     }
 
@@ -205,6 +244,8 @@ public class CssStyle implements Serializable, FileInterface {
         result = 6 * result + (getValue() != null ? getValue().trim().hashCode() : 0);
         result = 5 * result + (getValueSecond() != null ? getValueSecond().trim().hashCode() : 0);
         result = 7 * result + (getValueThird() != null ? getValueThird().trim().hashCode() : 0);
+        result = 7 * result + (getValueFourth() != null ? getValueFourth().trim().hashCode() : 0);
+        result = 7 * result + (getValueFifth() != null ? getValueFifth().trim().hashCode() : 0);
         result = 8 * result + (getResourceUrl() != null ? getResourceUrl().trim().hashCode() : 0);
         result = 9 * result + (getResourceFilename() != null ? getResourceFilename().trim().hashCode() : 0);
         int childrenHashCode = 0;
@@ -495,6 +536,18 @@ public class CssStyle implements Serializable, FileInterface {
             stringBuilder.append(secUnit.getValue());
         }
 
+        if (getUnitNameFourth() != null && !getUnitNameFourth().isEmpty()) {
+            BaseUnit secUnit = getUnitFromNameAndValue(getUnitNameFourth(), getValueFourth());
+            stringBuilder.append(" ");
+            stringBuilder.append(secUnit.getValue());
+        }
+
+        if (getUnitNameFifth() != null && !getUnitNameFifth().isEmpty()) {
+            BaseUnit secUnit = getUnitFromNameAndValue(getUnitNameFifth(), getValueFifth());
+            stringBuilder.append(" ");
+            stringBuilder.append(secUnit.getValue());
+        }
+
         return stringBuilder.toString();
 
     }
@@ -625,6 +678,38 @@ public class CssStyle implements Serializable, FileInterface {
 
     public void setMultipleValue(boolean multipleValue) {
         this.multipleValue = multipleValue;
+    }
+
+    public String getUnitNameFourth() {
+        return unitNameFourth;
+    }
+
+    public void setUnitNameFourth(String unitNameFourth) {
+        this.unitNameFourth = unitNameFourth;
+    }
+
+    public String getUnitNameFifth() {
+        return unitNameFifth;
+    }
+
+    public void setUnitNameFifth(String unitNameFifth) {
+        this.unitNameFifth = unitNameFifth;
+    }
+
+    public String getValueFourth() {
+        return valueFourth;
+    }
+
+    public void setValueFourth(String valueFourth) {
+        this.valueFourth = valueFourth;
+    }
+
+    public String getValueFifth() {
+        return valueFifth;
+    }
+
+    public void setValueFifth(String valueFifth) {
+        this.valueFifth = valueFifth;
     }
 
     public CssStyle addCssValue(CssValue value) {

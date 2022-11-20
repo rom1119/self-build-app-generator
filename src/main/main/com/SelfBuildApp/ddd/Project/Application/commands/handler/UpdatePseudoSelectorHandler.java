@@ -5,6 +5,7 @@ import com.SelfBuildApp.cqrs.annotation.CommandHandlerAnnotation;
 import com.SelfBuildApp.cqrs.command.handler.CommandHandler;
 import com.SelfBuildApp.ddd.Project.Application.commands.UpdatePseudoSelectorCommand;
 import com.SelfBuildApp.ddd.Project.domain.*;
+import com.SelfBuildApp.ddd.Project.domain.Assembler.CssAssembler;
 import com.SelfBuildApp.ddd.Support.infrastructure.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -33,6 +34,9 @@ public class UpdatePseudoSelectorHandler implements CommandHandler<UpdatePseudoS
     @Autowired
     private MediaQueryRepository mediaQueryRepository;
 
+    @Autowired
+    private CssAssembler cssAssembler;
+
     @Override
     @Transactional
     public PseudoSelector handle(UpdatePseudoSelectorCommand command) {
@@ -50,44 +54,9 @@ public class UpdatePseudoSelectorHandler implements CommandHandler<UpdatePseudoS
                 CssStyle dbCss = cssStyleRepository.getOne(css.getId());
                 if (dbCss != null) {
                     issetEntitiesIds.add(css.getId());
-                    dbCss.setResourceUrl(css.getResourceUrl());
-                    dbCss.setValue(css.getValue());
-                    dbCss.setValueSecond(css.getValueSecond());
-                    dbCss.setValueThird(css.getValueThird());
-                    dbCss.setUnitName(css.getUnitName());
-                    dbCss.setUnitNameSecond(css.getUnitNameSecond());
-                    dbCss.setUnitNameThird(css.getUnitNameThird());
-                    for (CssValue cssVal : css.getCssValues()) {
+                    dbCss = cssAssembler.createModel(dbCss, css);
+                    issetEntitiesIdsValues = dbCss.getIssetEntitiesIdsValues();
 
-                        if(cssVal.getId() != null && cssVal.getId() > 0) {
-                            CssValue dbCssVal = cssValueRepository.getOne(cssVal.getId());
-
-                            if (dbCssVal != null) {
-                                issetEntitiesIdsValues.add(cssVal.getId());
-
-                                dbCssVal.setInset(cssVal.isInset());
-                                dbCssVal.setSpecialValGradient(cssVal.isSpecialValGradient());
-                                dbCssVal.setValue(cssVal.getValue());
-                                dbCssVal.setValueSecond(cssVal.getValueSecond());
-                                dbCssVal.setValueThird(cssVal.getValueThird());
-                                dbCssVal.setValueFourth(cssVal.getValueFourth());
-                                dbCssVal.setValueFifth(cssVal.getValueFifth());
-                                dbCssVal.setValueSixth(cssVal.getValueSixth());
-                                dbCssVal.setValueSeventh(cssVal.getValueSeventh());
-                                dbCssVal.setValueEighth(cssVal.getValueEighth());
-                                dbCssVal.setValueNinth(cssVal.getValueNinth());
-                                dbCssVal.setUnitName(cssVal.getUnitName());
-                                dbCssVal.setUnitNameSecond(cssVal.getUnitNameSecond());
-                                dbCssVal.setUnitNameThird(cssVal.getUnitNameThird());
-                                dbCssVal.setUnitNameFourth(cssVal.getUnitNameFourth());
-                                dbCssVal.setUnitNameFifth(cssVal.getUnitNameFifth());
-                                dbCssVal.setUnitNameSixth(cssVal.getUnitNameSixth());
-                                dbCssVal.setUnitNameSeventh(cssVal.getUnitNameSeventh());
-                                dbCssVal.setUnitNameEighth(cssVal.getUnitNameEighth());
-                                dbCssVal.setUnitNameNinth(cssVal.getUnitNameNinth());
-                            }
-                        }
-                    }
                     this.processChildren(css, dbCss);
                 }
             }
@@ -238,43 +207,8 @@ public class UpdatePseudoSelectorHandler implements CommandHandler<UpdatePseudoS
                 CssStyle dbCss = cssStyleRepository.getOne(css.getId());
                 if (dbCss != null) {
                     issetEntitiesIds.add(css.getId());
-                    dbCss.setResourceUrl(css.getResourceUrl());
-
-                    dbCss.setValue(css.getValue());
-                    dbCss.setValueSecond(css.getValueSecond());
-                    dbCss.setValueThird(css.getValueThird());
-                    dbCss.setUnitName(css.getUnitName());
-                    dbCss.setUnitNameSecond(css.getUnitNameSecond());
-                    dbCss.setUnitNameThird(css.getUnitNameThird());
-                    for (CssValue cssVal : css.getCssValues()) {
-
-                        if(cssVal.getId() != null && cssVal.getId() > 0) {
-                            CssValue dbCssVal = cssValueRepository.getOne(cssVal.getId());
-
-                            if (dbCssVal != null) {
-                                issetEntitiesIdsValues.add(cssVal.getId());
-
-                                dbCssVal.setInset(cssVal.isInset());
-                                dbCssVal.setSpecialValGradient(cssVal.isSpecialValGradient());
-                                dbCssVal.setValue(cssVal.getValue());
-                                dbCssVal.setValueSecond(cssVal.getValueSecond());
-                                dbCssVal.setValueThird(cssVal.getValueThird());
-                                dbCssVal.setValueFourth(cssVal.getValueFourth());
-                                dbCssVal.setValueFifth(cssVal.getValueFifth());
-                                dbCssVal.setValueSixth(cssVal.getValueSixth());
-                                dbCssVal.setValueSeventh(cssVal.getValueSeventh());
-                                dbCssVal.setValueEighth(cssVal.getValueEighth());
-                                dbCssVal.setUnitName(cssVal.getUnitName());
-                                dbCssVal.setUnitNameSecond(cssVal.getUnitNameSecond());
-                                dbCssVal.setUnitNameThird(cssVal.getUnitNameThird());
-                                dbCssVal.setUnitNameFourth(cssVal.getUnitNameFourth());
-                                dbCssVal.setUnitNameFifth(cssVal.getUnitNameFifth());
-                                dbCssVal.setUnitNameSixth(cssVal.getUnitNameSixth());
-                                dbCssVal.setUnitNameSeventh(cssVal.getUnitNameSeventh());
-                                dbCssVal.setUnitNameEighth(cssVal.getUnitNameEighth());
-                            }
-                        }
-                    }
+                    dbCss = cssAssembler.createModel(dbCss, css);
+                    issetEntitiesIdsValues = dbCss.getIssetEntitiesIdsValues();
                 }
             }
         }

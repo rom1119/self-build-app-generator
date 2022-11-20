@@ -28,7 +28,12 @@ public class CssFactory {
     public static String PLACEHOLDER_VAL = "{{{__KEY__:||VALUE||}}}";
     public CssStyle build(String name,String value)
     {
+        List<String> excludedCss = Arrays.asList("windows", "orphans",
+                "break-inside", "appearance", "touch-action", "pointer-events", "user-select");
 
+        if (excludedCss.contains(name)) {
+            return null;
+        }
 
         CssStyle css = new CssStyle();
         css.setName(name);
@@ -103,6 +108,22 @@ public class CssFactory {
             String valueOne = getClearValue(v);
             css.setValueThird(valueOne);
             css.setUnitNameThird(unitName);
+        }
+
+        if (valArr.size() > 3) {
+            String v = valArr.get(3).trim();
+            String unitName = getUnitNameFromValue(v);
+            String valueOne = getClearValue(v);
+            css.setValueFourth(valueOne);
+            css.setUnitNameFourth(unitName);
+        }
+
+        if (valArr.size() > 4) {
+            String v = valArr.get(4).trim();
+            String unitName = getUnitNameFromValue(v);
+            String valueOne = getClearValue(v);
+            css.setValueFifth(valueOne);
+            css.setUnitNameFifth(unitName);
         }
 
     }

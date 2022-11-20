@@ -227,6 +227,9 @@ public class PageCrawler {
         while ( nodeIterator.hasNext() && stringIterator.hasNext()) {
             JsonNode cssVal = nodeIterator.next();
             CssStyle css = cssFactory.build(stringIterator.next(), cssVal.getTextValue());
+            if (css == null) {
+                continue;
+            }
             css.updateCssIdentity();
             if (dbEntity.cssUniqueMap.containsKey(css.getCssIdentity())) {
                 continue;
