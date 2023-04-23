@@ -49,7 +49,7 @@ public class PseudoSelector implements Serializable {
 
     @Valid
     @OneToMany(mappedBy = "pseudoSelector", cascade = CascadeType.ALL,
-            fetch = FetchType.EAGER, orphanRemoval = true)
+            fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     @JsonView(PropertyAccess.Details.class)
     @Cascade(org.hibernate.annotations.CascadeType.ALL)
@@ -75,6 +75,57 @@ public class PseudoSelector implements Serializable {
     @JsonIgnore
     private PathFileManager pathFileManager;
 
+    @Transient
+    public String htmlTagId;
+
+    @Transient
+    public Long mediaQueryId;
+
+    @Transient
+    public String keyFrameId;
+
+    public PseudoSelector(
+            Long pseudoSelector_id,
+            String pseudoSelector_name,
+            String pseudoSelector_value,
+            String pseudoSelector_unit_name,
+            String pseudoSelector_delimiter,
+            String pseudoSelector_html_tag_id,
+            Long pseudoSelector_media_query_id,
+            String pseudoSelector_key_frame_id
+    ) {
+
+        this();
+        this.id = pseudoSelector_id;
+        this.name = pseudoSelector_name;
+        this.value = pseudoSelector_value;
+        this.unitName = pseudoSelector_unit_name;
+        this.delimiter = pseudoSelector_delimiter;
+        this.htmlTagId = pseudoSelector_html_tag_id;
+        this.mediaQueryId = pseudoSelector_media_query_id;
+        this.keyFrameId = pseudoSelector_key_frame_id;
+    }
+
+
+    public String getHtmlTagId() {
+        return htmlTagId;
+    }
+
+    public void setHtmlTagId(String htmlTagId) {
+        this.htmlTagId = htmlTagId;
+    }
+
+    public void setMediaQueryId(Long mediaQueryId) {
+        this.mediaQueryId = mediaQueryId;
+    }
+
+    public String getKeyFrameId() {
+        return keyFrameId;
+    }
+
+    public void setKeyFrameId(String keyFrameId) {
+        this.keyFrameId = keyFrameId;
+    }
 
     public void setPathFileManager(PathFileManager pathFileManager) {
         this.pathFileManager = pathFileManager;
@@ -150,12 +201,17 @@ public class PseudoSelector implements Serializable {
 
     @JsonView(PropertyAccess.Details.class)
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    public Long getMediaQueryId() throws Exception {
+    public Long getMediaQueryId() {
         if (mediaQuery == null) {
             return null;
         }
 
         return mediaQuery.getId();
+    }
+
+    public Long getMediaQueryIdField() {
+
+        return mediaQueryId;
     }
 
     public boolean hasCssStyle(CssStyle cssStyle) {

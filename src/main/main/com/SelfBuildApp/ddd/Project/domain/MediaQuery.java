@@ -54,7 +54,7 @@ public class MediaQuery implements Serializable {
 
     @Valid
     @OneToMany(mappedBy = "mediaQuery", cascade = CascadeType.ALL,
-            fetch = FetchType.EAGER, orphanRemoval = true)
+            fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     @JsonView({PropertyAccess.List.class, PropertyAccess.Details.class})
     @Cascade(org.hibernate.annotations.CascadeType.ALL)
@@ -76,11 +76,24 @@ public class MediaQuery implements Serializable {
     @JsonIgnore()
     protected List<PseudoSelector> pseudoSelectors;
 
+    public MediaQuery(
+            Long mediaQuery_id,
+            String mediaQuery_name,
+            String mediaQuery_color,
+            String mediaQuery_color_unit_name
+
+    ) {
+        this();
+        this.id = mediaQuery_id;
+        this.name = mediaQuery_name;
+        this.color = mediaQuery_color;
+        this.colorUnitName = mediaQuery_color_unit_name;
+    }
+
     public MediaQuery() {
         cssValues = new ArrayList<>();
         cssStyleList = new ArrayList<>();
         pseudoSelectors = new ArrayList<>();
-
     }
 
     public Long getId() {

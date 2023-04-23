@@ -36,12 +36,15 @@ public class GradientFactory {
             Pattern p = Pattern.compile("([a-z-]*gradient)([(]{1}[a-z .,%0-9()]*[)]{1})");
             Matcher m = p.matcher(allMatches.get(i));
 
-            String name = m.group(1);
-            String valueGradient = m.group(2);
+            while (m.find()) {
 
-            gradient.setName(name);
+                String name = m.group(1);
+                String valueGradient = m.group(2);
 
-            initValues(gradient, valueGradient);
+                gradient.setName(name);
+
+                initValues(gradient, valueGradient);
+            }
 
 
         }
@@ -52,11 +55,10 @@ public class GradientFactory {
 
     protected static void initValues(CssStyle gradient, String valueStr)
     {
-        List<String> colors = RgbaValue.fetchColorValues(valueStr);
-        String clearVal = RgbaValue.clearOriginalValue(valueStr);
+        String clearVal = RgbaValue.clearOriginalValueReplacePlaceholder(valueStr);
+        clearVal = RgbValue.clearOriginalValueReplacePlaceholder(clearVal);
         String[] clearValArr = clearVal.split(",");
 
-        int colorIndexToApply = 0;
 
         for (int i = 0; i < clearValArr.length; i++) {
             String itemVal = clearValArr[i].trim();
@@ -78,26 +80,13 @@ public class GradientFactory {
             }
 
             String specialVal = valArr[0].trim();
-            if (valArr[1] != null) {
-                String specialValSec = valArr[1].trim();
+            String specialValSec = valArr[1].trim();
 
-                cssValue.setValue(specialVal);
-                cssValue.setUnitName(CssFactory.getUnitNameFromValue(specialVal));
+            cssValue.setValue(CssFactory.getClearValue(specialVal));
+            cssValue.setUnitName(CssFactory.getUnitNameFromValue(specialVal));
 
-                cssValue.setValueSecond(specialValSec);
-                cssValue.setUnitNameSecond(CssFactory.getUnitNameFromValue(specialValSec));
-            } else {
-                String specialValSec = colors.get(colorIndexToApply);
-
-                cssValue.setValue(specialValSec);
-                cssValue.setUnitName(CssFactory.getUnitNameFromValue(specialValSec));
-
-                cssValue.setValueSecond(specialVal);
-                cssValue.setUnitNameSecond(CssFactory.getUnitNameFromValue(specialVal));
-
-
-                colorIndexToApply++;
-            }
+            cssValue.setValueSecond(CssFactory.getClearValue(specialValSec));
+            cssValue.setUnitNameSecond(CssFactory.getUnitNameFromValue(specialValSec));
 
 
         }

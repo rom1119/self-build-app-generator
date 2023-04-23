@@ -70,7 +70,7 @@ public class HtmlProjectController {
     @GetMapping("/{id}")
     @JsonView( PropertyAccess.HtmlTagDetails.class)
     public HtmlProject getOne(@PathVariable String id, Authentication auth) {
-        Optional<HtmlProject> load = Optional.ofNullable(repository.load(id));
+        Optional<HtmlProject> load = Optional.ofNullable(repository.fetchFullProjectData(id));
         load.orElseThrow(() -> new ResourceNotFoundException("Not found"));
         HtmlProject htmlProject = load.get();
 

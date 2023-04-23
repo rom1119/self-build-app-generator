@@ -34,7 +34,7 @@ public class KeyFrame extends BaseAggregateRoot implements Serializable {
 
     @Valid
     @OneToMany(mappedBy = "keyFrame", cascade = CascadeType.ALL,
-            fetch = FetchType.EAGER, orphanRemoval = true)
+            fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     @JsonView(PropertyAccess.Details.class)
     @Cascade(org.hibernate.annotations.CascadeType.ALL)
@@ -43,6 +43,17 @@ public class KeyFrame extends BaseAggregateRoot implements Serializable {
     @Transient
     @JsonIgnore
     private PathFileManager pathFileManager;
+
+    public KeyFrame(
+            String keyFrame_id,
+            String keyFrame_name
+    ) {
+
+        this();
+        this.id = keyFrame_id;
+        this.name = keyFrame_name;
+    }
+
 
 
     public void setPathFileManager(PathFileManager pathFileManager) {

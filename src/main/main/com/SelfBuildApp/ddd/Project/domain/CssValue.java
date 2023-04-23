@@ -151,6 +151,71 @@ public class CssValue implements Serializable {
     @JsonView(PropertyAccess.Details.class)
     private boolean specialValGradient = false;
 
+    @Transient
+    public Long mediaQueryId;
+
+    @Transient
+    public Long cssStyleId;
+
+    public CssValue(
+            Long cssV_id,
+            String cssV_css_identity,
+            boolean cssV_inset,
+            boolean cssV_special_val_gradient,
+            String cssV_unit_name,
+            String cssV_unit_name_second,
+            String cssV_unit_name_third,
+            String cssV_unit_name_fourth,
+            String cssV_unit_name_fifth,
+            String cssV_unit_name_sixth,
+            String cssV_unit_name_seventh,
+            String cssV_unit_name_eighth,
+            String cssV_unit_name_ninth,
+            String cssV_value,
+            String cssV_value_second,
+            String cssV_value_third,
+            String cssV_value_fourth,
+            String cssV_value_fifth,
+            String cssV_value_sixth,
+            String cssV_value_seventh,
+            String cssV_value_eighth,
+            String cssV_value_ninth,
+            Long cssV_media_query_id,
+            Long cssV_css_style_id
+
+    ) {
+        this();
+        id = cssV_id;
+        cssIdentity = cssV_css_identity;
+//        specialValGradient = cssV_special_val_gradient != null ? Integer.valueOf(cssV_special_val_gradient) == 1 : false;
+        specialValGradient = cssV_special_val_gradient;
+//        inset = cssV_inset != null ? Integer.valueOf(cssV_inset) == 1 : false;
+        inset = cssV_inset;
+
+        unitName = cssV_unit_name;
+        unitNameSecond = cssV_unit_name_second;
+        unitNameThird = cssV_unit_name_third;
+        unitNameFourth = cssV_unit_name_fourth;
+        unitNameFifth = cssV_unit_name_fifth;
+        unitNameSixth = cssV_unit_name_sixth;
+        unitNameSeventh = cssV_unit_name_seventh;
+        unitNameEighth = cssV_unit_name_eighth;
+        unitNameNinth = cssV_unit_name_ninth;
+//
+        value = cssV_value;
+        valueSecond = cssV_value_second;
+        valueThird = cssV_value_third;
+        valueFourth = cssV_value_fourth;
+        valueFifth = cssV_value_fifth;
+        valueSixth = cssV_value_sixth;
+        valueSeventh = cssV_value_seventh;
+        valueEighth = cssV_value_eighth;
+        valueNinth = cssV_value_ninth;
+
+        cssStyleId = cssV_css_style_id;
+        mediaQueryId = cssV_media_query_id;
+    }
+
 
     public CssValue() {
     }
@@ -158,6 +223,22 @@ public class CssValue implements Serializable {
     public CssValue(@NotEmpty() String value, @NotEmpty() String unitName) {
         this.value = value;
         this.unitName = unitName;
+    }
+
+    public Long getMediaQueryId() {
+        return mediaQueryId;
+    }
+
+    public void setMediaQueryId(Long mediaQueryId) {
+        this.mediaQueryId = mediaQueryId;
+    }
+
+    public Long getCssStyleId() {
+        return cssStyleId;
+    }
+
+    public void setCssStyleId(Long cssStyleId) {
+        this.cssStyleId = cssStyleId;
     }
 
     public PathFileManager getPathFileManager() {

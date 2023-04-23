@@ -6,6 +6,7 @@ import com.SelfBuildApp.ddd.Support.infrastructure.PropertyAccess;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
+import org.hibernate.annotations.Cascade;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -30,6 +31,18 @@ public abstract class HtmlNode extends ProjectItem<HtmlProject> implements Seria
     @Column(name = "order_number")
     protected int orderNumber = 1;
 
+    @Transient
+    public String dtype = "";
+
+    @Transient
+    public String parentId;
+
+    @Transient
+    @JsonView(PropertyAccess.Details.class)
+    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
+    protected String text;
+
+
     @ManyToOne
     @JoinColumn(name = "project_id", nullable = false)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
@@ -52,6 +65,30 @@ public abstract class HtmlNode extends ProjectItem<HtmlProject> implements Seria
 
     public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public String getDtype() {
+        return dtype;
+    }
+
+    public void setDtype(String dtype) {
+        this.dtype = dtype;
+    }
+
+    public String getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(String parentId) {
+        this.parentId = parentId;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
     }
 
     @PrePersist
@@ -120,11 +157,4 @@ public abstract class HtmlNode extends ProjectItem<HtmlProject> implements Seria
         this.shortUuid = shortUuid;
     }
 
-    public Long getVersion() {
-        return version;
-    }
-
-    public void setVersion(Long version) {
-        this.version = version;
-    }
 }

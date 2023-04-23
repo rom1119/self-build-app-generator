@@ -56,13 +56,13 @@ public class AssetProject extends DtoFontFile implements Serializable, FileInter
     @JsonIgnore
     private PathFileManager pathFileManager;
 
-    @ManyToOne( fetch = FetchType.EAGER)
+    @ManyToOne()
     @JoinColumn(name = "project_id")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @JsonIgnore()
     private HtmlProject project;
 
-    @ManyToOne( fetch = FetchType.EAGER)
+    @ManyToOne()
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @JoinColumn(name = "font_face_id")
     @JsonIgnore()
@@ -72,6 +72,28 @@ public class AssetProject extends DtoFontFile implements Serializable, FileInter
     @Transient
     protected MultipartFile file;
 
+    @Transient
+    protected Long fontFaceId;
+
+
+    public AssetProject(
+            Long assetProject_id,
+            Long assetProject_font_face_id,
+            int assetProject_type,
+            String assetProject_format,
+            String assetProject_resource_filename,
+            String assetProject_resource_file_extension,
+            String assetProject_resource_url
+    ) {
+        this();
+        this.id = assetProject_id;
+        this.fontFaceId = assetProject_font_face_id;
+        this.type = assetProject_type;
+        this.format = assetProject_format;
+        this.resourceFilename = assetProject_resource_filename;
+        this.resourceFileExtension = assetProject_resource_file_extension;
+        this.resourceUrl = assetProject_resource_url;
+    }
 
     public AssetProject() {
         this.typesMap = new HashMap<>();
@@ -79,6 +101,14 @@ public class AssetProject extends DtoFontFile implements Serializable, FileInter
         typesMap.put(2, "img");
         typesMap.put(3, "css");
         typesMap.put(4, "js");
+    }
+
+    public Long getFontFaceId() {
+        return fontFaceId;
+    }
+
+    public void setFontFaceId(Long fontFaceId) {
+        this.fontFaceId = fontFaceId;
     }
 
     @PostRemove

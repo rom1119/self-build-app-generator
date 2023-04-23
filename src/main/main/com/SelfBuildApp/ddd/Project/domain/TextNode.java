@@ -1,5 +1,6 @@
 package com.SelfBuildApp.ddd.Project.domain;
 
+import com.SelfBuildApp.ddd.Project.infrastructure.repo.HtmlAttrConverter;
 import com.SelfBuildApp.ddd.Support.infrastructure.PropertyAccess;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -18,10 +19,15 @@ public class TextNode extends HtmlNode {
     @JsonView(PropertyAccess.Details.class)
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     @NotNull
-    @Column(length = 5000)
+    @Column(length = 15000, columnDefinition="Text")
     protected String text;
 
     public TextNode() {
+    }
+
+    public TextNode(String id, String text) {
+        this.id = id;
+        this.text = text;
     }
 
     public TextNode(String text) {

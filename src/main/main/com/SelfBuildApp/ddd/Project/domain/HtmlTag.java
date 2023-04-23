@@ -10,6 +10,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.apache.commons.io.FileUtils;
 import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.Type;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -38,12 +40,12 @@ public class HtmlTag extends HtmlNode {
     @JsonView(PropertyAccess.HtmlTagDetails.class)
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     @Convert(converter = HtmlAttrConverter.class)
-    @Column(length = 5000)
+    @Column(name="attrs", length=200000, columnDefinition="Text")
     protected Map<String, HtmlTagAttr> attrs;
 
     @Valid
     @OneToMany(mappedBy = "htmlTag", cascade = CascadeType.ALL,
-            fetch = FetchType.EAGER, orphanRemoval = true)
+            fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     @JsonView(PropertyAccess.HtmlTagDetails.class)
     @Cascade(org.hibernate.annotations.CascadeType.ALL)
@@ -51,7 +53,7 @@ public class HtmlTag extends HtmlNode {
 
     @Valid
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL,
-            fetch = FetchType.EAGER, orphanRemoval = true)
+            fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     @JsonView(PropertyAccess.HtmlTagDetails.class)
     @Cascade(org.hibernate.annotations.CascadeType.ALL)
@@ -59,7 +61,7 @@ public class HtmlTag extends HtmlNode {
 
     @Valid
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL,
-            fetch = FetchType.EAGER, orphanRemoval = true)
+            fetch = FetchType.LAZY, orphanRemoval = true)
     @OrderBy("orderNumber")
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "className")
@@ -72,7 +74,7 @@ public class HtmlTag extends HtmlNode {
     private boolean closingTag = true;
 
     @Lob
-    @Column(name="svg_content", length=512)
+    @Column(name="svg_content", length=15000, columnDefinition="Text")
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     @JsonView(PropertyAccess.Details.class)
     private String svgContent;
@@ -95,6 +97,45 @@ public class HtmlTag extends HtmlNode {
     @Transient
     @JsonIgnore
     public Map<String, PseudoSelector> pseudoSelectorUniqueMap;
+
+    public HtmlTag(
+           String node_id,
+           String node_parent_id,
+           String node_short_uuid,
+           String node_text,
+           Long node_version,
+           int node_order_number,
+           String node_dtype,
+           String node_tag_name,
+           String node_attrs,
+           String node_closing_tag,
+           String node_svg_content,
+           String node_resource_filename,
+           String node_resource_file_extension,
+           String node_resource_url
+    ) {
+        this();
+        id = node_id;
+        parentId = node_parent_id;
+        shortUuid = node_short_uuid;
+        text = node_text;
+        version = node_version;
+        dtype = node_dtype;
+        orderNumber = node_order_number;
+        tagName = node_tag_name;
+        closingTag = node_closing_tag != null ? Integer.valueOf(node_closing_tag) == 1 : false;
+        svgContent = node_svg_content;
+        resourceFilename = node_resource_filename;
+        resourceFileExtension = node_resource_file_extension;
+        resourceUrl = node_resource_url;
+        HtmlAttrConverter htmlAttrConverter = new HtmlAttrConverter();
+        if (node_attrs != null) {
+            attrs = htmlAttrConverter.convertToEntityAttribute(node_attrs);
+
+        }
+
+    }
+
 
     public HtmlTag() {
         cssStyleList = new ArrayList<>();

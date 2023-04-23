@@ -15,6 +15,7 @@ import com.SelfBuildApp.ddd.Project.domain.Unit.Size.EM;
 import com.SelfBuildApp.ddd.Project.domain.Unit.Size.Percent;
 import com.SelfBuildApp.ddd.Project.domain.Unit.Size.Pixel;
 import com.SelfBuildApp.ddd.Project.domain.Unit.Size.REM;
+import com.SelfBuildApp.ddd.Project.infrastructure.repo.HtmlAttrConverter;
 import com.SelfBuildApp.ddd.Support.infrastructure.PropertyAccess;
 import com.SelfBuildApp.infrastructure.Validation.Image;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -23,6 +24,8 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.FileUtils;
 import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
@@ -112,7 +115,7 @@ public class CssStyle implements Serializable, FileInterface {
 
     @Valid
     @OneToMany(mappedBy = "cssStyle", cascade = CascadeType.ALL,
-            fetch = FetchType.EAGER, orphanRemoval = true)
+            fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     @JsonView({PropertyAccess.HtmlTagDetails.class, PropertyAccess.Details.class})
     @Cascade(org.hibernate.annotations.CascadeType.ALL)
@@ -120,7 +123,7 @@ public class CssStyle implements Serializable, FileInterface {
 
     @Valid
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL,
-            fetch = FetchType.EAGER, orphanRemoval = true)
+            fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonProperty(access = JsonProperty.Access.READ_WRITE)
     @JsonView({PropertyAccess.HtmlTagDetails.class, PropertyAccess.Details.class})
     @Cascade(org.hibernate.annotations.CascadeType.ALL)
@@ -159,6 +162,73 @@ public class CssStyle implements Serializable, FileInterface {
     @JsonView({PropertyAccess.HtmlTagDetails.class, PropertyAccess.Details.class})
     private MediaQuery mediaQuery;
 
+    @Transient
+    public String htmlTagId;
+
+    @Transient
+    public Long mediaQueryId;
+
+    @Transient
+    public Long parentId;
+
+    @Transient
+    public Long pseudoSelectorId;
+
+    public CssStyle(
+            Long cssS_id,
+            String cssS_css_identity,
+            String cssS_multiple_value,
+            String cssS_name,
+            String cssS_unit_name,
+            String cssS_unit_name_second,
+            String cssS_unit_name_third,
+            String cssS_unit_name_fourth,
+            String cssS_unit_name_fifth,
+
+            String cssS_value,
+            String cssS_value_second,
+            String cssS_value_third,
+            String cssS_value_fourth,
+            String cssS_value_fifth,
+
+            String cssS_html_tag_id,
+            Long cssS_media_query_id,
+            Long cssS_parent_id,
+            Long cssS_pseudo_selector_id,
+
+            String cssS_resource_filename,
+            String cssS_resource_file_extension,
+            String cssS_resource_url
+    ) {
+        this();
+        id = cssS_id;
+        cssIdentity = cssS_css_identity;
+        multipleValue = cssS_multiple_value != null ? Integer.valueOf(cssS_multiple_value) == 1 : false;
+        name = cssS_name;
+
+        unitName = cssS_unit_name;
+        unitNameSecond = cssS_unit_name_second;
+        unitNameThird = cssS_unit_name_third;
+        unitNameFourth = cssS_unit_name_fourth;
+        unitNameFifth = cssS_unit_name_fifth;
+
+        htmlTagId = cssS_html_tag_id;
+        mediaQueryId = cssS_media_query_id;
+        parentId = cssS_parent_id;
+        pseudoSelectorId = cssS_pseudo_selector_id;
+
+        value = cssS_value;
+        valueSecond = cssS_value_second;
+        valueThird = cssS_value_third;
+        valueFourth = cssS_value_fourth;
+        valueFifth = cssS_value_fifth;
+
+        resourceFilename = cssS_resource_filename;
+        resourceFileExtension = cssS_resource_file_extension;
+        resourceUrl = cssS_resource_url;
+
+    }
+
     public CssStyle() {
         cssValues = new ArrayList<>();
         children = new ArrayList<>();
@@ -168,6 +238,38 @@ public class CssStyle implements Serializable, FileInterface {
         this();
         this.name = name;
         this.value = value;
+    }
+
+    public String getHtmlTagId() {
+        return htmlTagId;
+    }
+
+    public void setHtmlTagId(String htmlTagId) {
+        this.htmlTagId = htmlTagId;
+    }
+
+    public Long getMediaQueryId() {
+        return mediaQueryId;
+    }
+
+    public void setMediaQueryId(Long mediaQueryId) {
+        this.mediaQueryId = mediaQueryId;
+    }
+
+    public Long getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(Long parentId) {
+        this.parentId = parentId;
+    }
+
+    public Long getPseudoSelectorId() {
+        return pseudoSelectorId;
+    }
+
+    public void setPseudoSelectorId(Long pseudoSelectorId) {
+        this.pseudoSelectorId = pseudoSelectorId;
     }
 
     @JsonIgnore

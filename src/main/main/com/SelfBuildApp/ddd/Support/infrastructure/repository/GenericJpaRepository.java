@@ -14,7 +14,7 @@ public abstract class GenericJpaRepository<A extends BaseAggregateRoot>  {
     @PersistenceContext
     protected EntityManager entityManager;
 
-    private Class<A> clazz;
+    protected Class<A> clazz;
 
     @Autowired
     private AutowireCapableBeanFactory spring;

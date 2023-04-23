@@ -34,6 +34,7 @@ public class CssFactory {
         if (excludedCss.contains(name)) {
             return null;
         }
+        System.out.println(name);
 
         CssStyle css = new CssStyle();
         css.setName(name);
@@ -49,6 +50,13 @@ public class CssFactory {
                 name.contains("shadow") ||
                 name.equals("transition")) {
             css.setMultipleValue(true);
+
+            if (value.contains("rgba")) {
+                value = RgbaValue.clearOriginalValueReplacePlaceholder(value);
+            } else if (value.contains("rgb")) {
+                value = RgbValue.clearOriginalValueReplacePlaceholder(value);
+            }
+
             String[] clearValArr = value.split(",");
             for (int i = 0; i < clearValArr.length; i++) {
                 String itemVal = clearValArr[i].trim();
@@ -78,12 +86,22 @@ public class CssFactory {
     public void initValuesAndUnitsForStyle(CssStyle css, String fullValue)
     {
         String val = fullValue.trim();
+        System.out.println(val);
 
         if (val.contains("rgba")) {
             val = RgbaValue.clearOriginalValueReplacePlaceholder(val);
         } else if (val.contains("rgb")) {
             val = RgbValue.clearOriginalValueReplacePlaceholder(val);
+        } else if (val.contains("calc")) {
+            String v = val;
+            String unitName = getUnitNameFromValue(v);
+            String valueOne = v;
+            css.setValue(valueOne);
+            css.setUnitName(unitName);
+
+            return;
         }
+
         List<String> valArr = new ArrayList<>(Arrays.asList(val.split(" ")));
 
         if (valArr.size() > 0) {
@@ -131,11 +149,19 @@ public class CssFactory {
     public void initValuesAndUnitsForStyleValue(CssValue cssValue, String fullValue)
     {
         String val = fullValue.trim();
-
+        System.out.println(val);
         if (val.contains("rgba")) {
             val = RgbaValue.clearOriginalValueReplacePlaceholder(val);
         } else if (val.contains("rgb")) {
             val = RgbValue.clearOriginalValueReplacePlaceholder(val);
+        } else if (val.contains("calc")) {
+            String v = val;
+            String unitName = getUnitNameFromValue(v);
+            String valueOne = v;
+            cssValue.setValue(valueOne);
+            cssValue.setUnitName(unitName);
+
+            return;
         }
 
         List<String> valArr = new ArrayList<>(Arrays.asList(val.split(" ")));
@@ -220,13 +246,14 @@ public class CssFactory {
         if (value == null) {
             return "";
         }
+        System.out.println(value);
         String newValue = value;
 
         Pattern pattern = Pattern.compile("[0-9,.]+s");
         Matcher matcher = pattern.matcher(value);
 
         if (matcher.find()) {
-            newValue = newValue.replace("s", "");
+            newValue = newValue.replace("s", "").replace(",", "");
             return newValue;
         }
 

@@ -64,28 +64,66 @@ public class UpdateHtmlProjectHandler implements CommandHandler<UpdateHtmlProjec
         return dbEntity;
     }
 
-    @Transactional
     private void deleteProjectDataIfUrlPageIsChange(String oldPageUrl, HtmlProject dbEntity)
     {
-        if (oldPageUrl.equals( dbEntity.getPageUrl())) {
+        if (oldPageUrl == null || oldPageUrl.equals( dbEntity.getPageUrl())) {
             return;
         }
 
-        List<HtmlNode> tags = htmlTagRepository.findAllHtmlTagsForProject(dbEntity.getId());
-        List<MediaQuery> mediaQueryList = mediaQueryRepository.findAllForProjectId(dbEntity.getId());
-        List<FontFace> fontFaceList = fontFaceRepository.findAllForProjectId(dbEntity.getId());
-        List<KeyFrame> keyFrameList = keyFrameRepository.findAllForProjectId(dbEntity.getId());
+//        List<HtmlNode> tags = htmlTagRepository.findAllHtmlTagsForProject(dbEntity.getId());
+//        List<MediaQuery> mediaQueryList = mediaQueryRepository.findAllForProjectId(dbEntity.getId());
+//        List<FontFace> fontFaceList = fontFaceRepository.findAllForProjectId(dbEntity.getId());
+//        List<KeyFrame> keyFrameList = keyFrameRepository.findAllForProjectId(dbEntity.getId());
 
-        System.out.println("all tags= " + tags.size());
+//        System.out.println("all tags= " + tags.size());
+//        System.out.println("all mediaQueryList= " + mediaQueryList.size());
+//        System.out.println("all fontFaceList= " + fontFaceList.size());
+//        System.out.println("all keyFrameList= " + keyFrameList.size());
+
+
+
+
+        deleteCss(dbEntity.getId());
+        deleteAnothers(dbEntity.getId());
+        clearTagParents(dbEntity.getId());
+        deleteTags(dbEntity.getId());
+
+    }
+
+    @Transactional
+    private void deleteCss(String id)
+    {
+        htmlTagRepository.deleteMediaQueryCss(id);
+        htmlTagRepository.deletePseudoSelectorCss(id);
+        htmlTagRepository.deleteCssValues(id);
+        htmlTagRepository.deleteTagCss(id);
+    }
+
+    @Transactional
+    private void deleteTags(String id)
+    {
+        htmlTagRepository.deleteTags(id);
+    }
+
+    @Transactional
+    private void clearTagParents(String id)
+    {
+        htmlTagRepository.clearTagParents(id);
+    }
+
+    @Transactional
+    private void deleteAnothers(String id)
+    {
+//        List<HtmlNode> tags = htmlTagRepository.findAllHtmlTagsForProject(dbEntity.getId());
+        List<MediaQuery> mediaQueryList = mediaQueryRepository.findAllForProjectId(id);
+        List<FontFace> fontFaceList = fontFaceRepository.findAllForProjectId(id);
+        List<KeyFrame> keyFrameList = keyFrameRepository.findAllForProjectId(id);
+
+//        System.out.println("all tags= " + tags.size());
         System.out.println("all mediaQueryList= " + mediaQueryList.size());
         System.out.println("all fontFaceList= " + fontFaceList.size());
         System.out.println("all keyFrameList= " + keyFrameList.size());
 
-        for (HtmlNode el: tags) {
-            el.setPathFileManager(pathFileManager);
-
-            entityManager.remove(el);
-        }
 
         for (MediaQuery el: mediaQueryList) {
 
@@ -103,6 +141,5 @@ public class UpdateHtmlProjectHandler implements CommandHandler<UpdateHtmlProjec
 
             entityManager.remove(el);
         }
-
     }
 }

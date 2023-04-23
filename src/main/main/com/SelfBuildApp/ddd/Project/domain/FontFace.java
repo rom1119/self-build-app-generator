@@ -48,6 +48,18 @@ public class FontFace implements Serializable {
     @Cascade(org.hibernate.annotations.CascadeType.ALL)
     private List<AssetProject> src;
 
+    public FontFace(
+            Long fontFace_id,
+            Long fontFace_version,
+            String fontFace_name
+
+    ) {
+        this();
+        this.id = fontFace_id;
+        this.version = fontFace_version;
+        this.name = fontFace_name;
+    }
+
     public FontFace() {
         src = new ArrayList<>();
     }
@@ -102,6 +114,13 @@ public class FontFace implements Serializable {
     public void setSrc(List<AssetProject> src) {
         this.src = src;
     }
+
+    public void addSrc(AssetProject src) {
+        this.src.add(src);
+        src.setFontFace(this);
+    }
+
+
 
 
 
