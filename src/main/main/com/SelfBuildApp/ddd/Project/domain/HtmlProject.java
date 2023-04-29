@@ -23,15 +23,15 @@ import java.util.Set;
 @Table( name = "html_project" )
 @JsonDeserialize()
 @SqlResultSetMapping(
-        name = "HtmlProjectMapping",
+        name = "HtmlNodeMapping",
 
         classes = {
-                @ConstructorResult(
-                        targetClass = HtmlProject.class,
-                        columns = {
-                                @ColumnResult(name =  "projectId"),
-                                @ColumnResult(name =  "projectPageUrl"),
-                        }),
+//                @ConstructorResult(
+//                        targetClass = HtmlProject.class,
+//                        columns = {
+//                                @ColumnResult(name =  "projectId"),
+//                                @ColumnResult(name =  "projectPageUrl"),
+//                        }),
                 @ConstructorResult(
                         targetClass = HtmlTag.class,
                         columns = {
@@ -50,6 +50,112 @@ import java.util.Set;
                                 @ColumnResult(name =  "node_resource_file_extension"),
                                 @ColumnResult(name =  "node_resource_url")
                         }),
+//                @ConstructorResult(
+//                        targetClass = CssStyle.class,
+//                        columns = {
+//                                @ColumnResult(name =  "cssS_id", type = Long.class),
+//                                @ColumnResult(name =  "cssS_css_identity"),
+//                                @ColumnResult(name =  "cssS_multiple_value", type = String.class),
+//                                @ColumnResult(name =  "cssS_name"),
+//                                @ColumnResult(name =  "cssS_unit_name"),
+//                                @ColumnResult(name =  "cssS_unit_name_second"),
+//                                @ColumnResult(name =  "cssS_unit_name_third"),
+//                                @ColumnResult(name =  "cssS_unit_name_fourth"),
+//                                @ColumnResult(name =  "cssS_unit_name_fifth"),
+//                                @ColumnResult(name =  "cssS_value"),
+//                                @ColumnResult(name =  "cssS_value_second"),
+//                                @ColumnResult(name =  "cssS_value_third"),
+//                                @ColumnResult(name =  "cssS_value_fourth"),
+//                                @ColumnResult(name =  "cssS_value_fifth"),
+//                                @ColumnResult(name =  "cssS_html_tag_id"),
+//                                @ColumnResult(name =  "cssS_media_query_id", type = Long.class),
+//                                @ColumnResult(name =  "cssS_parent_id", type = Long.class),
+//                                @ColumnResult(name =  "cssS_pseudo_selector_id", type = Long.class),
+//                                @ColumnResult(name =  "cssS_resource_filename"),
+//                                @ColumnResult(name =  "cssS_resource_file_extension"),
+//                                @ColumnResult(name =  "cssS_resource_url")
+//                        }),
+//                @ConstructorResult(
+//                        targetClass = CssValue.class,
+//                        columns = {
+//                                @ColumnResult(name =  "cssV_id", type = Long.class),
+//                                @ColumnResult(name =  "cssV_css_identity"),
+//                                @ColumnResult(name =  "cssV_inset", type = Boolean.class),
+//                                @ColumnResult(name =  "cssV_special_val_gradient", type = Boolean.class),
+//                                @ColumnResult(name =  "cssV_unit_name"),
+//                                @ColumnResult(name =  "cssV_unit_name_second"),
+//                                @ColumnResult(name =  "cssV_unit_name_third"),
+//                                @ColumnResult(name =  "cssV_unit_name_fourth"),
+//                                @ColumnResult(name =  "cssV_unit_name_fifth"),
+//                                @ColumnResult(name =  "cssV_unit_name_sixth"),
+//                                @ColumnResult(name =  "cssV_unit_name_seventh"),
+//                                @ColumnResult(name =  "cssV_unit_name_eighth"),
+//                                @ColumnResult(name =  "cssV_unit_name_ninth"),
+//                                @ColumnResult(name =  "cssV_value"),
+//                                @ColumnResult(name =  "cssV_value_second"),
+//                                @ColumnResult(name =  "cssV_value_third"),
+//                                @ColumnResult(name =  "cssV_value_fourth"),
+//                                @ColumnResult(name =  "cssV_value_fifth"),
+//                                @ColumnResult(name =  "cssV_value_sixth"),
+//                                @ColumnResult(name =  "cssV_value_seventh"),
+//                                @ColumnResult(name =  "cssV_value_eighth"),
+//                                @ColumnResult(name =  "cssV_value_ninth"),
+//                                @ColumnResult(name =  "cssV_media_query_id", type = Long.class),
+//                                @ColumnResult(name =  "cssV_css_style_id", type = Long.class)
+//                        }),
+//                @ConstructorResult(
+//                        targetClass = KeyFrame.class,
+//                        columns = {
+//                                @ColumnResult(name =  "keyFrame_id"),
+//                                @ColumnResult(name =  "keyFrame_name"),
+//                        }),
+//                @ConstructorResult(
+//                        targetClass = PseudoSelector.class,
+//                        columns = {
+//                                @ColumnResult(name =  "pseudoSelector_id", type = Long.class),
+//                                @ColumnResult(name =  "pseudoSelector_name"),
+//                                @ColumnResult(name =  "pseudoSelector_value"),
+//                                @ColumnResult(name =  "pseudoSelector_unit_name"),
+//                                @ColumnResult(name =  "pseudoSelector_delimiter"),
+//                                @ColumnResult(name =  "pseudoSelector_html_tag_id"),
+//                                @ColumnResult(name =  "pseudoSelector_media_query_id", type = Long.class),
+//                                @ColumnResult(name =  "pseudoSelector_key_frame_id")
+//                        }),
+//
+//                @ConstructorResult(
+//                        targetClass = MediaQuery.class,
+//                        columns = {
+//                                @ColumnResult(name =  "mediaQuery_id", type = Long.class),
+//                                @ColumnResult(name =  "mediaQuery_name"),
+//                                @ColumnResult(name =  "mediaQuery_color"),
+//                                @ColumnResult(name =  "mediaQuery_color_unit_name"),
+//                        }),
+//                @ConstructorResult(
+//                        targetClass = FontFace.class,
+//                        columns = {
+//                                @ColumnResult(name =  "fontFace_id", type = Long.class),
+//                                @ColumnResult(name =  "fontFace_version", type = Long.class),
+//                                @ColumnResult(name =  "fontFace_name"),
+//                        }),
+//                @ConstructorResult(
+//                        targetClass = AssetProject.class,
+//                        columns = {
+//                                @ColumnResult(name =  "assetProject_id", type = Long.class),
+//                                @ColumnResult(name =  "assetProject_font_face_id", type = Long.class),
+//                                @ColumnResult(name =  "assetProject_type", type = int.class),
+//                                @ColumnResult(name =  "assetProject_format"),
+//                                @ColumnResult(name =  "assetProject_resource_filename"),
+//                                @ColumnResult(name =  "assetProject_resource_file_extension"),
+//                                @ColumnResult(name =  "assetProject_resource_url")
+//                        }),
+
+        }
+
+
+)
+@SqlResultSetMapping(
+        name = "CssStyleMapping",
+        classes = {
                 @ConstructorResult(
                         targetClass = CssStyle.class,
                         columns = {
@@ -75,61 +181,11 @@ import java.util.Set;
                                 @ColumnResult(name =  "cssS_resource_file_extension"),
                                 @ColumnResult(name =  "cssS_resource_url")
                         }),
-                @ConstructorResult(
-                        targetClass = CssValue.class,
-                        columns = {
-                                @ColumnResult(name =  "cssV_id", type = Long.class),
-                                @ColumnResult(name =  "cssV_css_identity"),
-                                @ColumnResult(name =  "cssV_inset", type = Boolean.class),
-                                @ColumnResult(name =  "cssV_special_val_gradient", type = Boolean.class),
-                                @ColumnResult(name =  "cssV_unit_name"),
-                                @ColumnResult(name =  "cssV_unit_name_second"),
-                                @ColumnResult(name =  "cssV_unit_name_third"),
-                                @ColumnResult(name =  "cssV_unit_name_fourth"),
-                                @ColumnResult(name =  "cssV_unit_name_fifth"),
-                                @ColumnResult(name =  "cssV_unit_name_sixth"),
-                                @ColumnResult(name =  "cssV_unit_name_seventh"),
-                                @ColumnResult(name =  "cssV_unit_name_eighth"),
-                                @ColumnResult(name =  "cssV_unit_name_ninth"),
-                                @ColumnResult(name =  "cssV_value"),
-                                @ColumnResult(name =  "cssV_value_second"),
-                                @ColumnResult(name =  "cssV_value_third"),
-                                @ColumnResult(name =  "cssV_value_fourth"),
-                                @ColumnResult(name =  "cssV_value_fifth"),
-                                @ColumnResult(name =  "cssV_value_sixth"),
-                                @ColumnResult(name =  "cssV_value_seventh"),
-                                @ColumnResult(name =  "cssV_value_eighth"),
-                                @ColumnResult(name =  "cssV_value_ninth"),
-                                @ColumnResult(name =  "cssV_media_query_id", type = Long.class),
-                                @ColumnResult(name =  "cssV_css_style_id", type = Long.class)
-                        }),
-                @ConstructorResult(
-                        targetClass = KeyFrame.class,
-                        columns = {
-                                @ColumnResult(name =  "keyFrame_id"),
-                                @ColumnResult(name =  "keyFrame_name"),
-                        }),
-                @ConstructorResult(
-                        targetClass = PseudoSelector.class,
-                        columns = {
-                                @ColumnResult(name =  "pseudoSelector_id", type = Long.class),
-                                @ColumnResult(name =  "pseudoSelector_name"),
-                                @ColumnResult(name =  "pseudoSelector_value"),
-                                @ColumnResult(name =  "pseudoSelector_unit_name"),
-                                @ColumnResult(name =  "pseudoSelector_delimiter"),
-                                @ColumnResult(name =  "pseudoSelector_html_tag_id"),
-                                @ColumnResult(name =  "pseudoSelector_media_query_id", type = Long.class),
-                                @ColumnResult(name =  "pseudoSelector_key_frame_id")
-                        }),
-
-                @ConstructorResult(
-                        targetClass = MediaQuery.class,
-                        columns = {
-                                @ColumnResult(name =  "mediaQuery_id", type = Long.class),
-                                @ColumnResult(name =  "mediaQuery_name"),
-                                @ColumnResult(name =  "mediaQuery_color"),
-                                @ColumnResult(name =  "mediaQuery_color_unit_name"),
-                        }),
+        }
+)
+@SqlResultSetMapping(
+        name = "FontFaceMapping",
+        classes = {
                 @ConstructorResult(
                         targetClass = FontFace.class,
                         columns = {
@@ -137,6 +193,22 @@ import java.util.Set;
                                 @ColumnResult(name =  "fontFace_version", type = Long.class),
                                 @ColumnResult(name =  "fontFace_name"),
                         }),
+        }
+)
+@SqlResultSetMapping(
+        name = "KeyFrameMapping",
+        classes = {
+                @ConstructorResult(
+                        targetClass = KeyFrame.class,
+                        columns = {
+                                @ColumnResult(name =  "keyFrame_id"),
+                                @ColumnResult(name =  "keyFrame_name"),
+                        }),
+        }
+)
+@SqlResultSetMapping(
+        name = "AssetProjectMapping",
+        classes = {
                 @ConstructorResult(
                         targetClass = AssetProject.class,
                         columns = {
@@ -148,38 +220,70 @@ import java.util.Set;
                                 @ColumnResult(name =  "assetProject_resource_file_extension"),
                                 @ColumnResult(name =  "assetProject_resource_url")
                         }),
-
-//                @ConstructorResult(
-//                        targetClass = TextNode.class,
-//                        columns = {
-//                                @ColumnResult(name =  "node_id"),
-//                                @ColumnResult(name =  "node_parent_id"),
-//                                @ColumnResult(name =  "node_short_uuid"),
-//                                @ColumnResult(name =  "node_text"),
-//                        }),
-
         }
-//                @EntityResult(
-//                        entityClass = HtmlTag.class,
-//                        fields = {
-//                                @FieldResult(name = "id", column = "node_id"),
-//                                @FieldResult(name = "dtype", column = "node_dtype"),
-//                                @FieldResult(name = "version", column = "node_version"),
-//                                @FieldResult(name = "orderNumber", column = "node_order_number"),
-//                                @FieldResult(name = "text", column = "node_text"),
-//                                @FieldResult(name = "attrs", column = "node_attrs"),
-//                                @FieldResult(name = "closingTag", column = "node_closing_tag"),
-//                                @FieldResult(name = "resourceFileExtension", column = "node_resource_file_extension"),
-//                                @FieldResult(name = "resourceFileName", column = "node_resource_filename"),
-//                                @FieldResult(name = "resourceUrl", column = "node_resource_url"),
-//                                @FieldResult(name = "svgContent", column = "node_svg_content"),
-//                                @FieldResult(name = "tagName", column = "node_tag_name"),
-//                                @FieldResult(name = "parentId", column = "node_parent_id"),
-//                        }
-//                )
-
-//        }
-
+)
+@SqlResultSetMapping(
+        name = "MediaQueryMapping",
+        classes = {
+                @ConstructorResult(
+                    targetClass = MediaQuery.class,
+                    columns = {
+                            @ColumnResult(name =  "mediaQuery_id", type = Long.class),
+                            @ColumnResult(name =  "mediaQuery_name"),
+                            @ColumnResult(name =  "mediaQuery_color"),
+                            @ColumnResult(name =  "mediaQuery_color_unit_name"),
+                    }),
+        }
+)
+@SqlResultSetMapping(
+        name = "PseudoSelectorMapping",
+        classes = {
+                @ConstructorResult(
+                    targetClass = PseudoSelector.class,
+                    columns = {
+                            @ColumnResult(name =  "pseudoSelector_id", type = Long.class),
+                            @ColumnResult(name =  "pseudoSelector_name"),
+                            @ColumnResult(name =  "pseudoSelector_value"),
+                            @ColumnResult(name =  "pseudoSelector_unit_name"),
+                            @ColumnResult(name =  "pseudoSelector_delimiter"),
+                            @ColumnResult(name =  "pseudoSelector_html_tag_id"),
+                            @ColumnResult(name =  "pseudoSelector_media_query_id", type = Long.class),
+                            @ColumnResult(name =  "pseudoSelector_key_frame_id")
+                    }),
+        }
+)
+@SqlResultSetMapping(
+        name = "CssValueMapping",
+        classes = {
+                @ConstructorResult(
+                    targetClass = CssValue.class,
+                    columns = {
+                            @ColumnResult(name =  "cssV_id", type = Long.class),
+                            @ColumnResult(name =  "cssV_css_identity"),
+                            @ColumnResult(name =  "cssV_inset", type = Boolean.class),
+                            @ColumnResult(name =  "cssV_special_val_gradient", type = Boolean.class),
+                            @ColumnResult(name =  "cssV_unit_name"),
+                            @ColumnResult(name =  "cssV_unit_name_second"),
+                            @ColumnResult(name =  "cssV_unit_name_third"),
+                            @ColumnResult(name =  "cssV_unit_name_fourth"),
+                            @ColumnResult(name =  "cssV_unit_name_fifth"),
+                            @ColumnResult(name =  "cssV_unit_name_sixth"),
+                            @ColumnResult(name =  "cssV_unit_name_seventh"),
+                            @ColumnResult(name =  "cssV_unit_name_eighth"),
+                            @ColumnResult(name =  "cssV_unit_name_ninth"),
+                            @ColumnResult(name =  "cssV_value"),
+                            @ColumnResult(name =  "cssV_value_second"),
+                            @ColumnResult(name =  "cssV_value_third"),
+                            @ColumnResult(name =  "cssV_value_fourth"),
+                            @ColumnResult(name =  "cssV_value_fifth"),
+                            @ColumnResult(name =  "cssV_value_sixth"),
+                            @ColumnResult(name =  "cssV_value_seventh"),
+                            @ColumnResult(name =  "cssV_value_eighth"),
+                            @ColumnResult(name =  "cssV_value_ninth"),
+                            @ColumnResult(name =  "cssV_media_query_id", type = Long.class),
+                            @ColumnResult(name =  "cssV_css_style_id", type = Long.class)
+                    }),
+        }
 )
 public class HtmlProject extends Project<HtmlNode> implements Serializable {
 
@@ -227,10 +331,9 @@ public class HtmlProject extends Project<HtmlNode> implements Serializable {
     @JsonIgnore
     private PathFileManager pathFileManager;
 
-    public HtmlProject(String projectId, String projectPageUrl) {
+    public HtmlProject(String projectId) {
         this();
         id = projectId;
-        pageUrl = projectPageUrl;
     }
 
     public HtmlProject() {
