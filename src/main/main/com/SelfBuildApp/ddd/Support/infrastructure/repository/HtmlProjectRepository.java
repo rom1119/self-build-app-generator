@@ -354,12 +354,16 @@ public class HtmlProjectRepository extends GenericJpaRepository<HtmlProject> {
                         + " LEFT JOIN  css_style cssParent ON cssChild.parent_id = cssParent.id"
                         + " LEFT JOIN  html_node cssStyleParentNode ON cssParent.html_tag_id = cssStyleParentNode.id"
                         + " LEFT JOIN  pseudo_selector pseudoSelectorParent ON cssParent.pseudo_selector_id = pseudoSelectorParent.id"
+                        + " LEFT JOIN  key_frame keyFrameCssParent ON pseudoSelectorParent.key_frame_id = keyFrameCssParent.id"
                         + " LEFT JOIN  html_node nodePseudoSelCssParent ON nodePseudoSelCssParent.id = pseudoSelectorParent.html_tag_id"
                         + " LEFT JOIN  pseudo_selector pseudoSelector ON cssStyle.pseudo_selector_id = pseudoSelector.id"
+                        + " LEFT JOIN  key_frame keyFrameCss ON pseudoSelector.key_frame_id = keyFrameCss.id"
                         + " LEFT JOIN  html_node nodePseudoSelCss ON nodePseudoSelCss.id = pseudoSelector.html_tag_id"
                         + " where mediaQuery.html_project_id  = :id " +
                         "OR cssStyleNode.project_id  = :id " +
                         "OR cssStyleParentNode.project_id  = :id " +
+                        "OR keyFrameCssParent.html_project_id  = :id " +
+                        "OR keyFrameCss.html_project_id  = :id " +
                         "OR nodePseudoSelCssParent.project_id  = :id " +
                         "OR nodePseudoSelCss.project_id  = :id "
                 ,
