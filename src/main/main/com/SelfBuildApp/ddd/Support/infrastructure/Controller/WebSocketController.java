@@ -93,12 +93,13 @@ public class WebSocketController {
                 = objectMapper.readValue(json, new TypeReference<Map<String,String>>(){});
         String projectUuid = map.get("projectId");
         String typeCode = map.get("type");
-        System.out.println("websocket");
+        System.out.println("websocket_START");
         System.out.println(projectUuid);
         System.out.println(typeCode);
 
-        HtmlProject entity = Optional.ofNullable(projectRepository.load(projectUuid))
+        HtmlProject entity = Optional.ofNullable(projectRepository.fetchFullProjectData(projectUuid))
                 .orElseThrow(() -> new ResourceNotFoundException("Not found"));
+        System.out.println("websocket_START after fetchFullProjectData");
 
         HtmlProjectCodeItem generateHtmlProject;
         String generateHtml = "";
@@ -128,6 +129,7 @@ public class WebSocketController {
 
         }
 
+        System.out.println("websocket_END");
 
         return new HtmlProjectCode(generateHtml,
                 generateCss);

@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Set;
 
 @Component
 public class HtmlProjectCodeGenerator implements CodeGenerator<HtmlProject> {
@@ -31,7 +32,7 @@ public class HtmlProjectCodeGenerator implements CodeGenerator<HtmlProject> {
     public CodeGeneratedItem generate(HtmlProject arg) {
 
         HtmlProjectCodeItem htmlProjectCodeItem = new HtmlProjectCodeItem(arg);
-        List<HtmlTag> mainHtmlTagsForProject = htmlTagRepository.findMainHtmlTagsForProject(arg.getId());
+        Set<HtmlNode> mainHtmlTagsForProject = arg.getItems();
 
 
         for (HtmlNode node: mainHtmlTagsForProject) {

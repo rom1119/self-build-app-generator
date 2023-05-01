@@ -16,190 +16,24 @@ import java.util.Map;
 @Repository
 public class HtmlProjectRepository extends GenericJpaRepository<HtmlProject> {
 
+    public HtmlProject fetchSimpleProjectData( String projectId)
+    {
 
+        Query namedQueryNodes = this.entityManager.createNativeQuery(
+                "SELECT" +
+                        " p.id projectId, p.page_url projectPageUrl, p.name projectName, p.version projectVersion " +
+                       "from html_project p "
+                         + " where p.id = :id "
+                ,
+                "HtmlProjectMapping" )
+                ;
+        namedQueryNodes.setParameter("id", projectId);
+        return  (HtmlProject) namedQueryNodes.getSingleResult();
+    }
 
     public HtmlProject fetchFullProjectData( String projectId)
     {
 
-//        EntityGraph<HtmlProject> entityGraph = entityManager.createEntityGraph(HtmlProject.class);
-
-
-//        Query namedQuery = this.entityManager.createQuery( "SELECT p from HtmlProject p "
-//                + " LEFT JOIN FETCH p.fontFaceList fontFaceList"
-//
-//                        + " LEFT JOIN FETCH p.items nodes "
-//                        + " LEFT JOIN FETCH p.mediaQueryList mediaQueryList"
-//                + " LEFT JOIN FETCH mediaQueryList.pseudoSelectors pseudoSMediaQuery "
-//                + " LEFT JOIN FETCH mediaQueryList.cssStyleList cssSMediaQuery "
-//                + " LEFT JOIN FETCH mediaQueryList.cssValues cssVMediaQuery "
-//
-//                + " LEFT JOIN FETCH p.keyFrameList keyFrameList"
-//                + " LEFT JOIN FETCH keyFrameList.selectorList pseudoSKeyFrame"
-
-//                + " LEFT JOIN FETCH nodes.cssStyleList cssStyleListNode "
-//                + " LEFT JOIN FETCH cssStyleListNode.children cssStyleChildListNode "
-//                + " LEFT JOIN FETCH cssStyleChildListNode.cssValues cssValueChildListNode "
-//                + " LEFT JOIN FETCH cssStyleListNode.cssValues cssValueListNode "
-//                + " LEFT JOIN FETCH nodes.pseudoSelectors pseudoSelectorsNode "
-
-//                + " LEFT JOIN FETCH nodes.children childNode "
-//                + " LEFT JOIN FETCH childNode.cssStyleList cssStyleListChildNode "
-//                + " LEFT JOIN FETCH cssStyleListChildNode.children cssStyleChildListChildNode "
-//                + " LEFT JOIN FETCH cssStyleListChildNode.cssValues cssValueChildListChildNode "
-//                + " LEFT JOIN FETCH cssStyleChildListChildNode.cssValues cssValueListChildNode "
-//                + " LEFT JOIN FETCH childNode.pseudoSelectors pseudoSelectorsChildNode "
-
-//        +  " where p.id = :id"
-//                , clazz);
-
-//        entityGraph.addAttributeNodes("fontFaceList");
-//
-//
-//        entityGraph.addSubgraph("mediaQueryList")
-//                .addAttributeNodes("pseudoSelectors", "cssStyleList", "cssValues");
-//        entityGraph.addSubgraph("keyFrameList").addAttributeNodes("selectorList");
-//        TypeReferenced<List> a = new TypeReferenced<List>(){};
-
-//        Subgraph<HtmlTag> itemsSubgraph = entityGraph.addSubgraph("items",  HtmlTag.class);
-//        Subgraph<TextNode> itemsTextSubgraph = entityGraph.addSubgraph("items",  TextNode.class);
-//                    .addSubgraph("cssStyleList")
-//                        .addSubgraph("children")
-//                            .addSubgraph("cssValues")
-//                                .addSubgraph("cssValues");
-//        cssStyleListSubgraph.addAttributeNodes("pseudoSelectors");
-
-//        entityGraph
-//                .addAttributeNodes(
-//                        "children",
-//                        "cssStyleList"
-//
-//                );
-
-
-
-
-//        namedQuery.setHint("javax.persistence.loadgraph", entityGraph);
-
-//        namedQuery.setParameter("id", projectId);
-//        namedQuery.setHint(QueryHints.PASS_DISTINCT_THROUGH, false);
-
-//        HtmlProject singleResult = (HtmlProject) namedQuery.getSingleResult();
-//        System.out.println("NEXT_QUERY");
-//        HtmlProject result = fetchNextFields(singleResult,
-//                 " LEFT JOIN p.items nodes "
-//                        );
-//
-//        System.out.println("NEXT_QUERY 22222");
-//        result = fetchNextFields(result,
-//                 " LEFT JOIN FETCH p.mediaQueryList mediaQueryList "
-//                        );
-//
-//        System.out.println("NEXT_QUERY 3333");
-//        result = fetchNextFields(result,
-//                 " LEFT JOIN FETCH p.keyFrameList keyFrameList "
-//                        );
-//
-//        System.out.println("NEXT_QUERY 444444");
-//        result = fetchNextFields(result,
-//                 " LEFT JOIN FETCH p.assets assets "
-//                        );
-//
-////        System.out.println("NEXT_QUERY 55555");
-////        result = fetchNextFields(singleResult,
-////                 " LEFT JOIN FETCH p.pseudoSelectors pseudoSelectors "
-////                        );
-//
-//        System.out.println("NEXT_QUERY 55555");
-//        result = fetchNextFields(result,
-//                 " LEFT JOIN FETCH p.items nodes "
-////                 + " LEFT JOIN FETCH nodes.children nodesChildren "
-//                 + " LEFT JOIN FETCH nodes.cssStyleList cssStyleList "
-////                 + " LEFT JOIN FETCH nodes.pseudoSelectors pseudoSelectorsNodes "
-////                 + " LEFT JOIN FETCH nodesChildren.pseudoSelectors pseudoSelectorsNodesChildren "
-//
-//        );
-//
-//        result = fetchNextFields(result,
-//                 " LEFT JOIN FETCH p.items nodes "
-////                 + " LEFT JOIN FETCH nodes.children nodesChildren "
-////                 + " LEFT JOIN FETCH nodes.cssStyleList cssStyleList "
-//                 + " LEFT JOIN FETCH cssStyleList.cssValues cssValues "
-////                 + " LEFT JOIN FETCH nodes.pseudoSelectors pseudoSelectorsNodes "
-////                 + " LEFT JOIN FETCH nodesChildren.pseudoSelectors pseudoSelectorsNodesChildren "
-//
-//        );
-//
-//        System.out.println("NEXT_QUERY 666666");
-//        result = fetchNextFields(result,
-//                 " LEFT JOIN FETCH p.items nodes "
-////                 + " LEFT JOIN FETCH nodes.children nodesChildren "
-////                 + " LEFT JOIN FETCH nodes.cssStyleList cssStyleList "
-//                 + " LEFT JOIN FETCH nodes.pseudoSelectors pseudoSelectorsNodes "
-////                 + " LEFT JOIN FETCH nodesChildren.pseudoSelectors pseudoSelectorsNodesChildren "
-//
-//        );
-//
-//        System.out.println("NEXT_QUERY 77777");
-//        result = fetchNextFields(result,
-//                 " LEFT JOIN FETCH p.items nodes "
-//                 + " LEFT JOIN FETCH nodes.children nodesChildren "
-////                 + " LEFT JOIN FETCH nodes.cssStyleList cssStyleList "
-////                 + " LEFT JOIN FETCH nodes.pseudoSelectors pseudoSelectorsNodes "
-////                 + " LEFT JOIN FETCH nodesChildren.pseudoSelectors pseudoSelectorsNodesChildren "
-//
-//        );
-
-
-
-//        result = fetchNextFields(result,
-//                " LEFT JOIN FETCH p.items nodes "
-//                        + " LEFT JOIN FETCH nodes.cssStyleList cssStyleListNode "
-//                        + " LEFT JOIN FETCH cssStyleListNode.children cssStyleChildListNode "
-//                        + " LEFT JOIN FETCH cssStyleChildListNode.cssValues cssValueChildListNode "
-//                        + " LEFT JOIN FETCH cssStyleListNode.cssValues cssValueListNode "
-//                        + " LEFT JOIN FETCH nodes.pseudoSelectors pseudoSelectorsNode ");
-
-//        result = fetchNextFields(result,
-//                        " LEFT JOIN FETCH p.mediaQueryList mediaQueryList"
-//                       );
-
-//        Query namedQuery = this.entityManager.createQuery( "SELECT cssStyle from CssStyle cssStyle "
-////                        + " LEFT JOIN FETCH p.fontFaceList fontFaceList"
-////
-//                        + " LEFT JOIN FETCH cssStyle.cssValues cssValues "
-//                        + " LEFT JOIN FETCH cssStyle.parent parent "
-//                        + " LEFT JOIN FETCH cssStyle.pseudoSelector pseudoSelector "
-//                        + " LEFT JOIN FETCH cssStyle.mediaQuery mediaQuery "
-//                        + " LEFT JOIN FETCH cssStyle.htmlTag htmlTag "
-//
-//                        + " LEFT JOIN FETCH htmlTag.parent htmlTagParent "
-//                        + " LEFT JOIN FETCH htmlTag.project project"
-//                    + " LEFT JOIN FETCH project.mediaQueryList mediaQueryList "
-//                    + " LEFT JOIN FETCH mediaQueryList.pseudoSelectors pseudoSMediaQuery "
-//                + " LEFT JOIN FETCH mediaQueryList.cssStyleList cssSMediaQuery "
-//                + " LEFT JOIN FETCH mediaQueryList.cssValues cssVMediaQuery "
-//
-//                + " LEFT JOIN FETCH project.keyFrameList keyFrameList"
-//                + " LEFT JOIN FETCH keyFrameList.selectorList pseudoSKeyFrame"
-//                + " LEFT JOIN FETCH project.assets assets "
-//               + " LEFT JOIN FETCH project.keyFrameList keyFrameList "
-
-//
-//                + " LEFT JOIN FETCH nodes.cssStyleList cssStyleListNode "
-//                + " LEFT JOIN FETCH cssStyleListNode.children cssStyleChildListNode "
-//                + " LEFT JOIN FETCH cssStyleChildListNode.cssValues cssValueChildListNode "
-//                + " LEFT JOIN FETCH cssStyleListNode.cssValues cssValueListNode "
-//                + " LEFT JOIN FETCH nodes.pseudoSelectors pseudoSelectorsNode "
-//
-//                + " LEFT JOIN FETCH nodes.children childNode "
-//                + " LEFT JOIN FETCH childNode.cssStyleList cssStyleListChildNode "
-//                + " LEFT JOIN FETCH cssStyleListChildNode.children cssStyleChildListChildNode "
-//                + " LEFT JOIN FETCH cssStyleListChildNode.cssValues cssValueChildListChildNode "
-//                + " LEFT JOIN FETCH cssStyleChildListChildNode.cssValues cssValueListChildNode "
-//                + " LEFT JOIN FETCH childNode.pseudoSelectors pseudoSelectorsChildNode "
-
-//                        +  " where project.id = :id"
-//                , CssStyle.class);
 
         Query namedQueryNodes = this.entityManager.createNativeQuery(
                 "SELECT" +
@@ -244,10 +78,12 @@ public class HtmlProjectRepository extends GenericJpaRepository<HtmlProject> {
                         " cssS.id cssS_id, cssS.css_identity cssS_css_identity, cssS.multiple_value cssS_multiple_value, cssS.name cssS_name, cssS.resource_file_extension cssS_resource_file_extension, cssS.resource_filename cssS_resource_filename, cssS.resource_url cssS_resource_url, cssS.unit_name cssS_unit_name, cssS.unit_name_second cssS_unit_name_second, cssS.unit_name_third cssS_unit_name_third, cssS.unit_name_fourth cssS_unit_name_fourth, cssS.unit_name_fifth cssS_unit_name_fifth, cssS.value cssS_value, cssS.value_second cssS_value_second, cssS.value_third cssS_value_third, cssS.value_fourth cssS_value_fourth, cssS.value_fifth cssS_value_fifth, cssS.html_tag_id cssS_html_tag_id, cssS.media_query_id cssS_media_query_id, cssS.parent_id cssS_parent_id, cssS.pseudo_selector_id cssS_pseudo_selector_id " +
                         " from css_style cssS "
 
+
                         + "LEFT JOIN  css_style cssParent ON cssS.parent_id = cssParent.id"
                         + " LEFT JOIN  html_node cssStyleParentNode ON cssParent.html_tag_id = cssStyleParentNode.id"
 
                         + " LEFT JOIN  pseudo_selector pseudoSelectorParent ON cssParent.pseudo_selector_id = pseudoSelectorParent.id"
+                        + " LEFT JOIN  key_frame keyFrameCssParent ON pseudoSelectorParent.key_frame_id = keyFrameCssParent.id"
                         + " LEFT JOIN  html_node nodePseudoSelCssParent ON nodePseudoSelCssParent.id = pseudoSelectorParent.html_tag_id"
                         + " LEFT JOIN  media_query mediaQuery ON cssS.media_query_id = mediaQuery.id"
                         + " LEFT JOIN  html_node node ON node.id = cssS.html_tag_id "
@@ -257,6 +93,7 @@ public class HtmlProjectRepository extends GenericJpaRepository<HtmlProject> {
                         + " where mediaQuery.html_project_id = :id OR" +
                         " node.project_id = :id OR " +
                         " keyFrame.html_project_id = :id OR " +
+                        " keyFrameCssParent.html_project_id = :id OR " +
                         " nodePseudoSel.project_id = :id OR" +
                         " cssStyleParentNode.project_id = :id OR" +
                         " nodePseudoSelCssParent.project_id = :id "
@@ -385,6 +222,16 @@ public class HtmlProjectRepository extends GenericJpaRepository<HtmlProject> {
         Map<Long, AssetProject> assetList = new HashMap<>();
         Map<Long, PseudoSelector> pseudoSelectorList = new HashMap<>();
 
+        HtmlProject htmlProject = new HtmlProject(projectId);
+        htmlProject.tagsMap = tags;
+        htmlProject.cssMap = cssList;
+        htmlProject.cssValueMap = cssValueList;
+        htmlProject.keyFramesMap = keyFramesList;
+        htmlProject.mediaQueryMap = mediaQueryList;
+        htmlProject.fontFaceMap = fontFaceList;
+        htmlProject.assetMap = assetList;
+        htmlProject.pseudoSelectorMap = pseudoSelectorList;
+
         arrayResultNodes.stream().forEach((record) -> {
 
             HtmlTag tag = (HtmlTag)record;
@@ -430,7 +277,6 @@ public class HtmlProjectRepository extends GenericJpaRepository<HtmlProject> {
             cssValueList.put(record.getId(), record);
         });
 
-        HtmlProject htmlProject = new HtmlProject(projectId);
 
         keyFramesList.entrySet().stream().forEach((record) -> {
             KeyFrame keyFrame = record.getValue();

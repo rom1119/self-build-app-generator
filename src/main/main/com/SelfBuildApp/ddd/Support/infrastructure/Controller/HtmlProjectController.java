@@ -79,6 +79,18 @@ public class HtmlProjectController {
         return htmlProject;
     }
 
+    @GetMapping("/short-data/{id}")
+    @JsonView( PropertyAccess.HtmlTagDetails.class)
+    public HtmlProject getOneShortData(@PathVariable String id, Authentication auth) {
+        Optional<HtmlProject> load = Optional.ofNullable(repository.fetchSimpleProjectData(id));
+        load.orElseThrow(() -> new ResourceNotFoundException("Not found"));
+        HtmlProject htmlProject = load.get();
+
+        htmlProject.setPathFileManager(pathFileManager);
+
+        return htmlProject;
+    }
+
     @GetMapping("/import-website")
     public String loadWebsitePage(@RequestParam String url) {
         PageCrawler pageCrawler = new PageCrawler();

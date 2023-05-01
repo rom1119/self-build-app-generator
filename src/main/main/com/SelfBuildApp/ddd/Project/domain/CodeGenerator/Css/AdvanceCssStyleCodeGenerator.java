@@ -67,12 +67,14 @@ public class AdvanceCssStyleCodeGenerator implements CodeGenerator<HtmlProject> 
     public CodeGeneratedItem generate(HtmlProject arg) {
 
         CssProjectCodeItem projectCodeItem = new CssProjectCodeItem(arg);
+        System.out.println("BEF findAllForProjectId");
 
-        List<CssStyle> allForProjectId = cssStyleRepository.findAllForProjectId(arg.getId());
+        Map<Long, CssStyle> allForProjectId = arg.cssMap;
 
-        Map<String, List<HtmlTag>> uniqueStyles = uniqueStyles(allForProjectId);
-        this.addStylesToProject(projectCodeItem, uniqueStyles);
+        Map<Long, List<HtmlTag>> uniqueStyles = uniqueStyles(allForProjectId);
+        this.addStylesToProject(projectCodeItem, uniqueStyles, allForProjectId);
 
+        System.out.println("BEF findAllForProjectIdWhereNotHaveMediaQuery");
 
         List<PseudoSelector> allPseudoSelectors = pseudoSelectorRepository.findAllForProjectIdWhereNotHaveMediaQuery(projectCodeItem.getProjectId());
 
@@ -82,15 +84,20 @@ public class AdvanceCssStyleCodeGenerator implements CodeGenerator<HtmlProject> 
             projectCodeItem.addSelector(selectorCodeItem);
 
         }
+        System.out.println("BEF mediaQueryGenerator.generate");
 
         mediaQueryGenerator.setTagsCodeItem(tagsCodeItem);
-
+        mediaQueryGenerator.setMediaQueryList(arg.getMediaQueryList());
         mediaQueryGenerator.generate(projectCodeItem);
 
+        System.out.println("BEF fontFaceGenerator.generate");
 
+        fontFaceGenerator.setFontFaceList(arg.getFontFaceList());
         fontFaceGenerator.generate(projectCodeItem);
 
+        System.out.println("BEF keyFrameGenerator.generate");
 
+        keyFrameGenerator.setKeyFrames(arg.getKeyFrameList());
         keyFrameGenerator.generate(projectCodeItem);
 
 
@@ -203,11 +210,11 @@ public class AdvanceCssStyleCodeGenerator implements CodeGenerator<HtmlProject> 
 
         return selector;
     }
-    protected void addStylesToProject(CssProjectCodeItem projectCodeItem, Map<String, List<HtmlTag>> uniqueStyles)
+    protected void addStylesToProject(CssProjectCodeItem projectCodeItem, Map<Long, List<HtmlTag>> uniqueStyles, Map<Long, CssStyle> cssStyleMap)
     {
-        for (Map.Entry<String, List<HtmlTag>> el : uniqueStyles.entrySet()) {
+        for (Map.Entry<Long, List<HtmlTag>> el : uniqueStyles.entrySet()) {
 
-            CssStyle css = cssStyleRepository.findOneByCssIdentity(el.getKey());
+            CssStyle css = cssStyleMap.get(el.getKey());
             css.setPathFileManager(pathFileManager);
 
             this.addStyleCssToProject(projectCodeItem, css, el.getValue());
@@ -247,7 +254,7 @@ public class AdvanceCssStyleCodeGenerator implements CodeGenerator<HtmlProject> 
         try {
             selectorCodeItem.addProperty(cssProp);
         } catch (DuplicateCssPropertyInSelector duplicateCssPropertyInSelector) {
-            duplicateCssPropertyInSelector.printStackTrace();
+//            duplicateCssPropertyInSelector.printStackTrace();
         }
 
         return selectorCodeItem;
@@ -334,23 +341,24 @@ public class AdvanceCssStyleCodeGenerator implements CodeGenerator<HtmlProject> 
     }
 
 
-    private Map<String, List<HtmlTag>> uniqueStyles(List<CssStyle> styleList)
+    private Map<Long, List<HtmlTag>> uniqueStyles(Map<Long, CssStyle> styleList)
     {
-        Map<String, List<HtmlTag>> res = new HashMap<>();
+        Map<Long, List<HtmlTag>> res = new HashMap<>();
 
-        for (CssStyle css : styleList) {
-            if (css.getHtmlTag() == null) {
+        for (Map.Entry<Long, CssStyle> cssItem : styleList.entrySet()) {
+            CssStyle css = cssItem.getValue();
+            if (css.getHtmlTag() == null || css.getMediaQuery() != null) {
                 continue;
             }
-            if (res.containsKey(css.getCssIdentity())) {
+            if (res.containsKey(css.getId())) {
 
-                List<HtmlTag> el = res.get(css.getCssIdentity());
+                List<HtmlTag> el = res.get(css.getId());
                 el.add(css.getHtmlTag());
 
             } else {
                 List<HtmlTag> list = new ArrayList<>();
                 list.add(css.getHtmlTag());
-                res.put(css.getCssIdentity(), list);
+                res.put(css.getId(), list);
             }
 
 //            System.out.println(css.getHtmlTag().getId());

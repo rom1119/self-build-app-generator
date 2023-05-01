@@ -38,13 +38,17 @@ public class FontFaceGenerator implements CodeGenerator<CssProjectCodeItem> {
     private PathFileManager pathFileManager;
 
     protected List<HtmlNodeCodeItem> tagsCodeItem;
+    protected List<FontFace> fontFaceList;
 
     public void setTagsCodeItem(List<HtmlNodeCodeItem> tagsCodeItem) {
         this.tagsCodeItem = tagsCodeItem;
     }
 
+    public void setFontFaceList(List<FontFace> fontFaceList) {
+        this.fontFaceList = fontFaceList;
+    }
 
-//    public void setProjectCodeItem(CssProjectCodeItem projectCodeItem) {
+    //    public void setProjectCodeItem(CssProjectCodeItem projectCodeItem) {
 //        this.projectCodeItem = projectCodeItem;
 //    }
 
@@ -54,7 +58,7 @@ public class FontFaceGenerator implements CodeGenerator<CssProjectCodeItem> {
 
 
 
-        List<FontFace> allFontFaceList = repository.findAllForProjectId(arg.getProjectId());
+        List<FontFace> allFontFaceList = this.fontFaceList;
 
         for (FontFace fontFace : allFontFaceList) {
             fontFace.setPathFileManager(pathFileManager);

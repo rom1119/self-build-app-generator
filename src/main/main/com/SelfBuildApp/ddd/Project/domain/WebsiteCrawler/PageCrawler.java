@@ -3,6 +3,7 @@ import com.SelfBuildApp.ddd.Project.domain.*;
 import com.SelfBuildApp.ddd.Project.domain.CssModelFactory.CssFactory;
 import com.SelfBuildApp.ddd.Project.domain.Unit.Color.RGB;
 import com.SelfBuildApp.ddd.Project.domain.Unit.Named;
+import com.SelfBuildApp.ddd.Support.infrastructure.Generator.impl.HtmlNodeShortUUID;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ObjectNode;
@@ -50,6 +51,9 @@ public class PageCrawler {
 
     @PersistenceContext
     protected EntityManager entityManager;
+
+    @Autowired
+    private HtmlNodeShortUUID shortUUID;
 
     public PageCrawler() {
         mediaQueryMapUnique = new HashMap<>();
@@ -137,6 +141,9 @@ public class PageCrawler {
 
         for (JsonNode node : tags) {
             HtmlTag tag = new HtmlTag();
+            String generateShortUUid = shortUUID.generateUniqueExcludedMemory(dbEntity.getId());
+
+            tag.setShortUuid(generateShortUUid);
             tag.setTagName(node.get("tagName").toString().replaceAll("[\"]*", ""));
             tag.setProject(dbEntity);
             tag.setParent(parent);
@@ -157,6 +164,10 @@ public class PageCrawler {
 
             if (node.get("text") != null && !node.get("text").toString().isEmpty()) {
                 TextNode text  = new TextNode();
+
+                String generateShortUUidTextNode = shortUUID.generateUniqueExcludedMemory(dbEntity.getId());
+
+                text.setShortUuid(generateShortUUidTextNode);
 
                 text.setText(node.get("text").toString().
                         replaceAll("^\"", "")

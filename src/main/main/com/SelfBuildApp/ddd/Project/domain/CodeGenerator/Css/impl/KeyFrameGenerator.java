@@ -35,13 +35,17 @@ public class KeyFrameGenerator implements CodeGenerator<CssProjectCodeItem> {
     private PathFileManager pathFileManager;
 
     protected List<HtmlNodeCodeItem> tagsCodeItem;
+    protected List<KeyFrame> keyFrames;
 
     public void setTagsCodeItem(List<HtmlNodeCodeItem> tagsCodeItem) {
         this.tagsCodeItem = tagsCodeItem;
     }
 
+    public void setKeyFrames(List<KeyFrame> keyFrames) {
+        this.keyFrames = keyFrames;
+    }
 
-//    public void setProjectCodeItem(CssProjectCodeItem projectCodeItem) {
+    //    public void setProjectCodeItem(CssProjectCodeItem projectCodeItem) {
 //        this.projectCodeItem = projectCodeItem;
 //    }
 
@@ -51,14 +55,14 @@ public class KeyFrameGenerator implements CodeGenerator<CssProjectCodeItem> {
 
 
 
-        List<KeyFrame> keyFrames = repository.findAllForProjectId(arg.getProjectId());
+        List<KeyFrame> keyFrames = this.keyFrames;
 
-        for (KeyFrame fontFace : keyFrames) {
-            fontFace.setPathFileManager(pathFileManager);
+        for (KeyFrame keyFrame : keyFrames) {
+            keyFrame.setPathFileManager(pathFileManager);
 //            MediaQueryCodeItem mediaQueryCodeItem = arg.getMediaQuery(fontFace.getMediaQuery().getId());
 //
 //            if (mediaQueryCodeItem == null) {
-            KeyFrameCodeItem mediaQueryCodeItem = new KeyFrameCodeItem(fontFace);
+            KeyFrameCodeItem mediaQueryCodeItem = new KeyFrameCodeItem(keyFrame);
             arg.addKeyFrame(mediaQueryCodeItem);
 //            }
 

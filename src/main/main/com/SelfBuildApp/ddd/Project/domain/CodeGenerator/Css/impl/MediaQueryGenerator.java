@@ -40,12 +40,17 @@ public class MediaQueryGenerator implements CodeGenerator<CssProjectCodeItem> {
     private PathFileManager pathFileManager;
 
     protected List<HtmlNodeCodeItem> tagsCodeItem;
+    protected List<MediaQuery> mediaQueryList;
 
     protected boolean inlineStyle = false;
 
 
     public void setTagsCodeItem(List<HtmlNodeCodeItem> tagsCodeItem) {
         this.tagsCodeItem = tagsCodeItem;
+    }
+
+    public void setMediaQueryList(List<MediaQuery> mediaQueryList) {
+        this.mediaQueryList = mediaQueryList;
     }
 
     public void setInlineStyle(boolean inlineStyle) {
@@ -60,51 +65,91 @@ public class MediaQueryGenerator implements CodeGenerator<CssProjectCodeItem> {
     public CodeGeneratedItem generate(CssProjectCodeItem arg) {
 
 
+        Map<String, CssStyle> cssStyleMap = new HashMap<>();
+        for (MediaQuery mediaQuery : mediaQueryList) {
 
-
-        List<CssStyle> cssForMediaQueries = cssStyleRepository.findAllForProjectIdWhereHasMediaQueryOrPseudoSelector(arg.getProjectId());
-        Map<String, List<HtmlTag>> uniqueStylesForMedia = uniqueStyles(cssForMediaQueries);
-
-        for (CssStyle cssForMediaQuery : cssForMediaQueries) {
-
-            MediaQuery mediaQuery = null;
-            if (cssForMediaQuery.getMediaQuery() != null) {
-                mediaQuery = cssForMediaQuery.getMediaQuery();
-            } else {
-                mediaQuery = cssForMediaQuery.getPseudoSelector().getMediaQuery();
-
-            }
             MediaQueryCodeItem mediaQueryCodeItem = arg.getMediaQuery(mediaQuery.getId());
 
             if (mediaQueryCodeItem == null) {
                 mediaQueryCodeItem = new MediaQueryCodeItem(mediaQuery);
                 arg.addMediaQuery(mediaQueryCodeItem);
             }
+            for (CssStyle cssForMediaQuery : mediaQuery.getCssStyleList()) {
+                cssForMediaQuery.setPathFileManager(pathFileManager);
+                cssStyleMap.put(cssForMediaQuery.getCssIdentity(), cssForMediaQuery);
+            }
 
-            if (cssForMediaQuery.getPseudoSelector() != null) {
-
-                CssSelectorCodeItem selectorCodeItem = addPseudoSelectorToProject(mediaQueryCodeItem, cssForMediaQuery.getPseudoSelector());
+            for (PseudoSelector pseudoSelector : mediaQuery.getPseudoSelectors()) {
+                CssSelectorCodeItem selectorCodeItem = addPseudoSelectorToProject(mediaQueryCodeItem, pseudoSelector);
                 try {
                     mediaQueryCodeItem.addSelector(selectorCodeItem);
                 } catch (DuplicateCssPropertyInSelector duplicateCssPropertyInSelector) {
-                    duplicateCssPropertyInSelector.printStackTrace();
+//                    duplicateCssPropertyInSelector.printStackTrace();
+                }
+
+                for (CssStyle cssForMediaQuery : pseudoSelector.getCssStyleList()) {
+                    cssForMediaQuery.setPathFileManager(pathFileManager);
+                    cssStyleMap.put(cssForMediaQuery.getCssIdentity(), cssForMediaQuery);
                 }
             }
-
         }
+        Map<String, List<HtmlTag>> uniqueStylesForMedia = uniqueStyles(cssStyleMap);
 
         for (Map.Entry<Long, MediaQueryCodeItem> mediaQueryEl  : arg.getMediaQueries().entrySet()) {
 
 
             for (Map.Entry<String, List<HtmlTag>> el : uniqueStylesForMedia.entrySet()) {
-
-                CssStyle css = cssStyleRepository.findOneByCssIdentity(el.getKey());
-                css.setPathFileManager(pathFileManager);
-                this.addStyleCssToMediaQuery(mediaQueryEl.getValue(), css, el.getValue());
+                CssStyle cssForMediaQuery = cssStyleMap.get(el.getKey());
+                this.addStyleCssToMediaQuery(mediaQueryEl.getValue(), cssForMediaQuery, el.getValue());
 
             }
 
         }
+
+
+//        List<CssStyle> cssForMediaQueries = cssStyleRepository.findAllForProjectIdWhereHasMediaQueryOrPseudoSelector(arg.getProjectId());
+//        Map<String, List<HtmlTag>> uniqueStylesForMedia = uniqueStyles(cssForMediaQueries);
+//
+//        for (CssStyle cssForMediaQuery : cssForMediaQueries) {
+//
+//            MediaQuery mediaQuery = null;
+//            if (cssForMediaQuery.getMediaQuery() != null) {
+//                mediaQuery = cssForMediaQuery.getMediaQuery();
+//            } else {
+//                mediaQuery = cssForMediaQuery.getPseudoSelector().getMediaQuery();
+//
+//            }
+//            MediaQueryCodeItem mediaQueryCodeItem = arg.getMediaQuery(mediaQuery.getId());
+//
+//            if (mediaQueryCodeItem == null) {
+//                mediaQueryCodeItem = new MediaQueryCodeItem(mediaQuery);
+//                arg.addMediaQuery(mediaQueryCodeItem);
+//            }
+//
+//            if (cssForMediaQuery.getPseudoSelector() != null) {
+//
+//                CssSelectorCodeItem selectorCodeItem = addPseudoSelectorToProject(mediaQueryCodeItem, cssForMediaQuery.getPseudoSelector());
+//                try {
+//                    mediaQueryCodeItem.addSelector(selectorCodeItem);
+//                } catch (DuplicateCssPropertyInSelector duplicateCssPropertyInSelector) {
+////                    duplicateCssPropertyInSelector.printStackTrace();
+//                }
+//            }
+//
+//        }
+//
+//        for (Map.Entry<Long, MediaQueryCodeItem> mediaQueryEl  : arg.getMediaQueries().entrySet()) {
+//
+//
+//            for (Map.Entry<String, List<HtmlTag>> el : uniqueStylesForMedia.entrySet()) {
+//
+//                CssStyle css = cssStyleRepository.findOneByCssIdentity(el.getKey());
+//                css.setPathFileManager(pathFileManager);
+//                this.addStyleCssToMediaQuery(mediaQueryEl.getValue(), css, el.getValue());
+//
+//            }
+//
+//        }
 
         return null;
     }
@@ -342,11 +387,12 @@ public class MediaQueryGenerator implements CodeGenerator<CssProjectCodeItem> {
         return null;
     }
 
-    private Map<String, List<HtmlTag>> uniqueStyles(List<CssStyle> styleList)
+    private Map<String, List<HtmlTag>> uniqueStyles(Map<String, CssStyle> styleList)
     {
         Map<String, List<HtmlTag>> res = new HashMap<>();
 
-        for (CssStyle css : styleList) {
+        for (Map.Entry<String, CssStyle> cssEL : styleList.entrySet()) {
+            CssStyle css = cssEL.getValue();
             if (css.getHtmlTag() == null) {
                 continue;
             }
